@@ -143,7 +143,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         }
         let geo=SCNGeometry(sources:[SCNGeometrySource(vertices:expanded),SCNGeometrySource(normals:normals)],elements:[SCNGeometryElement(indices:Array(0..<Int32(expanded.count)),primitiveType:.triangles)]); paint.isDoubleSided=true; geo.materials=[paint]; root.addChildNode(SCNNode(geometry:geo))
         box(CGFloat(width)*2.15,0.12,CGFloat(length)*3.6,0,0.33,0,dark)
-        
+
         // Angled glasshouse and sculpted roof, rather than a rectangular cabin.
         func quad(_ a:SCNVector3,_ b:SCNVector3,_ c:SCNVector3,_ d:SCNVector3,_ mat:SCNMaterial) {
             let u=SIMD3<Float>(b.x-a.x,b.y-a.y,b.z-a.z),v=SIMD3<Float>(c.x-a.x,c.y-a.y,c.z-a.z)
