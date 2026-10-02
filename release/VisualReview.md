@@ -1,3 +1,36 @@
+# Development build 14 — World Tour and full-screen Motorworks
+
+2 October 2026. App Store submission remains on hold for further artistic and physical-device review.
+
+## Implemented
+
+- Twenty individually authored closed routes, arranged as five routes per district. Four environment themes, sixty circuit/time-attack/drift events and 180 available stars. The original four circuit IDs remain stable for existing saves. Five stars earned anywhere in a district unlock the next district; daily events do not bypass this progression.
+- Arc-length sampling gives consistent speed along each route. Lane coordinates are now perpendicular metres, so corners preserve road width and full-body barriers remain valid. Route tests check closure, spacing, lane width and self-clearance.
+- World Tour district tabs, route diagrams, route character, distance, star totals and explicit locked states. The notebook remains four chapters, with memories aggregated across each district’s five routes; daily rotation now includes all twenty routes. A live route map tracks the player in the race HUD.
+- VANTA uses Sharif Miah's independently modeled Concept styled sports car 1, with native PBR materials and four rotating wheel assemblies. It also replaces the pickup on the rival grid. SOLSTICE and KOMET keep their independent Pierre-Louis Baril meshes with more exterior geometry and transferred authored surface normals. Three later garage entries still derive from the original DGG platform; the fleet is not six independent meshes.
+- The Motorworks showroom fills the landscape screen behind the HUD. A deep blue service bay, yellow pit markings and cyan pit-wall branding replace the unbroken grey floor around the car.
+- Coastal settlement density increased, architecture placed on level urban/coastal terrain, and imported open basement geometry buried into sealed low foundations. Complete-model road clearance remains enforced, including entrance stairs. Coastal buildings are excluded from the sea side of the terrain boundary.
+- CC0 scanned grass/rock diffuse, normal and roughness maps from Poly Haven, with downloaded checksums verified. Distant terrain uses grounded hills instead of flattened cliff silhouettes. Slim cantilever LED street lamps replace the glowing spheres.
+
+## Validation
+
+The final selected test run completed with **TEST SUCCEEDED**: 17 unit tests and two UI cases covering all twenty calendar routes, all six garage entries and four environment renders. Unit coverage includes district save migration and memory aggregation, right-handed steering coordinates, full-circuit scenery clearance, sealed building foundations, body barriers and eleven private art packs. The final region snapshots each recorded 60 fps in the simulator.
+
+The complete race/results/next-event journey and rival-grid case also passed during this build’s earlier broad art run; the rival grid recorded 56.7 fps in the simulator. That invocation failed only because the new calendar test omitted dismissing the first-race briefing. The test was fixed and passed in the final run. An intermediate regression invocation reported all cases passed but stalled finalizing its result bundle and was canceled; it is not counted as a completed successful command. The separate iPad layout run completed with TEST SUCCEEDED.
+
+The final device build succeeded, installed as version 2.0.0 (14), and devicectl confirmed launch on Oana’s iPhone. Existing user saves were preserved. Installation and launch do not establish sustained physical-device performance; simulator frame rates are not device measurements.
+
+Logs: `/tmp/afterlight14-verified.log`, `/tmp/afterlight14-final-tests.log`, `/tmp/afterlight14-tablet.log`, `/tmp/afterlight14-phone-final.log`, `/tmp/afterlight14-install.log`, `/tmp/afterlight14-launch.log`. Final native simulator captures are saved in `release/screenshots-build14/`.
+
+## Asset handling and limits
+
+Licensed BlenderKit sources, plaintext derivatives, encrypted local packs and generated keys remain excluded from public Git. Public builds use the credited fallback art. AssetCredits.txt includes exact provenance; prepare_concept_gt.py and the updated sedan converter make the private adaptations reproducible.
+
+The visual references guide the composition, motorsport colors and vehicle prominence. This remains an arcade racing development build; it is not an Asphalt-quality claim or a final art sign-off. Remaining work includes higher fidelity track dressing, vegetation, distant scenery, lighting and sustained physical-device performance review.
+
+<details>
+<summary>Build 13 review history</summary>
+
 # Development build 13 — industrial garage and varied city architecture
 
 2 October 2026. App Store submission remains on hold. The seven supplied references establish large contemporary vehicles, industrial garages, cyan telemetry, yellow actions and detailed street scenes. Vehicle surface polish, lighting, terrain silhouettes and remaining menu art still need further work; this is not a final visual sign-off.
@@ -33,3 +66,5 @@ Logs: /tmp/afterlight-city13-final-tests.log, /tmp/afterlight-city13-final-phone
 ## Remaining art work
 
 The garage and architecture have improved, but vehicle surface fidelity, terrain silhouettes, lighting, distant scenery and remaining menu art still need further refinement against the supplied references. Further professional art work and physical-device performance review are required before App Store submission.
+
+</details>

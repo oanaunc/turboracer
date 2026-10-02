@@ -29,7 +29,7 @@ final class ProgressTests: XCTestCase {
             XCTAssertNotNil(ArtVault.model(name))
             guard let model=GLBAsset.load(name) else {XCTFail("Cannot decode local licensed art: \(name)");continue}
             XCTAssertGreaterThan(model.boundingBox.max.y-model.boundingBox.min.y,0)
-            if ["LuxurySedan","SportsCoupe","RivalPickup"].contains(name) {
+            if ["LuxurySedan","SportsCoupe","RivalPickup","ConceptGT"].contains(name) {
                 var wheels=0
                 model.enumerateChildNodes {node,_ in if node.name?.hasPrefix("Wheel") == true {wheels += 1}}
                 XCTAssertEqual(wheels,4,"Licensed cars must keep four authored wheel pivots")
@@ -91,7 +91,7 @@ final class ProgressTests: XCTestCase {
         let compact=SurfaceLibrary.grandTourer(Car.all[1])!.boundingBox
         let hyper=SurfaceLibrary.grandTourer(Car.all[2])!.boundingBox
         XCTAssertLessThan(compact.max.z-compact.min.z,tourer.max.z-tourer.min.z)
-        XCTAssertGreaterThan(hyper.max.x-hyper.min.x,tourer.max.x-tourer.min.x)
+        XCTAssertLessThan(hyper.max.y-hyper.min.y,tourer.max.y-tourer.min.y)
     }
 
     @MainActor func testRoadsideModelsLeaveTheFullCircuitClear() {
@@ -147,6 +147,57 @@ final class ProgressTests: XCTestCase {
             let a=circuit.point(0), b=circuit.point(1)
             XCTAssertEqual(a.x,b.x,accuracy:0.001); XCTAssertEqual(a.z,b.z,accuracy:0.001)
             for i in 0...100 { XCTAssertTrue(circuit.heading(Double(i)/100).isFinite) }
+        }
+    }
+    func testWorldTourHasTwentySafeConstantWidthRoutes() {
+        XCTAssertEqual(Circuit.all.count,20)
+        XCTAssertEqual(Set(Circuit.all.map(\.id)).count,20)
+        for environment in 0..<4 {XCTAssertEqual(Circuit.all.filter {$0.environment==environment}.count,5)}
+        var signatures=Set<String>()
+        for circuit in Circuit.all {
+            let points=(0..<240).map {circuit.point(Double($0)/240)}
+            signatures.insert(points.map {"\(Int($0.x)),\(Int($0.z))"}.joined(separator:";"))
+            var steps:[Float]=[]
+            for i in 0..<240 {
+                let t=Double(i)/240,center=points[i],edge=circuit.point(t,lane:9)
+                XCTAssertEqual(hypot(edge.x-center.x,edge.z-center.z),9,accuracy:0.002)
+                let h=circuit.heading(t)
+                XCTAssertGreaterThan((edge.x-center.x)*cos(h)-(edge.z-center.z)*sin(h),8.99,"Positive steering must move right in the driver's frame")
+                let next=points[(i+1)%240];steps.append(hypot(next.x-center.x,next.z-center.z))
+                // Non-adjacent parts of a course need a full road-width gap.
+                for j in (i+1)..<240 where min(j-i,240-(j-i))>12 {
+                    XCTAssertGreaterThan(hypot(points[j].x-center.x,points[j].z-center.z),25,"Road overlap on \(circuit.name)")
+                }
+            }
+            XCTAssertLessThan(steps.max()!/steps.min()!,1.08,"Arc-length sampling should keep speed consistent")
+        }
+        XCTAssertEqual(signatures.count,20)
+    }
+    func testExpandedCampaignPreservesSavesAndUnlocksDistrictRoutes() throws {
+        var legacy=SaveData();legacy.medals=[0:3,1:3];legacy.owned=[0,1];legacy.selectedCar=1
+        let restored=try JSONDecoder().decode(SaveData.self,from:JSONEncoder().encode(legacy))
+        XCTAssertEqual(restored.unlockedRegion,1);XCTAssertTrue(restored.isUnlocked(Circuit.all[11]))
+        XCTAssertFalse(restored.isUnlocked(Circuit.all[12]));XCTAssertEqual(restored.selectedCar,1)
+        var newSave=SaveData();newSave.medals=[4*3:3,5*3:2]
+        XCTAssertEqual(newSave.unlockedRegion,1,"New routes must contribute to district progression")
+        newSave.memorySparks=[0:3,4:5,7:4,8:9]
+        XCTAssertEqual(newSave.memories(in:0),12,"New routes must contribute to their district's notebook")
+        XCTAssertEqual(newSave.memories(in:1),9)
+    }
+    @MainActor func testEveryUrbanBuildingHasSealedFoundation() {
+        for environment in 0..<2 {
+            let engine=RaceEngine(circuit:Circuit.all[environment],mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+            var buildings=0,foundations=0
+            engine.scene.rootNode.enumerateChildNodes {node,_ in
+                if node.name=="roadside-building" {buildings += 1}
+                if node.name=="building-foundation" {
+                    foundations += 1
+                    let bounds=node.boundingBox
+                    XCTAssertLessThan(node.convertPosition(bounds.min,to:nil).y,-0.04)
+                    XCTAssertGreaterThan(node.convertPosition(bounds.max,to:nil).y,0.3)
+                }
+            }
+            XCTAssertGreaterThan(buildings,0);XCTAssertEqual(foundations,buildings)
         }
     }
     @MainActor func testRaceFinishesOnceAndPauseFreezesSimulation() {

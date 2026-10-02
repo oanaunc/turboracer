@@ -6,14 +6,15 @@ import UIKit
     private static var images: [String: UIImage] = [:]
     static func image(_ name: String) -> UIImage? {
         if let image = images[name] { return image }
-        guard let url = Bundle.main.url(forResource:name,withExtension:"png"), let image=UIImage(contentsOfFile:url.path) else { return nil }
+        guard let url = Bundle.main.url(forResource:name,withExtension:"png") ?? Bundle.main.url(forResource:name,withExtension:"jpg"), let image=UIImage(contentsOfFile:url.path) else { return nil }
         images[name]=image; return image
     }
     static func surface(_ name: String, tint: UIColor = .white) -> SCNMaterial {
         let m=SCNMaterial(); m.lightingModel = .physicallyBased
-        m.diffuse.contents=image(name=="asphalt" ? "asphalt-art" : name) ?? image(name) ?? tint; m.diffuse.intensity=1
-        m.normal.contents=image(name+"-normal"); m.normal.intensity=0.6
-        m.roughness.contents=image(name+"-roughness") ?? 0.85; m.metalness.contents=0
+        let textureName=name=="grass" ? "terrain-grass":name
+        m.diffuse.contents=image(name=="asphalt" ? "asphalt-art" : textureName) ?? image(name) ?? tint; m.diffuse.intensity=1; m.multiply.contents=tint
+        m.normal.contents=image(textureName+"-normal"); m.normal.intensity=0.6
+        m.roughness.contents=image(textureName+"-roughness") ?? 0.85; m.metalness.contents=0
         for channel in [m.diffuse,m.normal,m.roughness] { channel.wrapS = .repeat; channel.wrapT = .repeat; channel.minificationFilter = .linear; channel.magnificationFilter = .linear; channel.mipFilter = .linear }
         return m
     }
@@ -25,8 +26,8 @@ import UIKit
     private static var tourers: [String:SCNNode] = [:]
     private static var platforms:[String:SCNNode]=[:]
     static func grandTourer(_ car: Car,model:String?=nil) -> SCNNode? {
-        let design = model ?? ["LuxurySedan","SportsCoupe","Hyper","Roadster","Hyper","Hyper"][car.id]
-        if platforms[design]==nil {platforms[design]=GLBAsset.load(design) ?? GLBAsset.load("Concept")}
+        let design = model ?? ["LuxurySedan","SportsCoupe","ConceptGT","Roadster","Hyper","Hyper"][car.id]
+        if platforms[design]==nil {platforms[design]=GLBAsset.load(design) ?? GLBAsset.load(design=="ConceptGT" ? "Hyper":"Concept")}
         let key="\(design)-\(car.id)"
         if tourers[key] == nil, let asset=platforms[design]?.clone() {
             let root=SCNNode();let bounds=asset.boundingBox;asset.position=SCNVector3(-(bounds.min.x+bounds.max.x)/2,-bounds.min.y,-(bounds.min.z+bounds.max.z)/2);root.addChildNode(asset)
@@ -36,7 +37,7 @@ import UIKit
                 node.geometry=geometry.copy() as? SCNGeometry
                 node.geometry?.materials=geometry.materials.map {original in
                     let m=original.copy() as! SCNMaterial
-                    if m.name?.hasPrefix("Paint 1") == true || m.name?.hasPrefix("LuxuryBodyPaint") == true {let body=paint(car.color);if design=="LuxurySedan" || design=="SportsCoupe" {body.metalness.contents=0.35;body.roughness.contents=0.4;body.clearCoat.contents=0.35;body.clearCoatRoughness.contents=0.2};return body}
+                    if m.name?.hasPrefix("Paint 1") == true || m.name?.hasPrefix("LuxuryBodyPaint") == true {let body=paint(car.color);if design=="LuxurySedan" || design=="SportsCoupe" {body.metalness.contents=0.45;body.roughness.contents=0.3;body.clearCoat.contents=0.6;body.clearCoatRoughness.contents=0.16};return body}
                     if m.name=="Glass" {m.diffuse.contents=UIColor(hex:0x142B38);m.multiply.contents=UIColor.white;m.transparency=0.96;m.metalness.contents=0.05;m.roughness.contents=0.08}
                     return m
                 }

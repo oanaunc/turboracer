@@ -24,6 +24,7 @@ struct RaceView: View {
                     hud(request.mode == .circuit ? "POSITION":"DRIFT",request.mode == .circuit ? "\(engine.position)/4":engine.driftScore.formatted())
                     hud("TIME",String(format:"%.1f",engine.elapsed))
                     Spacer()
+                    TrackMap(circuit:request.circuit,progress:engine.routeProgress).frame(width:72,height:60).accessibilityLabel("Live circuit map")
                     Button {engine.setPaused(true)} label: {Image(systemName:"pause.fill").foregroundStyle(.white).frame(width:40,height:40).background(ink.opacity(0.7),in:RacingPanel(cut:7))}.accessibilityLabel("Pause race")
                 }
                 Spacer(minLength:0)

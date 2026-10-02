@@ -36,22 +36,35 @@ for mat in bpy.data.materials:
     p.inputs['Base Color'].default_value=color;p.inputs['Metallic'].default_value=metal;p.inputs['Roughness'].default_value=rough
     if 'red glass' in name:p.inputs['Emission Color'].default_value=(.8,.004,.008,1);p.inputs['Emission Strength'].default_value=.7
     mat.diffuse_color=color
+# Retain the authored exterior normals before simplifying. Transferring them
+# back after decimation avoids the rippled paint caused by averaged triangles.
+normal_sources={}
+for obj in objects:
+    if any(m and m.name.startswith('LuxuryBodyPaint') for m in obj.data.materials):
+        original=obj.copy();original.data=obj.data.copy();bpy.context.collection.objects.link(original)
+        normal_sources[obj]=original
 # Remove interior micro-detail that cannot be seen through opaque tinted glass;
 # retain the dashboard/seats to support garage close-ups.
 for obj in objects:
     bpy.context.view_layer.objects.active=obj
-    budget=7000 if any(m and m.name.startswith('LuxuryBodyPaint') for m in obj.data.materials) else 1600
+    budget=12000 if any(m and m.name.startswith('LuxuryBodyPaint') for m in obj.data.materials) else 1600
     if len(obj.data.polygons)>budget:
         mod=obj.modifiers.new('Mobile surface budget','DECIMATE');mod.ratio=min(1,budget/len(obj.data.polygons));bpy.ops.object.modifier_apply(modifier=mod.name)
-    for poly in obj.data.polygons:poly.use_smooth=True
 # Reduce small interior components while retaining more exterior curvature.
 total=sum(len(o.data.polygons) for o in objects)
 ratio=min(1,90000/max(total,1))
 for obj in objects:
     if len(obj.data.polygons)>64:
         bpy.context.view_layer.objects.active=obj
-        mod=obj.modifiers.new('Fleet triangle budget','DECIMATE');mod.ratio=.75 if any(m and m.name.startswith('LuxuryBodyPaint') for m in obj.data.materials) else ratio
+        mod=obj.modifiers.new('Fleet triangle budget','DECIMATE');mod.ratio=.95 if any(m and m.name.startswith('LuxuryBodyPaint') for m in obj.data.materials) else ratio
         bpy.ops.object.modifier_apply(modifier=mod.name)
+for obj,original in normal_sources.items():
+    bpy.context.view_layer.objects.active=obj
+    transfer=obj.modifiers.new('Authored surface normals','DATA_TRANSFER')
+    transfer.object=original;transfer.use_loop_data=True;transfer.data_types_loops={'CUSTOM_NORMAL'}
+    transfer.loop_mapping='POLYINTERP_NEAREST'
+    bpy.ops.object.modifier_apply(modifier=transfer.name)
+    bpy.data.objects.remove(original,do_unlink=True)
 # Keep authored real-world dimensions and ground contact. glTF maps -Y to +Z.
 points=[o.matrix_world@Vector(v) for o in objects for v in o.bound_box]
 lo=Vector([min(p[i] for p in points) for i in range(3)]);hi=Vector([max(p[i] for p in points) for i in range(3)])

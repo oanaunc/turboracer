@@ -68,3 +68,12 @@ https://www.blendkit.com/asset-gallery-detail/a1600774-b49a-4590-82f8-f663047f5c
 Adaptation: five isolated buildings, baked 1024px facade/normal atlases,
 portable glazing, centered meshes and circuit-wide placement clearance.
 Complete source city and unencrypted derivatives excluded from public Git.
+
+Vanta GT: Concept styled sports car 1 — Sharif Miah. BlenderKit Royalty Free.
+https://www.blendkit.com/asset-gallery-detail/83af864a-734b-433c-98c9-27c929957af2/
+Adaptation: road-car proportions, mobile PBR palette, separate wheel pivots.
+Source and plaintext derivatives remain private; encrypted app pack only.
+
+Aerial Grass Rock — Rob Tuytel / Poly Haven. CC0 1.0 public domain.
+https://polyhaven.com/a/aerial_grass_rock
+1K diffuse, OpenGL normal and roughness maps; vendor MD5 checksums verified.

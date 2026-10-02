@@ -13,31 +13,84 @@ struct Car: Identifiable {
         Car(id: 5, name: "AFTERLIGHT", subtitle: "Tomorrow belongs to you", price: 13000, speed: 74, handling: 1.25, color: 0xD9F8F5)
     ]
 }
+/// Closed, arc-length sampled courses. Lane offsets are real metres normal to
+/// the racing line, so a tight corner cannot squeeze the road or its colliders.
 struct Circuit: Identifiable {
-    let id: Int; let name: String; let region: String; let tagline: String
-    let color: UInt32; let radius: Double; let distortion: Double
-    let sky: UInt32; let ground: UInt32; let rival: String
-    static let all = [
-        Circuit(id: 0, name: "PALM COAST", region: "01 / THE COAST", tagline: "Salt in the air. Fire in the engine.", color: 0xFFAA79, radius: 105, distortion: 0.14, sky: 0x241B42, ground: 0x224D57, rival: "Luca"),
-        Circuit(id: 1, name: "NEON HARBOR", region: "02 / THE CITY", tagline: "The city only sleeps when you stop.", color: 0x59E8D4, radius: 115, distortion: 0.25, sky: 0x090F28, ground: 0x121C34, rival: "Nova"),
-        Circuit(id: 2, name: "EMBER CANYON", region: "03 / THE BADLANDS", tagline: "Find your line through the fire.", color: 0xFFD76E, radius: 125, distortion: 0.32, sky: 0x47283F, ground: 0x623C3B, rival: "Rafa"),
-        Circuit(id: 3, name: "CLOUDLINE", region: "04 / THE SUMMIT", tagline: "Above the noise. Beyond the ordinary.", color: 0xBBA8FF, radius: 110, distortion: 0.38, sky: 0x272B53, ground: 0x3A5060, rival: "Iris")
-    ]
-    func point(_ progress: Double, lane: Double = 0) -> SIMD3<Float> {
-        let t = progress * 2 * Double.pi
-        let r = radius * (1 + distortion * sin(3*t + Double(id))) + lane
-        return SIMD3(Float(sin(t)*r), 0, Float(cos(t)*r))
+    let id: Int
+    let name: String
+    let tagline: String
+    let environment: Int
+    let route: Int
+    private let samples: [SIMD3<Float>]
+    let length: Double
+    var region: String { ["01 / THE COAST","02 / THE CITY","03 / THE BADLANDS","04 / THE SUMMIT"][environment] }
+    var color: UInt32 { [0xFFAA79,0x59E8D4,0xFFD76E,0xBBA8FF][environment] }
+    var sky: UInt32 { [0x241B42,0x090F28,0x47283F,0x272B53][environment] }
+    var ground: UInt32 { [0x224D57,0x121C34,0x623C3B,0x3A5060][environment] }
+    var rival: String { ["Luca","Nova","Rafa","Iris"][environment] }
+    var character: String { ["BALANCED", "HIGH SPEED", "TECHNICAL", "ENDURANCE", "PRECISION"][route] }
+    var radius: Double { Double(samples.reduce(Float(0)) {max($0,max(abs($1.x),abs($1.z)))}) }
+    var distortion: Double { 0 }
+
+    private init(_ id: Int, _ name: String, _ tagline: String, _ environment: Int, _ route: Int, _ coordinates: [(Float,Float)]) {
+        self.id=id; self.name=name; self.tagline=tagline; self.environment=environment; self.route=route
+        let controls=coordinates.map {SIMD3<Float>($0.0,0,$0.1)}, count=controls.count, resolution=1024
+        func raw(_ t:Float) -> SIMD3<Float> {
+            let u=t*Float(count), i=Int(u)%count, f=u-Float(Int(u))
+            let a=controls[(i+count-1)%count], b=controls[i], c=controls[(i+1)%count], d=controls[(i+2)%count]
+            return (b*2+(c-a)*f+(a*2-b*5+c*4-d)*f*f+(-a+b*3-c*3+d)*f*f*f)*0.5
+        }
+        let source=(0...resolution).map {raw(Float($0)/Float(resolution))}
+        var distances=[Float(0)]
+        for i in 1...resolution {let delta=source[i]-source[i-1]; distances.append(distances.last!+sqrt(delta.x*delta.x+delta.z*delta.z))}
+        let total=distances.last!; self.length=Double(total)
+        var points:[SIMD3<Float>]=[], segment=1
+        for i in 0..<resolution {
+            let target=total*Float(i)/Float(resolution)
+            while segment<resolution && distances[segment]<target {segment += 1}
+            let fraction=(target-distances[segment-1])/max(0.0001,distances[segment]-distances[segment-1])
+            points.append(source[segment-1]+(source[segment]-source[segment-1])*fraction)
+        }
+        self.samples=points
+    }
+    private func center(_ progress: Double) -> SIMD3<Float> {
+        let wrapped=progress-floor(progress), u=wrapped*Double(samples.count), i=Int(u)%samples.count
+        return samples[i]+(samples[(i+1)%samples.count]-samples[i])*Float(u-floor(u))
     }
     func heading(_ progress: Double) -> Float {
-        let a = point(progress), b = point(progress + 0.0001)
-        return atan2(b.x-a.x, b.z-a.z)
+        let tangent=center(progress+0.0005)-center(progress-0.0005)
+        return atan2(tangent.x,tangent.z)
     }
-    var length: Double {
-        (0..<600).reduce(0) { sum, i in
-            let a = point(Double(i)/600), b = point(Double(i+1)/600)
-            return sum + Double(sqrt(pow(b.x-a.x,2)+pow(b.z-a.z,2)))
-        }
+    func point(_ progress: Double, lane: Double = 0) -> SIMD3<Float> {
+        let p=center(progress)
+        guard lane != 0 else {return p}
+        let h=heading(progress)
+        return p+SIMD3<Float>(cos(h)*Float(lane),0,-sin(h)*Float(lane))
     }
+    // Preserve the four original IDs: medals, records and notebook saves migrate
+    // without losing progress. Each district gains four separately authored routes.
+    static let all: [Circuit] = [
+        Circuit(0,"PALM COAST","Salt in the air. Fire in the engine.",0,0,[(0,120),(100,110),(135,30),(90,-95),(-20,-125),(-110,-65),(-125,45)]),
+        Circuit(1,"NEON HARBOR","The city only sleeps when you stop.",1,0,[(0,140),(120,140),(145,60),(65,10),(135,-80),(55,-145),(-105,-130),(-140,-40),(-85,45),(-125,125)]),
+        Circuit(2,"EMBER CANYON","Find your line through the fire.",2,0,[(0,150),(105,100),(75,10),(155,-55),(95,-130),(-10,-100),(-100,-145),(-155,-50),(-65,20),(-100,100)]),
+        Circuit(3,"CLOUDLINE","Above the noise. Beyond the ordinary.",3,0,[(0,140),(130,110),(110,25),(35,-25),(105,-100),(10,-160),(-120,-100),(-100,-20),(-150,65),(-75,120)]),
+        Circuit(4,"AZURE RUN","A long seafront straight. One perfect exit.",0,1,[(0,180),(110,155),(130,30),(105,-150),(0,-185),(-110,-140),(-120,0),(-90,155)]),
+        Circuit(5,"MARINA LOOP","Late braking around the old marina.",0,2,[(0,110),(100,120),(135,35),(55,-15),(90,-105),(-20,-145),(-105,-80),(-65,0),(-115,70)]),
+        Circuit(6,"RIVIERA GP","From the coastal villas to the headland.",0,3,[(0,190),(125,180),(180,95),(120,10),(165,-110),(30,-190),(-110,-130),(-100,-25),(-130,100)]),
+        Circuit(7,"SUNSET POINT","Clip the apex. Chase the last light.",0,4,[(0,125),(125,75),(80,-10),(140,-90),(20,-145),(-110,-100),(-60,-15),(-120,70)]),
+        Circuit(8,"DOCKLANDS","Open the throttle through the shipping district.",1,1,[(0,190),(145,165),(155,-135),(80,-195),(-130,-175),(-160,-90),(-95,0),(-145,130)]),
+        Circuit(9,"OLD QUARTER","A rhythm of squares and narrow exits.",1,2,[(0,135),(120,105),(115,15),(40,-30),(80,-120),(-15,-150),(-120,-65),(-60,25),(-110,100)]),
+        Circuit(10,"METROPOLIS","The full city. No room for hesitation.",1,3,[(0,195),(140,150),(185,30),(110,-60),(130,-160),(0,-200),(-140,-140),(-180,-20),(-105,50),(-140,155)]),
+        Circuit(11,"NIGHTSHIFT","Link the harbor's four hardest corners.",1,4,[(0,130),(135,100),(110,5),(30,-50),(75,-145),(-70,-130),(-140,-30),(-70,25),(-95,115)]),
+        Circuit(12,"REDLINE MESA","Long straights beneath the red cliffs.",2,1,[(0,190),(120,140),(140,-145),(30,-195),(-115,-160),(-145,65),(-85,160)]),
+        Circuit(13,"DEVIL'S ELBOW","Two linked bends demand a steady hand.",2,2,[(0,140),(120,115),(140,20),(55,-20),(100,-110),(-20,-165),(-140,-80),(-65,0),(-120,95)]),
+        Circuit(14,"DUST TRAIL","An endurance loop through the badlands.",2,3,[(0,210),(155,150),(185,25),(100,-55),(150,-150),(0,-220),(-160,-150),(-190,-40),(-110,30),(-150,140)]),
+        Circuit(15,"COPPER RIDGE","Commit to every braking point.",2,4,[(0,155),(115,85),(60,0),(145,-80),(45,-165),(-80,-120),(-140,-25),(-60,35),(-105,125)]),
+        Circuit(16,"SKY EXPRESS","Clean mountain air. Unbroken speed.",3,1,[(0,205),(110,155),(140,-130),(40,-205),(-120,-160),(-140,100),(-70,185)]),
+        Circuit(17,"ALPINE SWITCH","A technical dance above the treeline.",3,2,[(0,150),(125,115),(90,25),(145,-65),(35,-140),(-105,-105),(-60,-10),(-130,75)]),
+        Circuit(18,"SUMMIT TOUR","The longest road to the festival crown.",3,3,[(0,215),(145,165),(200,50),(100,-30),(165,-130),(20,-220),(-130,-170),(-200,-50),(-110,45),(-150,150)]),
+        Circuit(19,"LAST LIGHT","Your final invitation. Make it count.",3,4,[(0,165),(135,105),(75,20),(150,-70),(40,-170),(-110,-130),(-160,-30),(-75,40),(-115,135)])
+    ]
 }
 enum RaceMode: String, CaseIterable { case circuit = "Circuit", sprint = "Time attack", drift = "Drift run"
     var detail: String { switch self { case .circuit: return "2 laps • 3 rivals"; case .sprint: return "1 lap • chase the clock"; case .drift: return "1 lap • build your drift score" } }
@@ -56,7 +109,14 @@ struct SaveData: Codable {
     var dailyStamp = ""; var dailyBest = 0
     var memorySparks: [Int: Int]? = nil
     var dailyRewardStamp: String? = nil
-    var unlockedRegion: Int { min(3, (0..<4).first(where: { region in (0..<3).reduce(0) { $0 + (medals[region*3+$1] ?? 0) } < 5 }) ?? 3) }
+    func stars(in environment: Int) -> Int {
+        Circuit.all.filter {$0.environment == environment}.reduce(0) {sum,c in sum+(0..<3).reduce(0) {$0+(medals[c.id*3+$1] ?? 0)}}
+    }
+    func memories(in environment: Int) -> Int {
+        min(12,Circuit.all.filter {$0.environment==environment}.reduce(0) {$0+(memorySparks?[$1.id] ?? 0)})
+    }
+    var unlockedRegion: Int { min(3,(0..<4).first(where:{stars(in:$0)<5}) ?? 3) }
+    func isUnlocked(_ circuit: Circuit) -> Bool { circuit.environment <= unlockedRegion }
 }
 @MainActor final class Garage: ObservableObject {
     @Published var save: SaveData { didSet { persist() } }
@@ -95,7 +155,7 @@ struct SaveData: Codable {
         if daily { let day = Self.dayStamp(); if save.dailyRewardStamp != day && result.stars > 0 { save.credits += 350; save.dailyRewardStamp = day }; if save.dailyStamp != day { save.dailyBest = 0 }; save.dailyStamp = day; save.dailyBest = max(save.dailyBest, result.drift) }
     }
     static func dayStamp(date: Date = Date()) -> String { let f = DateFormatter(); f.calendar = Calendar(identifier: .gregorian); f.locale = Locale(identifier: "en_US_POSIX"); f.timeZone = TimeZone(secondsFromGMT: 0); f.dateFormat = "yyyy-MM-dd"; return f.string(from: date) }
-    static var dailyCircuit: Circuit { let days = Int(Date().timeIntervalSince1970/86400); return Circuit.all[days % 4] }
+    static var dailyCircuit: Circuit { let days = Int(Date().timeIntervalSince1970/86400); return Circuit.all[days % Circuit.all.count] }
     func reset() { save = SaveData() }
 }
 extension Color { init(hex: UInt32) { self.init(red: Double((hex>>16)&255)/255, green: Double((hex>>8)&255)/255, blue: Double(hex&255)/255) } }

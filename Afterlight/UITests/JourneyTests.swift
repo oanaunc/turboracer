@@ -43,6 +43,30 @@ final class JourneyTests: XCTestCase {
         app.buttons["Leave race"].tap()
     }
 
+    func testAllTwentyCalendarRoutesAreReachable() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-calendar"];app.launch()
+        XCTAssertTrue(app.scrollViews["race-calendar"].waitForExistence(timeout:10))
+        for region in 0..<4 {
+            app.buttons["district-\(region)"].tap()
+            let ids=[region]+Array((4+region*4)..<(8+region*4))
+            for id in ids {
+                let event=app.buttons["event-\(id)-1"]
+                for _ in 0..<6 {if event.isHittable {break};app.scrollViews["race-calendar"].swipeLeft()}
+                XCTAssertTrue(event.isHittable,"Route \(id) must be reachable")
+                XCTAssertTrue(event.isEnabled)
+            }
+            capture("world-tour-district-\(region)",app)
+        }
+        app.buttons["event-19-1"].tap()
+        let brief=app.buttons.matching(NSPredicate(format:"label CONTAINS %@","LET'S RACE")).firstMatch
+        if brief.waitForExistence(timeout:3) {brief.tap()}
+        XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:10))
+        app.buttons["control-NITRO"].press(forDuration:5)
+        capture("last-light-new-route",app)
+        app.buttons["Pause race"].tap();app.buttons["Leave race"].tap()
+    }
+
     func testLicensedRivalGridPerformance() {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region","0","--preview-grid"];app.launch()
@@ -61,14 +85,14 @@ final class JourneyTests: XCTestCase {
         let app=XCUIApplication();app.launchArguments=["--visual-review"];app.launch()
         XCTAssertTrue(app.buttons["GARAGE"].waitForExistence(timeout:10));app.buttons["GARAGE"].tap()
         for name in ["SOLSTICE","KOMET","VANTA","AURORA","SPECTRE","AFTERLIGHT"] {
-            let swatch=app.buttons[name];if !swatch.isHittable {app.swipeUp()};swatch.tap()
+            let swatch=app.buttons[name];XCTAssertTrue(swatch.isHittable);swatch.tap()
             XCTAssertTrue(app.descendants(matching:.any)["showroom-ready-"+name].waitForExistence(timeout:10))
-            app.swipeDown();capture("fleet-"+name,app)
+            capture("fleet-"+name,app)
         }
         app.buttons["WORLD"].tap()
         for region in 0..<4 {
-            let events=app.buttons.matching(NSPredicate(format:"label CONTAINS 'Time attack'"))
-            let event=events.element(boundBy:region)
+            app.buttons["district-\(region)"].tap()
+            let event=app.buttons["event-\(region)-1"]
             for _ in 0..<10 {if event.isHittable {break};app.scrollViews["race-calendar"].swipeLeft()}
             XCTAssertTrue(event.isHittable,"Region event must be reachable")
             event.tap()

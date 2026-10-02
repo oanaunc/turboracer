@@ -32,11 +32,18 @@ struct Eyebrow: View {
 struct HomeView: View {
     @EnvironmentObject var garage: Garage
     @State private var tab = 0
+    @State private var calendarRegion = 0
+    @State private var inspectedCar = 0
     @State private var settings = false
     @State private var activeRace: RaceRequest?
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
-        ZStack { PaddockBackground()
+        ZStack {
+            if tab==2 {
+                CarShowroom(car:Car.all[inspectedCar]).ignoresSafeArea()
+                LinearGradient(colors:[ink.opacity(0.85),.clear,.clear],startPoint:.leading,endPoint:.trailing).ignoresSafeArea().allowsHitTesting(false)
+                LinearGradient(colors:[ink.opacity(0.65),.clear,ink.opacity(0.25)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
+            } else {PaddockBackground()}
             VStack(spacing:0) {
                 HStack(spacing:10) {
                     Image(systemName:"flag.checkered").foregroundStyle(mint).font(.system(size:20))
@@ -48,7 +55,7 @@ struct HomeView: View {
                 HStack(spacing:16) {
                     VStack(spacing:24) {nav("house.fill","HOME",0);nav("map.fill","WORLD",1);nav("car.side.fill","GARAGE",2);nav("book.closed.fill","STORY",3)}.frame(width:68).padding(.vertical,12)
                     if tab==0 {landscapeHome}
-                    else if tab==2 {GarageView()}
+                    else if tab==2 {GarageView(inspected:$inspectedCar)}
                     else {ScrollView {VStack(alignment:.leading,spacing:20) {if tab==1 {campaign}else{journal}}.padding(.trailing,20).padding(.bottom,20)}}
                 }.padding(.bottom,8)
             }
@@ -56,7 +63,8 @@ struct HomeView: View {
         .fullScreenCover(item:$activeRace) { request in RaceView(request:request,garage:garage,openCalendar:{tab=1}) }
         .onAppear { Soundtrack.shared.play(enabled:garage.save.music)
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--preview-garage") {tab=2}
+            if ProcessInfo.processInfo.arguments.contains("--preview-garage") {tab=2;inspectedCar=garage.save.selectedCar}
+            if ProcessInfo.processInfo.arguments.contains("--preview-calendar") {tab=1}
             if let index=ProcessInfo.processInfo.arguments.firstIndex(of:"--preview-car"),ProcessInfo.processInfo.arguments.count>index+1,let car=Int(ProcessInfo.processInfo.arguments[index+1]),Car.all.indices.contains(car) {garage.save.selectedCar=car}
             if let index=ProcessInfo.processInfo.arguments.firstIndex(of:"--preview-region"),ProcessInfo.processInfo.arguments.count>index+1,let region=Int(ProcessInfo.processInfo.arguments[index+1]),Circuit.all.indices.contains(region) {garage.save.races=1;activeRace=RaceRequest(circuit:Circuit.all[region],mode:ProcessInfo.processInfo.arguments.contains("--preview-grid") ? .circuit:.sprint,daily:false)}
             #endif
@@ -117,35 +125,53 @@ struct HomeView: View {
     }
     func stat(_ title: String,_ value: String) -> some View { VStack(alignment:.leading,spacing:7) { Text(value).font(RacingType.data(23)); Eyebrow(text:title,color:muted) }.frame(maxWidth:.infinity,alignment:.leading).padding(16).background(Color(hex:0x1A2228),in:RacingPanel(cut:8)) }
     var campaign: some View {
-        VStack(alignment:.leading,spacing:10) {
-            SectionHeading(number:"03",title:"RACE CALENDAR",detail:"12 EVENTS")
+        VStack(alignment:.leading,spacing:8) {
+            SectionHeading(number:"03",title:"WORLD TOUR",detail:"20 CIRCUITS / 60 EVENTS")
+            HStack(spacing:8) {
+                ForEach(0..<4,id:\.self) {region in
+                    let color=Color(hex:Circuit.all[region].color)
+                    Button {calendarRegion=region} label: {
+                        HStack(spacing:8) {
+                            Text(String(format:"%02d",region+1)).font(RacingType.data(11)).foregroundStyle(color)
+                            VStack(alignment:.leading,spacing:3) {
+                                Text(["RIVIERA","NIGHT CITY","BADLANDS","ALPINE"][region]).font(RacingType.title(15))
+                                Text("5 ROUTES / \(garage.save.stars(in:region)) OF 45 ★").font(RacingType.data(7)).foregroundStyle(muted)
+                            }
+                            Spacer(minLength:0)
+                            if region>garage.save.unlockedRegion {Image(systemName:"lock.fill").font(.system(size:10))}
+                        }.padding(11).background(calendarRegion==region ? color.opacity(0.22):ink.opacity(0.6),in:RacingPanel(cut:8))
+                        .overlay(alignment:.bottom) {Rectangle().fill(calendarRegion==region ? color:.clear).frame(height:2)}
+                    }.buttonStyle(.plain).accessibilityIdentifier("district-\(region)")
+                }
+            }
             ScrollView(.horizontal) {
-                HStack(alignment:.top,spacing:14) {ForEach(Circuit.all) {circuit in
-                    let locked=circuit.id>garage.save.unlockedRegion
-                    VStack(alignment:.leading,spacing:8) {
-                        HStack {Eyebrow(text:circuit.region,color:Color(hex:circuit.color));Spacer();Text(locked ? "LOCKED":"\((0..<3).reduce(0) {$0+(garage.save.medals[circuit.id*3+$1] ?? 0)})/9 ★").font(RacingType.data(8)).foregroundStyle(muted)}
-                        HStack {VStack(alignment:.leading,spacing:5) {Text(circuit.name).font(RacingType.title(23));Text("\(String(format:"%.2f",circuit.length/1000)) KM / 3 SESSIONS").font(RacingType.data(8)).foregroundStyle(muted)};Spacer();TrackMap(circuit:circuit).frame(width:66,height:58)}
+                HStack(alignment:.top,spacing:14) {ForEach(Circuit.all.filter {$0.environment==calendarRegion}) {circuit in
+                    let locked = !garage.save.isUnlocked(circuit)
+                    VStack(alignment:.leading,spacing:6) {
+                        HStack {Eyebrow(text:String(format:"ROUTE %02d",circuit.route+1),color:Color(hex:circuit.color));Spacer();Text(locked ? "LOCKED":"\((0..<3).reduce(0) {$0+(garage.save.medals[circuit.id*3+$1] ?? 0)})/9 ★").font(RacingType.data(8)).foregroundStyle(muted)}
+                        HStack {VStack(alignment:.leading,spacing:5) {Text(circuit.name).font(RacingType.title(21));Text("\(String(format:"%.2f",circuit.length/1000)) KM / \(circuit.character)").font(RacingType.data(8)).foregroundStyle(muted)};Spacer();TrackMap(circuit:circuit).frame(width:66,height:44)}
                         ForEach(Array(RaceMode.allCases.enumerated()),id:\.offset) {index,mode in
                             Button {activeRace=RaceRequest(circuit:circuit,mode:mode,daily:false)} label: {HStack {
                                 Image(systemName:mode == .circuit ? "flag.checkered":mode == .sprint ? "stopwatch":"wind").foregroundStyle(Color(hex:circuit.color))
-                                VStack(alignment:.leading,spacing:2) {Text(mode.rawValue).font(.system(size:12,weight:.bold));Text(mode.detail).font(RacingType.data(7)).foregroundStyle(muted)}
+                                VStack(alignment:.leading,spacing:2) {Text(mode.rawValue).font(.system(size:11,weight:.bold));Text(mode.detail).font(RacingType.data(7)).foregroundStyle(muted)}
                                 Spacer();Image(systemName:locked ? "lock":"arrow.up.right").font(.system(size:10))
-                            }.padding(10).background(ink.opacity(0.6),in:RacingPanel(cut:6))}.buttonStyle(.plain).disabled(locked)
+                            }.padding(7).background(ink.opacity(0.6),in:RacingPanel(cut:6))}.buttonStyle(.plain).disabled(locked)
+                            .accessibilityIdentifier("event-\(circuit.id)-\(index)")
                         }
-                        Text(locked ? "EARN 5 STARS IN THE PREVIOUS REGION":"CHOOSE YOUR SESSION").font(RacingType.data(7)).foregroundStyle(muted)
-                    }.padding(14).frame(width:310).background(LinearGradient(colors:[Color(hex:circuit.color).opacity(0.18),Color(hex:0x11212D)],startPoint:.topLeading,endPoint:.bottomTrailing),in:RacingPanel(cut:14)).opacity(locked ? 0.65:1)
+                        Text(locked ? "EARN 5 STARS IN THE PREVIOUS DISTRICT":circuit.tagline.uppercased()).font(RacingType.data(7)).lineLimit(1).foregroundStyle(muted)
+                    }.padding(10).frame(width:310).background(LinearGradient(colors:[Color(hex:circuit.color).opacity(0.18),Color(hex:0x11212D)],startPoint:.topLeading,endPoint:.bottomTrailing),in:RacingPanel(cut:14)).opacity(locked ? 0.65:1)
                 }}.padding(.bottom,8)
-            }.accessibilityIdentifier("race-calendar")
+            }.accessibilityIdentifier("race-calendar").id(calendarRegion)
         }
     }
     var journal: some View {
         VStack(alignment:.leading,spacing:22) {
             SectionHeading(number:"04",title:"THE PIT WALL",detail:"CREW & LEGACY")
             Text("You inherited a shuttered garage and your father's Solstice. Mika, your oldest friend and mechanic, has a plan: enter the Afterlight Festival, win back the garage's reputation, and reach the summit race your father never finished.").font(.system(size:15)).foregroundStyle(muted).lineSpacing(6)
-            ForEach(Circuit.all) { c in
+            ForEach(Array(Circuit.all.prefix(4))) { c in
                 VStack(alignment:.leading,spacing:12) { HStack { Text(String(c.rival.prefix(1))).font(.system(size:28,weight:.black)).frame(width:58,height:58).background(Color(hex:c.color).opacity(0.15),in:Circle()).foregroundStyle(Color(hex:c.color)); VStack(alignment:.leading,spacing:5) { Eyebrow(text:c.region,color:Color(hex:c.color)); Text(c.rival.uppercased()).font(RacingType.title(24)) } }
-                    HStack { Image(systemName:"sparkle").foregroundStyle(Color(hex:0xFFD76E)); Text("FATHER'S NOTEBOOK • \(min(12,garage.save.memorySparks?[c.id] ?? 0))/12 SPARKS").font(.system(size:9,weight:.bold,design:.monospaced)).foregroundStyle(muted) }
-                    if (garage.save.memorySparks?[c.id] ?? 0) >= 12 { Text(notebook(c.id)).font(.system(size:13,weight:.medium,design:.serif)).italic().foregroundStyle(Color(hex:0xF0D8AA)).lineSpacing(5).padding(14).background(ink,in:RacingPanel(cut:6)) }
+                    HStack { Image(systemName:"sparkle").foregroundStyle(Color(hex:0xFFD76E)); Text("FATHER'S NOTEBOOK • \(garage.save.memories(in:c.environment))/12 SPARKS").font(.system(size:9,weight:.bold,design:.monospaced)).foregroundStyle(muted) }
+                    if garage.save.memories(in:c.environment) >= 12 { Text(notebook(c.id)).font(.system(size:13,weight:.medium,design:.serif)).italic().foregroundStyle(Color(hex:0xF0D8AA)).lineSpacing(5).padding(14).background(ink,in:RacingPanel(cut:6)) }
                     Text(story(c.id)).font(.system(size:13)).foregroundStyle(muted).lineSpacing(5)
                     if c.id <= garage.save.unlockedRegion { Text(c.id==0 ? "“Speed is easy. A clean line takes heart.”" : c.id==1 ? "“The lights don't make the city. The people do.”" : c.id==2 ? "“Out here, patience is faster than pride.”" : "“Your father left a road. You get to choose where it leads.”").font(.system(size:14,weight:.semibold)).foregroundStyle(Color(hex:c.color)) }
                 }.padding(20).background(Color(hex:0x1A2228),in:RacingPanel(cut:12))
@@ -155,7 +181,7 @@ struct HomeView: View {
             milestone("A place on the podium","Win a circuit race",garage.save.wins>0)
             milestone("Collector","Own three original cars",garage.save.owned.count>=3)
             milestone("Road to the summit","Unlock Cloudline",garage.save.unlockedRegion==3)
-            milestone("Festival legend","Earn all 36 campaign stars",garage.save.medals.values.reduce(0,+)>=36)
+            milestone("Festival legend","Earn all 180 campaign stars",garage.save.medals.values.reduce(0,+)>=180)
         }
     }
     func milestone(_ title:String,_ description:String,_ achieved:Bool) -> some View { HStack { Image(systemName:achieved ? "checkmark.seal.fill" : "seal").foregroundStyle(achieved ? mint : muted); VStack(alignment:.leading,spacing:4) { Text(title).font(.system(size:14,weight:.bold)); Text(description).font(.system(size:11)).foregroundStyle(muted) }; Spacer() }.padding(15).background(Color(hex:0x1A2228),in:RacingPanel(cut:6)) }
@@ -164,19 +190,24 @@ struct HomeView: View {
 }
 struct TrackMap: View {
     let circuit: Circuit
+    var progress: Double? = nil
     var body: some View { GeometryReader { geometry in
         let points=(0...180).map { circuit.point(Double($0)/180) }
         let bound = CGFloat(circuit.radius*(1+circuit.distortion))*2.2
         Path { p in for (i,v) in points.enumerated() { let point=CGPoint(x:geometry.size.width/2+CGFloat(v.x)/bound*geometry.size.height,y:geometry.size.height/2+CGFloat(v.z)/bound*geometry.size.height); if i==0 { p.move(to:point) } else { p.addLine(to:point) } } }.stroke(Color(hex:circuit.color),style:StrokeStyle(lineWidth:3,lineCap:.round)).shadow(color:Color(hex:circuit.color).opacity(0.5),radius:8)
+        if let progress {
+            let car=circuit.point(progress)
+            Circle().fill(.white).frame(width:7,height:7).shadow(color:.black,radius:2)
+                .position(x:geometry.size.width/2+CGFloat(car.x)/bound*geometry.size.height,y:geometry.size.height/2+CGFloat(car.z)/bound*geometry.size.height)
+        }
     } }
 }
 struct GarageView: View {
     @EnvironmentObject var garage: Garage
-    @State private var inspected = 0
+    @Binding var inspected: Int
     var car: Car { Car.all[inspected] }
     var body: some View {
         ZStack {
-            CarShowroom(car:car).ignoresSafeArea()
             LinearGradient(colors:[ink.opacity(0.85),.clear,.clear,ink.opacity(0.45)],startPoint:.leading,endPoint:.trailing).allowsHitTesting(false)
             VStack(alignment:.leading,spacing:10) {
                 HStack(alignment:.top) {

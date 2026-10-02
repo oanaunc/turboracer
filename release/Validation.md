@@ -1,3 +1,20 @@
+# Development build 14 validation — 2 October 2026
+
+TurboRacer: Afterlight 2.0.0 (14). Existing App Store app 6478083613.
+
+- Final iPhone simulator run completed successfully: 17 unit tests plus all-twenty-route navigation and six-car/four-environment visual UI cases. `/tmp/afterlight14-verified.log`.
+- Race/results/next-event and rival-grid UI cases passed in the earlier art run; see VisualReview.md for the test-fixture failure and subsequent successful rerun. Separate iPad layout run completed successfully: `/tmp/afterlight14-tablet.log`.
+- Four environment snapshots recorded 60 fps; rival-grid sample recorded 56.7 fps. These are simulator samples, not sustained physical-device measurements.
+- Device build succeeded. Build 14 installed on Oana’s iPhone and devicectl confirmed launch. Existing progress was preserved.
+- Actual native simulator captures are in `screenshots-build14/`. Further scene polish and physical-device playtesting remain necessary.
+- No new data collection or network services. Privacy website commit 32802dd remains applicable.
+- Build 14 has **not** been uploaded or submitted to App Store Connect. Store submission remains held for product and visual refinement.
+
+Full evidence and remaining art limitations: [VisualReview.md](VisualReview.md).
+
+<details>
+<summary>Historical build 5 release validation</summary>
+
 # Release validation — 2 October 2026
 
 TurboRacer: Afterlight 2.0.0 (5), existing App Store app 6478083613.
@@ -17,3 +34,5 @@ Build upload and Apple processing must finish before selecting build 5 for revie
 ## Practical limits
 
 This is an original playable native arcade game, not a licensed-car simulator. Device performance and long-session playtesting remain important before broad release. Apple decides acceptance under its current review guidelines.
+
+</details>

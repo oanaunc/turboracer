@@ -3,21 +3,21 @@ import UIKit
 
 @MainActor enum SceneDressing {
     static func terrain(_ circuit:Circuit) -> SCNNode {
-        let root=SCNNode(), steps=64
+        let root=SCNNode(), steps=96
         let track=(0..<120).map { circuit.point(Double($0)/120) }
         var vertices:[SCNVector3]=[], uv:[CGPoint]=[],indices:[Int32]=[]
-        let left:Float=circuit.id==0 ? -170 : -500, right:Float=500
+        let left:Float=circuit.environment==0 ? -170 : -500, right:Float=500
         for row in 0...steps { for col in 0...steps {
             let x=left+(right-left)*Float(col)/Float(steps), z = -500+1000*Float(row)/Float(steps)
             let nearest=track.map { hypot($0.x-x,$0.z-z) }.min() ?? 0
             let relief=max(0,min(1,(nearest-19)/65))
-            let h:Float = -0.04+relief*(1.8+sin(x*0.03)*cos(z*0.025)*1.7)
+            let h:Float = circuit.environment<2 ? -0.04 : -0.04+relief*(1.8+sin(x*0.03)*cos(z*0.025)*1.7)
             vertices.append(SCNVector3(x,h,z));uv.append(CGPoint(x:Double(x)/12,y:Double(z)/12))
         } }
         for row in 0..<steps { for col in 0..<steps { let a=Int32(row*(steps+1)+col),b=a+1,c=a+Int32(steps+1),d=c+1;indices += [a,c,b,b,c,d] } }
         let g=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:Array(repeating:SCNVector3(0,1,0),count:vertices.count)),SCNGeometrySource(textureCoordinates:uv)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
-        let ground=SurfaceLibrary.surface(circuit.id==1 ? "asphalt" : circuit.id==2 ? "sand" : "grass");ground.isDoubleSided=true;g.materials=[ground];root.addChildNode(SCNNode(geometry:g))
-        if circuit.id==0 {
+        let ground=SurfaceLibrary.surface(circuit.environment==1 ? "asphalt" : circuit.environment==2 ? "sand" : "grass");ground.isDoubleSided=true;g.materials=[ground];root.addChildNode(SCNNode(geometry:g))
+        if circuit.environment==0 {
             let beach=SCNPlane(width:24,height:1000);let sand=SurfaceLibrary.surface("sand");sand.diffuse.contentsTransform=SCNMatrix4MakeScale(2,80,1);sand.normal.contentsTransform=sand.diffuse.contentsTransform;beach.materials=[sand]
             let n=SCNNode(geometry:beach);n.eulerAngles.x = -.pi/2;n.position=SCNVector3(-166,0.01,0);root.addChildNode(n)
         }
@@ -25,23 +25,23 @@ import UIKit
     }
     static func promenade(_ circuit:Circuit) -> SCNNode {
         let root=SCNNode()
-        guard circuit.id==0 else { return root }
+        guard circuit.environment==0 else { return root }
         let stucco=SurfaceLibrary.surface("stucco"),glass=material(0x335962),roof=SurfaceLibrary.surface("rock")
         glass.metalness.contents=0.7;glass.roughness.contents=0.14
         func block(_ size:SCNVector3,_ position:SCNVector3,_ m:SCNMaterial,bevel:CGFloat=0.06) -> SCNNode {
             let g=SCNBox(width:CGFloat(size.x),height:CGFloat(size.y),length:CGFloat(size.z),chamferRadius:bevel);g.materials=[m];let n=SCNNode(geometry:g);n.position=position;return n
         }
-        for i in 0..<9 {
-            let t=Double(i)/9+0.035, p=circuit.point(t,lane:33)
+        for i in 0..<18 {
+            let t=Double(i)/18+0.035, p=circuit.point(t,lane:-33)
             if let building=asset(["CityTerrace","CityOffice","CityBrick"][i%3],height:Float(10+i%3*2)) {
                 building.eulerAngles.y=circuit.heading(t)
                 let b=building.boundingBox
                 var extent:Float=0
                 for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {let corner=building.convertPosition(SCNVector3(x,0,z),to:nil);extent=max(extent,hypot(corner.x,corner.z))}}
                 for offset in stride(from:Double(extent)+24,through:Double(extent)+90,by:4) {
-                    let q=circuit.point(t,lane:offset)
-                    if (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
-                        building.position=SCNVector3(q.x,0,q.z);building.name="roadside-building";root.addChildNode(building);break
+                    let q=circuit.point(t,lane:-offset)
+                    if q.x-extent > -154 && (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
+                        building.position=SCNVector3(q.x,-0.12,q.z);building.name="roadside-building";root.addChildNode(building);foundation(for:building,in:root);break
                     }
                 }
                 continue
@@ -62,6 +62,25 @@ import UIKit
         }
         return root
     }
+    /// Imported architecture can contain basement ramps, open undersides and
+    /// recessed entrances. A sealed plinth bridges those voids to the level
+    /// urban terrain, instead of relying on the lowest isolated vertex.
+    static func foundation(for building:SCNNode,in parent:SCNNode) {
+        let b=building.boundingBox
+        let width=(b.max.x-b.min.x)*building.scale.x
+        let depth=(b.max.z-b.min.z)*building.scale.z
+        let height=(b.max.y-b.min.y)*building.scale.y
+        building.position.y = -height*0.14
+        let top:Float=0.38
+        let geometry=SCNBox(width:CGFloat(width+0.12),height:CGFloat(top+1.5),length:CGFloat(depth+0.12),chamferRadius:0.015)
+        let stone=SurfaceLibrary.surface("stucco",tint:UIColor(hex:0xB9B4A7));stone.roughness.contents=0.95
+        geometry.materials=[stone]
+        let podium=SCNNode(geometry:geometry);podium.name="building-foundation"
+        let center=building.convertPosition(SCNVector3((b.min.x+b.max.x)/2,0,(b.min.z+b.max.z)/2),to:parent)
+        podium.position=SCNVector3(center.x,(top-1.5)/2,center.z);podium.eulerAngles.y=building.eulerAngles.y
+        parent.addChildNode(podium)
+    }
+
     static func tower(height:Float,seed:Int) -> SCNNode {
         let authored=["CityBank","CityOffice","CityTerrace","CityBrick","CityApartment"]
         let fallback=["CityCorner","CityMidrise","CityLandmark"]
@@ -180,9 +199,22 @@ import UIKit
             box(SCNVector3(2.3,0.08,0.95),SCNVector3(x,1.13,-7.7),steel)
             for y:Float in [0.22,0.48,0.74,1] {box(SCNVector3(1.95,0.025,0.04),SCNVector3(x,y,-7.25),steel)}
         }
+        // Deep blue epoxy service bay and a graphic pit-wall backdrop give the
+        // workshop a contemporary motorsport identity while retaining its texture.
+        let epoxy=material(0x233C50);epoxy.roughness.contents=0.28;epoxy.metalness.contents=0.18
+        box(SCNVector3(6.8,0.022,8.4),SCNVector3(0,-0.006,0),epoxy)
+        for x:Float in [-3.45,3.45] {
+            box(SCNVector3(0.065,0.016,8.5),SCNVector3(x,0.014,0),material(0xFFD52A))
+            for z:Float in [-3.8,-3.4,-3.0,3.0,3.4,3.8] {
+                box(SCNVector3(0.6,0.018,0.14),SCNVector3(x,0.017,z),material(0xFFD52A))
+            }
+        }
+        let wall=material(0x103148);wall.roughness.contents=0.62
+        box(SCNVector3(4.2,2.7,0.07),SCNVector3(0,2.7,-8.82),wall)
+        box(SCNVector3(4.2,0.05,0.08),SCNVector3(0,1.34,-8.75),material(0x47CFFF,glow:true))
         let text=SCNText(string:"AFTERLIGHT / MOTORWORKS",extrusionDepth:0.005)
         text.font=UIFont.systemFont(ofSize:1,weight:.bold);text.flatness=0.15;text.materials=[material(0xCBE7F1,glow:true)]
-        let sign=SCNNode(geometry:text);sign.scale=SCNVector3(0.21,0.21,0.21);sign.position=SCNVector3(-2.6,5.75,-8.86);scene.rootNode.addChildNode(sign)
+        let sign=SCNNode(geometry:text);sign.scale=SCNVector3(0.14,0.14,0.14);sign.position=SCNVector3(-1.8,2.7,-8.72);scene.rootNode.addChildNode(sign)
         for (position,power,color) in [(SCNVector3(-5,5.5,3),CGFloat(380),UInt32(0xE6EFF5)),(SCNVector3(4,5,-4),CGFloat(240),UInt32(0x83C8ED)),(SCNVector3(-7,3,-5),CGFloat(160),UInt32(0xFFD6A3))] {
             let node=SCNNode();let light=SCNLight();light.type = .spot;light.intensity=power;light.color=UIColor(hex:color)
             light.spotInnerAngle=45;light.spotOuterAngle=105;light.castsShadow=true;light.shadowRadius=5

@@ -6,14 +6,15 @@ A native offline arcade racing adventure for iPhone and iPad. The original 2024 
 
 Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join the Afterlight Festival. Race from Palm Coast through Neon Harbor and Ember Canyon to Cloudline. Earn five campaign stars in each region to open the next.
 
-- Four original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
-- Twelve campaign events: two-lap races with three rivals, time attack, and drift runs.
-- Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; the remaining entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
+- Four themed districts with five separately authored routes each. Constant-width roads and arc-length sampling keep corner widths and driving speed consistent.
+- Twenty original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
+- Sixty campaign events: two-lap races with three rivals, time attack, and drift runs.
+- Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; VANTA uses an independent concept GT; the remaining three entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
 - Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions with model-sized body volumes and swept contact checks.
-- Twelve memory sparks per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages in the story journal.
+- Twelve memory sparks per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages through district-wide progress. A live route map tracks your race position.
 - Daily rotating drift challenge; the first starred run awards 350 extra credits.
 - Persistent garage, best times, drift records, stars, statistics, and milestones.
-- Landscape racing and landscape menus, with an industrial car showroom with cyan telemetry and yellow actions, side navigation and thumb controls at the lower corners.
+- Landscape racing and landscape menus, with a full-screen industrial car showroom, blue service bay, cyan telemetry and yellow actions, side navigation and thumb controls at the lower corners.
 - Original generated cover/icon/asphalt art and a reproducible synth score. Bundled CC0 HDR lighting. No ads, purchases, accounts, analytics, or external game services.
 
 ## Build
@@ -38,7 +39,7 @@ Unit tests cover purchases, upgrade caps, persistence, campaign progression, dai
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 13. App Store submission is held while the visual/product redesign is reviewed.
+Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 14. App Store submission is held while the visual/product redesign is reviewed.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 
@@ -52,8 +53,8 @@ The app uses UserDefaults for on-device saves with required reason CA92.1 declar
 
 ## Local licensed art
 
-BlenderKit Royalty Free models are local build inputs and are deliberately excluded from public Git. The sedan, coupe and rival-only Jotun pickup are designs by Pierre-Louis Baril; the coconut palm is by Jan Hecl, warehouse by Dennis Hafemann and five city buildings by Alex Samusenko. See bundled AssetCredits.txt for source links. Public checkouts fall back to the bundled concept cars, coastal palm, original showroom and Quaternius architecture.
+BlenderKit Royalty Free models are local build inputs and are deliberately excluded from public Git. The sedan and coupe are designs by Pierre-Louis Baril; Vanta GT is adapted from Sharif Miah’s Concept styled sports car 1; the coconut palm is by Jan Hecl, warehouse by Dennis Hafemann and five city buildings by Alex Samusenko. See bundled AssetCredits.txt for source links. Public checkouts fall back to the bundled concept cars, coastal palm, original showroom and Quaternius architecture.
 
-Convert legitimately downloaded Blender sources using `prepare_licensed_sedan.py` (optional second argument `SportsCoupe` or `RivalPickup`) and `prepare_licensed_palm.py`. These write to the local ArtSources directory. `prepare_licensed_garage.py` and `prepare_licensed_city.py` take the downloaded source and a private output path; they bake facade/color and normal atlases for the native renderer. Package each GLB with `swift Afterlight/Tools/pack_art.swift <source.glb> Afterlight/Resources/Protected/<name>.asset Afterlight/Sources/GeneratedArtKeys.swift`, then regenerate the project. The packer preserves keys in a private manifest outside the repository. Never publish source models, protected packs or generated keys.
+Convert the downloaded GT using `prepare_concept_gt.py`. Convert other legitimately downloaded Blender sources using `prepare_licensed_sedan.py` (optional second argument `SportsCoupe` or `RivalPickup`) and `prepare_licensed_palm.py`. These write to the local ArtSources directory. `prepare_licensed_garage.py` and `prepare_licensed_city.py` take the downloaded source and a private output path; they bake facade/color and normal atlases for the native renderer. Package each GLB with `swift Afterlight/Tools/pack_art.swift <source.glb> Afterlight/Resources/Protected/<name>.asset Afterlight/Sources/GeneratedArtKeys.swift`, then regenerate the project. The packer preserves keys in a private manifest outside the repository. Never publish source models, protected packs or generated keys.
 
 The app decrypts AES-GCM packs in memory. This avoids distributing plainly extractable source files; it is not a claim of tamper-proof protection. Assets remain subject to the provider's license.
