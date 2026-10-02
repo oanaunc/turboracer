@@ -73,7 +73,7 @@ extension Circuit { var look: RouteLook { RouteLook.all[id] } }
                     let p=circuit.point(t,lane:side*offset)
                     if circuit.environment==0 && p.x-radius < -152 {continue}
                     let clear=(0..<480).allSatisfy {i in let road=circuit.point(Double(i)/480);return hypot(road.x-p.x,road.z-p.z)>radius+15}
-                    if clear {node.position=SCNVector3(p.x,-0.08,p.z);node.name="route-landmark";root.addChildNode(node);footprints[circuit.id,default:[]].append((p,radius));placed=true;break}
+                    if clear {node.eulerAngles.y=circuit.heading(t)-Float(side)*Float.pi/2;node.position=SCNVector3(p.x,-0.08,p.z);node.name="route-landmark";root.addChildNode(node);footprints[circuit.id,default:[]].append((p,radius));placed=true;break}
                 }
             }
         }
@@ -102,7 +102,11 @@ extension Circuit { var look: RouteLook { RouteLook.all[id] } }
         }
         func cabin(_ x:Float,_ z:Float,_ snow:Bool=false) {
             box(x,2.7,z,10,5.4,8,timber)
-            for side:Float in [-1,1] {let roof=box(x+side*2.65,6.8,z,6.2,0.25,10,snow ? white:steel);roof.eulerAngles.z = -side*0.5}
+            let roof=ArchitectureArt.pitchedRoof(width:11.2,depth:10,rise:2.8,wall:timber,cover:snow ? white:SurfaceLibrary.surface("terracotta"))
+            roof.position=SCNVector3(x,5.4,z);root.addChildNode(roof)
+            // Timber fascia and ridge sit directly on the filled gable.
+            for side:Float in [-1,1] {box(x+side*5.4,5.4,z,0.18,0.3,10,timber)}
+            box(x+2.9,7.4,z-1.8,0.85,3.3,0.85,stone);box(x+2.9,9.1,z-1.8,1.15,0.18,1.15,steel)
             for dx:Float in [-3,0,3] {box(x+dx,3,z+4.05,1.8,2.2,0.1,glass);box(x+dx,1.8,z+4.14,2,0.18,0.3,white)}
             box(x,0.2,z,11,0.4,9,stone)
         }

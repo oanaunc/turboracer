@@ -1,0 +1,67 @@
+[
+  {
+    "file": "Afterlight/Resources/Textures/ridge-rock.jpg",
+    "source": "https://polyhaven.com/a/aerial_rocks_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/aerial_rocks_02/aerial_rocks_02_diff_2k.jpg",
+    "md5": "f493fa9b31911f8a30ecd1d41cbc6f3d",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Textures/ridge-rock-normal.jpg",
+    "source": "https://polyhaven.com/a/aerial_rocks_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/aerial_rocks_02/aerial_rocks_02_nor_gl_2k.jpg",
+    "md5": "7c405cfd3308a2672c99b44e102c328e",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Textures/ridge-rock-roughness.jpg",
+    "source": "https://polyhaven.com/a/aerial_rocks_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/aerial_rocks_02/aerial_rocks_02_rough_2k.jpg",
+    "md5": "2d4464ceba47763b2ae75242e6f66270",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Textures/terracotta.jpg",
+    "source": "https://polyhaven.com/a/clay_roof_tiles_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_diff_2k.jpg",
+    "md5": "0a1350644116c58a19908b22f569bf8e",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Textures/terracotta-normal.jpg",
+    "source": "https://polyhaven.com/a/clay_roof_tiles_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_nor_gl_2k.jpg",
+    "md5": "1ccc234195df3d48107490a7f7f03e59",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Textures/terracotta-roughness.jpg",
+    "source": "https://polyhaven.com/a/clay_roof_tiles_02",
+    "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_rough_2k.jpg",
+    "md5": "a6d3dfd7f495213fa7cf6620f4982422",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "Afterlight/Resources/Models/AlpineFir.glb",
+    "source": "https://polyhaven.com/a/fir_tree_01",
+    "sha256": "e72cc4c3cc0e3aab6bae44cffaa90cbbb098147b5fd639fd6f8f7933c9930543",
+    "license": "CC0-1.0",
+    "derivative": "Simplified trunk/branches and 466 alpha-cutout canopy fronds clustered from source needles; 1K maps; prepare_vegetation.py",
+    "triangles": 12931
+  },
+  {
+    "file": "Afterlight/Resources/Models/CoastalShrub.glb",
+    "source": "https://polyhaven.com/a/shrub_01",
+    "sha256": "09e64b34d3a83a1c1b1a4f53c1317361b3f9765c5afd0f12bfcfbf2713fa1cd9",
+    "license": "CC0-1.0",
+    "derivative": "Blender decimation to 18K faces; 1K botanical maps; prepare_vegetation.py",
+    "triangles": 18000
+  },
+  {
+    "file": "Afterlight/Resources/Textures/daylight-sky.hdr",
+    "source": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+    "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/kloofendal_48d_partly_cloudy_puresky_2k.hdr",
+    "md5": "2eba3a4d7eeb23cbfbeca364c97e7980",
+    "license": "CC0-1.0"
+  }
+]

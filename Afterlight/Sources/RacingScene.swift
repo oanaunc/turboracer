@@ -22,7 +22,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     let circuit: Circuit; let mode: RaceMode; let car: Car; let upgrade: Int
     let rivalCars:[Car]
     let sensitivity: Double; let haptics: Bool; private let audio: CarAudio
-    let scene = SCNScene(); private let world = SCNNode(); private let trackLength: Double; let camera = SCNNode(); let player: SCNNode
+    let scene = SCNScene(); private let world = SCNNode(); private let roadFurniture = SCNNode(); private let trackLength: Double; let camera = SCNNode(); let player: SCNNode
     private let playerCollider:VehicleCollider
     private var rivalColliders:[VehicleCollider]=[]
     private var rivals: [SCNNode] = []; private var rivalProgress = [-0.008,-0.016,-0.024]
@@ -252,13 +252,14 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     }
     private func buildWorld() {
         scene.background.contents = Self.skyImage(circuit)
-        if circuit.environment != 1, let sky=Bundle.main.url(forResource:"coast-sky",withExtension:"hdr") { scene.background.contents=sky }
+        let daylight=(circuit.environment==0 && circuit.route != 4) || (circuit.environment==3 && circuit.route<3)
+        if circuit.environment != 1, let sky=Bundle.main.url(forResource:daylight ? "daylight-sky":"coast-sky",withExtension:"hdr") { scene.background.contents=sky }
         scene.lightingEnvironment.contents = circuit.environment==1 ? Self.skyImage(circuit) : Bundle.main.url(forResource:"coast-light",withExtension:"hdr"); scene.lightingEnvironment.intensity = circuit.environment == 1 ? 0.8 : 0.65
-        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = 260; scene.fogEndDistance = 900
-        let ambient=SCNNode(); ambient.light=SCNLight(); ambient.light?.type = .ambient; ambient.light?.color=UIColor(hex:0xCDDCEA); ambient.light?.intensity=circuit.environment == 1 ? 350 : 220; scene.rootNode.addChildNode(ambient)
-        let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:circuit.look.sun); sun.light?.intensity=circuit.environment == 1 ? 700 : 1100; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .deferred; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=90; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.35); sun.eulerAngles=SCNVector3(-0.4-Float(circuit.route)*0.12,-0.5+Float(circuit.route)*0.65,0); scene.rootNode.addChildNode(sun)
+        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = 320; scene.fogEndDistance = 1250
+        let ambient=SCNNode(); ambient.light=SCNLight(); ambient.light?.type = .ambient; ambient.light?.color=UIColor(hex:0xCDDCEA); ambient.light?.intensity=circuit.environment == 1 ? 260 : 95; scene.rootNode.addChildNode(ambient)
+        let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:circuit.look.sun); sun.light?.intensity=circuit.environment == 1 ? 700 : 1400; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .forward; sun.light?.shadowBias=2; sun.light?.shadowCascadeCount=3; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=180; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.35); sun.eulerAngles=SCNVector3(-0.4-Float(circuit.route)*0.12,-0.5+Float(circuit.route)*0.65,0); scene.rootNode.addChildNode(sun)
         let distantFloor=SCNFloor();distantFloor.materials=[RouteScenery.ground(circuit)];let distantLand=SCNNode(geometry:distantFloor);distantLand.position.y = -4;world.addChildNode(distantLand)
-        world.addChildNode(RouteScenery.landmarks(circuit)); world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit))
+        world.addChildNode(RouteScenery.landmarks(circuit)); world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit));world.addChildNode(SceneDressing.undergrowth(circuit))
         let roadMat=SurfaceLibrary.surface("asphalt"), stripe=material(0xDDDCD1), aqua=material(0x47CFFF,glow:true)
         if circuit.environment==1 {roadMat.roughness.contents=0.28;roadMat.normal.intensity=0.35}
         buildRoadSurface(roadMat)
@@ -275,7 +276,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             let heading=atan2(b.x-a.x,b.z-a.z)
             // Continuous UV-mapped road replaces overlapping rectangular road slabs.
             for side in [-1.0,1.0] {
-                if i%2==0 { let mark=SCNNode(geometry:SCNBox(width:0.12,height:0.02,length:distance*0.65,chamferRadius:0)); mark.geometry?.materials=[stripe]; let p=circuit.point(t,lane:side*3); mark.position=SCNVector3(p.x,0.12,p.z); mark.eulerAngles.y=heading; world.addChildNode(mark) }
+                if i%2==0 { let mark=SCNNode(geometry:SCNBox(width:0.12,height:0.02,length:distance*0.65,chamferRadius:0)); mark.geometry?.materials=[stripe]; let p=circuit.point(t,lane:side*3); mark.position=SCNVector3(p.x,0.12,p.z); mark.eulerAngles.y=heading; roadFurniture.addChildNode(mark) }
             }
             if i%6==0 { scenery(t,index:i) }
         }
@@ -285,6 +286,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         for x: Float in [-10,10] { let n=SCNNode(geometry:SCNBox(width:0.6,height:8,length:0.6,chamferRadius:0.1)); n.geometry?.materials=[aqua]; n.position=SCNVector3(x,4,0); gate.addChildNode(n) }
         let banner=SCNNode(geometry:SCNBox(width:21,height:1.5,length:0.4,chamferRadius:0.1)); banner.geometry?.materials=[material(0x171A30)]; banner.position=SCNVector3(0,8,0); gate.addChildNode(banner)
         let text=SCNText(string:"AFTERLIGHT",extrusionDepth:0.015); text.font=UIFont.boldSystemFont(ofSize:1); text.flatness=0.2; text.materials=[aqua]; let label=SCNNode(geometry:text); label.scale=SCNVector3(1.15,1.15,1.15); label.position=SCNVector3(-4,7.5,-0.25); label.eulerAngles.y = .pi; gate.addChildNode(label); world.addChildNode(gate)
+        world.addChildNode(roadFurniture.flattenedClone())
         scene.rootNode.addChildNode(world)
     }
     private func buildRoadSurface(_ mat:SCNMaterial) {
@@ -323,8 +325,8 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             let t=Double(i)/Double(count), next=Double(i+4)/Double(count)
             for side in [-1.0,1.0] {
                 let a=circuit.point(t,lane:side*10.8),b=circuit.point(next,lane:side*10.8)
-                let rail=SCNNode(geometry:SCNBox(width:0.12,height:0.36,length:CGFloat(simd_length(b-a)),chamferRadius:0.035));rail.geometry?.materials=[metal];rail.position=SCNVector3((a.x+b.x)/2,0.85,(a.z+b.z)/2);rail.eulerAngles.y=atan2(b.x-a.x,b.z-a.z);world.addChildNode(rail)
-                let post=SCNNode(geometry:SCNBox(width:0.09,height:0.9,length:0.09,chamferRadius:0.01));post.geometry?.materials=[metal];post.position=SCNVector3(a.x,0.45,a.z);world.addChildNode(post)
+                let rail=SCNNode(geometry:SCNBox(width:0.12,height:0.36,length:CGFloat(simd_length(b-a)),chamferRadius:0.035));rail.geometry?.materials=[metal];rail.position=SCNVector3((a.x+b.x)/2,0.85,(a.z+b.z)/2);rail.eulerAngles.y=atan2(b.x-a.x,b.z-a.z);roadFurniture.addChildNode(rail)
+                let post=SCNNode(geometry:SCNBox(width:0.09,height:0.9,length:0.09,chamferRadius:0.01));post.geometry?.materials=[metal];post.position=SCNVector3(a.x,0.45,a.z);roadFurniture.addChildNode(post)
             }
         }
     }
@@ -335,10 +337,15 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             let n=SCNNode(geometry:water); n.eulerAngles.x = -.pi/2; n.position=SCNVector3(-580,-0.30,0); world.addChildNode(n)
             for i in 0..<9 { let yacht=SCNNode(geometry:SCNBox(width:3,height:1,length:10,chamferRadius:0.9)); yacht.geometry?.materials=[material(0xE9DCD3)]; yacht.position=SCNVector3(-180-Float(i)*18,0.5,Float(i*25-100)); yacht.eulerAngles.y=Float(i)*0.2; world.addChildNode(yacht) }
         }
-        for i in 0..<22 {
-            let angle=Float(i)*2 * .pi/22; let radius: Float=420+Float(i%4)*35
-            let h: CGFloat=CGFloat(circuit.environment==0 ? (circuit.route==4 ? 25+i%5*8:8+i%6*3) : 35+i%6*(9+circuit.route*3))
-            let n=SurfaceLibrary.hill(radius:circuit.environment==0 ? 95 : 80,height:Float(h),seed:i+circuit.id,vegetated:circuit.look.ground=="grass",desert:circuit.environment==2,snow:circuit.look.ground=="snow"); n.position=SCNVector3(sin(angle)*radius,-0.1,cos(angle)*radius); world.addChildNode(n)
+        let ridgeCount=circuit.environment==0 ? 7:12
+        for i in 0..<ridgeCount {
+            // Keep the coast open to the sea; interlock broad inland ridges.
+            let angle=circuit.environment==0 ? -Float.pi*0.40+Float(i)*Float.pi*0.8/Float(ridgeCount-1):Float(i)*2 * .pi/Float(ridgeCount)
+            let distance:Float=570+Float(i%3)*55
+            let radius:Float=205+Float(i%3)*15
+            let h:Float=circuit.environment==0 ? 85+Float(i%4)*23 : circuit.environment==1 ? 65+Float(i%3)*18:145+Float(i%4)*35
+            let n=SurfaceLibrary.hill(radius:radius,height:h,seed:i+circuit.id*13,vegetated:circuit.environment==0 || circuit.look.ground=="grass",desert:circuit.environment==2,snow:circuit.look.ground=="snow")
+            n.position=SCNVector3(cos(angle)*distance,-1.5,sin(angle)*distance);n.eulerAngles.y=angle+Float.pi/2;world.addChildNode(n)
         }
         let motes=SCNParticleSystem(); motes.birthRate=circuit.look.ground=="snow" ? 70 : circuit.environment==1 && circuit.route != 2 ? 70 : 12; motes.particleLifeSpan=6; motes.particleSize=circuit.environment==1 ? 0.035 : 0.08; motes.particleColor=UIColor(hex:circuit.environment==1 ? 0x8EADD3 : 0xFFEBC3); motes.particleVelocity=circuit.environment==1 ? 18 : 0.4; motes.spreadingAngle=10; motes.emitterShape=SCNBox(width:260,height:1,length:260,chamferRadius:0); motes.acceleration=SCNVector3(0,circuit.environment==1 ? -12 : 0.2,0); motes.blendMode = .additive
         let emitter=SCNNode(); emitter.position=SCNVector3(0,circuit.environment==1 ? 30 : 1,0); emitter.addParticleSystem(motes); scene.rootNode.addChildNode(emitter)
@@ -370,7 +377,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
                     if clear && RouteScenery.allowsScenery(position,radius:extent,circuit:circuit) {n.position=SCNVector3(position.x,-0.12,position.z);n.name="roadside-building";world.addChildNode(n);SceneDressing.foundation(for:n,in:world);break}
                 }
             } else {
-                if circuit.environment==3 && (index/6)%circuit.look.density==0 && RouteScenery.allowsScenery(p,radius:4,circuit:circuit),let pine=SceneDressing.asset("pine_sapling_small",height:8+Float(index%4)) {pine.position=SCNVector3(p.x,0,p.z);world.addChildNode(pine)}
+                if circuit.environment==3 && (index/6)%circuit.look.density==0 && RouteScenery.allowsScenery(p,radius:4,circuit:circuit),let pine=SceneDressing.asset("AlpineFir",height:12+Float(index%4)*2,maxWidth:8) ?? SceneDressing.asset("pine_sapling_small",height:8+Float(index%4)) {pine.position=SCNVector3(p.x,0,p.z);world.addChildNode(pine)}
                 let h=CGFloat(8+index%(circuit.route==1 ? 7:23)); let rock=SceneDressing.asset("coastal_cliff_01",height:Float(h),maxWidth:18) ?? SurfaceLibrary.hill(radius:12,height:Float(h),seed:index,vegetated:false,desert:circuit.environment==2,snow:circuit.environment==3); let rockPoint=circuit.point(t,lane:side*38)
                 rock.position=SCNVector3(rockPoint.x,0,rockPoint.z);rock.eulerAngles.y=Float(index)
                 let radius:Float=18 * sqrt(2)/2

@@ -15,8 +15,16 @@ import UIKit
             vertices.append(SCNVector3(x,h,z));uv.append(CGPoint(x:Double(x)/12,y:Double(z)/12))
         } }
         for row in 0..<steps { for col in 0..<steps { let a=Int32(row*(steps+1)+col),b=a+1,c=a+Int32(steps+1),d=c+1;indices += [a,c,b,b,c,d] } }
-        let g=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:Array(repeating:SCNVector3(0,1,0),count:vertices.count)),SCNGeometrySource(textureCoordinates:uv)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
-        let ground=RouteScenery.ground(circuit);ground.isDoubleSided=true;g.materials=[ground];root.addChildNode(SCNNode(geometry:g))
+        var normals=Array(repeating:SIMD3<Float>.zero,count:vertices.count)
+        for i in stride(from:0,to:indices.count,by:3) {
+            let a=Int(indices[i]),b=Int(indices[i+1]),c=Int(indices[i+2])
+            func point(_ index:Int)->SIMD3<Float> {let v=vertices[index];return SIMD3(v.x,v.y,v.z)}
+            let n=simd_cross(point(b)-point(a),point(c)-point(a));normals[a] += n;normals[b] += n;normals[c] += n
+        }
+        let g=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:normals.map {vector(simd_normalize($0))}),SCNGeometrySource(textureCoordinates:uv)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
+        let ground=circuit.look.ground=="grass" ? LandscapeArt.terrainMaterial(vegetated:true,desert:false,snow:false):RouteScenery.ground(circuit)
+        ground.isDoubleSided=false
+        g.materials=[ground];root.addChildNode(SCNNode(geometry:g))
         if circuit.environment==0 {
             let beach=SCNPlane(width:24,height:1000);let sand=SurfaceLibrary.surface("sand");sand.diffuse.contentsTransform=SCNMatrix4MakeScale(2,80,1);sand.normal.contentsTransform=sand.diffuse.contentsTransform;beach.materials=[sand]
             let n=SCNNode(geometry:beach);n.eulerAngles.x = -.pi/2;n.position=SCNVector3(-166,0.01,0);root.addChildNode(n)
@@ -26,40 +34,42 @@ import UIKit
     static func promenade(_ circuit:Circuit) -> SCNNode {
         let root=SCNNode()
         guard circuit.environment==0 else { return root }
-        let stucco=SurfaceLibrary.surface("stucco"),glass=material(0x335962),roof=SurfaceLibrary.surface("rock")
-        glass.metalness.contents=0.7;glass.roughness.contents=0.14
-        func block(_ size:SCNVector3,_ position:SCNVector3,_ m:SCNMaterial,bevel:CGFloat=0.06) -> SCNNode {
-            let g=SCNBox(width:CGFloat(size.x),height:CGFloat(size.y),length:CGFloat(size.z),chamferRadius:bevel);g.materials=[m];let n=SCNNode(geometry:g);n.position=position;return n
-        }
-        let count=[18,7,5,9,3][circuit.route]
+        let count=[14,7,7,9,5][circuit.route]
         for i in 0..<count {
-            let t=Double(i)/Double(count)+0.035, p=circuit.point(t,lane:-33)
-            if let building=asset(["CityTerrace","CityOffice","CityBrick"][i%3],height:Float(10+i%3*2)) {
-                building.eulerAngles.y=circuit.heading(t)
-                let b=building.boundingBox
-                var extent:Float=0
-                for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {let corner=building.convertPosition(SCNVector3(x,0,z),to:nil);extent=max(extent,hypot(corner.x,corner.z))}}
-                for offset in stride(from:Double(extent)+24,through:Double(extent)+90,by:4) {
-                    let q=circuit.point(t,lane:-offset)
-                    if q.x-extent > -154 && RouteScenery.allowsScenery(q,radius:extent,circuit:circuit) && (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
-                        building.position=SCNVector3(q.x,-0.12,q.z);building.name="roadside-building";root.addChildNode(building);foundation(for:building,in:root);break
-                    }
+            let t=Double(i)/Double(count)+0.035
+            let building=ArchitectureArt.villa(variant:i)
+            building.eulerAngles.y=circuit.heading(t)+Float.pi/2
+            let b=building.boundingBox
+            var extent:Float=0
+            for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {let corner=building.convertPosition(SCNVector3(x,0,z),to:nil);extent=max(extent,hypot(corner.x,corner.z))}}
+            for offset in stride(from:Double(extent)+23,through:Double(extent)+90,by:4) {
+                let q=circuit.point(t,lane:-offset)
+                if q.x-extent > -154 && RouteScenery.allowsScenery(q,radius:extent,circuit:circuit) && (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
+                    building.position=SCNVector3(q.x,0,q.z);building.name="roadside-building";root.addChildNode(building);break
                 }
-                continue
             }
-            let villa=SCNNode();villa.position=SCNVector3(p.x,0,p.z);villa.eulerAngles.y=circuit.heading(t)
-            villa.addChildNode(block(SCNVector3(9,5.5,7),SCNVector3(0,2.75,0),stucco))
-            villa.addChildNode(block(SCNVector3(9.6,0.22,7.6),SCNVector3(0,5.6,0),roof))
-            villa.addChildNode(block(SCNVector3(7,2.0,0.04),SCNVector3(0,3.5,3.53),glass))
-            villa.addChildNode(block(SCNVector3(7.5,0.12,2.0),SCNVector3(0,2.25,4.3),stucco))
-            for x:Float in [-3.4,0,3.4] {villa.addChildNode(block(SCNVector3(0.08,0.8,0.08),SCNVector3(x,2.7,5.1),glass))}
-            villa.addChildNode(block(SCNVector3(7.5,0.07,0.06),SCNVector3(0,3.1,5.1),glass))
-            root.addChildNode(villa)
         }
         // Layer low rocks along the shore instead of a single flat terrain edge.
         for i in 0..<36 {
             let rock=asset("coastal_cliff_01",height:3+Float(i%3),maxWidth:12) ?? SurfaceLibrary.rock(radius:2.5+Float(i%3),height:3,seed:i,desert:false)
             rock.position=SCNVector3(-174+Float(i%3),0,Float(i)*24-430);root.addChildNode(rock)
+        }
+        return root
+    }
+    static func undergrowth(_ circuit:Circuit) -> SCNNode {
+        let root=SCNNode()
+        guard circuit.environment==0 || circuit.environment==3 else {return root}
+        let road=(0..<480).map {circuit.point(Double($0)/480)}
+        for i in 0..<52 {
+            let t=Double(i)/52+0.007
+            let side:Double=i%2==0 ? -1:1
+            let p=circuit.point(t,lane:side*(15.5+Double(i%4)*2.2))
+            let radius:Float=2.5
+            guard (circuit.environment != 0 || p.x-radius > -153),RouteScenery.allowsScenery(p,radius:radius,circuit:circuit),road.allSatisfy({hypot($0.x-p.x,$0.z-p.z)>13.5+radius}) else {continue}
+            if let shrub=asset("CoastalShrub",height:0.8+Float(i%4)*0.22,maxWidth:4) {
+                shrub.position=SCNVector3(p.x,-0.05,p.z);shrub.eulerAngles.y=Float(i)*2.39
+                shrub.name="roadside-shrub";root.addChildNode(shrub)
+            }
         }
         return root
     }

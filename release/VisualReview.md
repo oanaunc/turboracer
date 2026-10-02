@@ -1,3 +1,17 @@
+# Development build 18 — landscape and roof repair
+
+New original coastal villas have complete gables, tiled roofs, shutters, balconies, chimneys and sealed bases. Chalet roofs now use closed triangular prisms instead of intersecting slabs. Facades face the circuit; existing full-road clearance checks remain in place.
+
+The hill geometry has irregular ridges and erosion detail, with corrected terrain normals and triplanar rock/soil shading. New verified CC0 2K rock and roof maps replace the old stretched hill treatment. A daylight HDR supplies the background while the existing normalized HDR supplies lighting. Static road markings and barriers are batched to reduce draw submissions.
+
+CC0 fir and shrub derivatives add botanical geometry. Fir preparation retains simplified branches and replaces millions of individual needles with 466 alpha-cutout fronds clustered from the original canopy. This preserves canopy volume in the source render; distant in-game silhouettes remain thin and need further tuning against the terrain. Source URLs, licenses and final asset hashes are recorded in environment-build18-assets.json.
+
+The generated coastal direction image is reference art only. It was created using the built-in image_gen tool; its exact prompt is saved in concepts/coastal-direction-prompt.txt. It is not runtime scenery or an App Store screenshot.
+
+Remaining work includes stronger lighting and scene composition, foliage readability, ground-to-cliff transitions, richer city/landmark detail, water and vehicle art. This pass does not meet the requested Asphalt-level visual benchmark. Validation and device installation status are recorded in Validation.md.
+
+---
+
 # Development build 17 — nitro stability and a varied rival grid
 
 The nitro camera now eases its distance and lens instead of snapping. A held, exhausted tank no longer alternates boost on/off as tiny amounts of fuel regenerate. The simulation uses a display-linked clock in common run-loop modes, and scene updates explicitly disable implicit animation.

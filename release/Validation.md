@@ -1,3 +1,21 @@
+# Development build 18 — terrain, roofs and vegetation
+
+2 October 2026. Version 2.0.0 (18) compiled and installed on Oana’s iPhone. The subsequent launch request returned the iOS `Locked` error. The physical route sweep waited for unlock and was canceled without running; build 18 physical launch and performance are unverified. The installed app can be opened directly. Existing saves are preserved; review launches use isolated fixtures.
+
+Completed checks:
+
+- Final simulator invocation passed all 24 unit tests and the all-twenty-route opening-segment review. Each short simulator render sample met the 30 fps threshold. This does not establish sustained physical-device performance or full-lap art coverage.
+- The two new tests validate closed roof topology/outward winding and terrain texture resolution/finite surface normals. Existing collision, progression, roster, steering geometry, landmark and complete-circuit scenery-clearance tests also passed.
+- The full race/results/next-event journey passed in a separate build 18 invocation before the final canopy/lighting asset corrections. Gameplay code was unchanged by those corrections.
+- Device build-for-testing completed successfully. Source asset hashes match the simulator app’s bundled final fir; vendor download checksums and final model hashes are recorded in environment-build18-assets.json.
+- Representative actual native simulator captures are in screenshots-build18/. The separate generated coastal concept is development reference only.
+
+Final simulator log: `/tmp/afterlight18-final-routes.log`; result: `/tmp/AfterlightArt8/Logs/Test/Test-Afterlight-2026.10.02_15-04-10-+0300.xcresult`. Earlier complete journey: `/tmp/afterlight18-final-check.log`. Device build: `/tmp/afterlight18-phone-final-build.log`; blocked physical sweep: `/tmp/afterlight18-phone-routes.log`.
+
+Art limitations remain documented in VisualReview.md and ArtDirection.md. App Store submission remains pending refinement; no upload or identifier change was made. No new collection or network services were introduced; the existing privacy policy remains applicable. SubmissionStrategy.md records the recommendation to address the original rejection transparently using the current app record.
+
+---
+
 # Development build 17 — nitro and rival corrections
 
 2 October 2026. Version 2.0.0 (17) compiled, installed and launched on Oana’s iPhone. The physical-device repeated-nitro-hold test passed after unlock. Existing saves are preserved; UI reviews use an isolated fixture.

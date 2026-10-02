@@ -15,7 +15,7 @@ import UIKit
         m.diffuse.contents=image(name=="asphalt" ? "asphalt-art" : textureName) ?? image(name) ?? tint; m.diffuse.intensity=1; m.multiply.contents=tint
         m.normal.contents=image(textureName+"-normal"); m.normal.intensity=0.6
         m.roughness.contents=image(textureName+"-roughness") ?? 0.85; m.metalness.contents=0
-        for channel in [m.diffuse,m.normal,m.roughness] { channel.wrapS = .repeat; channel.wrapT = .repeat; channel.minificationFilter = .linear; channel.magnificationFilter = .linear; channel.mipFilter = .linear }
+        for channel in [m.diffuse,m.normal,m.roughness] { channel.wrapS = .repeat; channel.wrapT = .repeat; channel.minificationFilter = .linear; channel.magnificationFilter = .linear; channel.mipFilter = .linear; channel.maxAnisotropy=16 }
         return m
     }
     static func paint(_ color: UInt32) -> SCNMaterial {
@@ -80,24 +80,6 @@ import UIKit
 
 extension SurfaceLibrary {
     static func hill(radius:Float,height:Float,seed:Int,vegetated:Bool,desert:Bool,snow:Bool=false) -> SCNNode {
-        let steps=28
-        func elevation(_ x:Float,_ z:Float) -> Float {
-            let radial=max(0,1-(x*x+z*z)/(radius*radius))
-            let detail=0.82+0.16*sin(x*0.07+Float(seed))*cos(z*0.05)+0.10*cos(x*0.11+z*0.08)
-            return height*radial*radial*detail
-        }
-        var vertices:[SCNVector3]=[],normals:[SCNVector3]=[],uv:[CGPoint]=[],indices:[Int32]=[]
-        for row in 0...steps {for col in 0...steps {
-            let x=(Float(col)/Float(steps)*2-1)*radius,z=(Float(row)/Float(steps)*2-1)*radius
-            let dx=(elevation(x+0.5,z)-elevation(x-0.5,z)),dz=(elevation(x,z+0.5)-elevation(x,z-0.5))
-            vertices.append(SCNVector3(x,elevation(x,z),z));normals.append(vector(simd_normalize(SIMD3<Float>(-dx,1,-dz))));uv.append(CGPoint(x:Double(x)/12,y:Double(z)/12))
-        }}
-        for row in 0..<steps {for col in 0..<steps {let a=Int32(row*(steps+1)+col),b=a+1,c=a+Int32(steps+1),d=c+1;indices += [a,c,b,b,c,d]}}
-        var base:[Int32]=[],caps:[Int32]=[]
-        for i in stride(from:0,to:indices.count,by:3) {let tri=Array(indices[i..<i+3]);let y=tri.reduce(Float(0)) {$0+vertices[Int($1)].y}/3;if snow && y>height*0.5 {caps += tri}else{base += tri}}
-        var elements=[SCNGeometryElement(indices:base,primitiveType:.triangles)];if !caps.isEmpty {elements.append(SCNGeometryElement(indices:caps,primitiveType:.triangles))}
-        let g=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:normals),SCNGeometrySource(textureCoordinates:uv)],elements:elements)
-        let m=surface(vegetated ? "grass" : "rock");if desert {m.multiply.contents=UIColor(hex:0xCEAA86)}
-        let ice=material(0xD8E1DE);ice.roughness.contents=0.9;ice.normal.contents=image("sand-normal");g.materials=[m,ice];return SCNNode(geometry:g)
+        LandscapeArt.ridge(radius:radius,height:height,seed:seed,vegetated:vegetated,desert:desert,snow:snow)
     }
 }

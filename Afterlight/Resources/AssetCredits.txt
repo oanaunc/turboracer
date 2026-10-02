@@ -77,3 +77,22 @@ Source and plaintext derivatives remain private; encrypted app pack only.
 Aerial Grass Rock — Rob Tuytel / Poly Haven. CC0 1.0 public domain.
 https://polyhaven.com/a/aerial_grass_rock
 1K diffuse, OpenGL normal and roughness maps; vendor MD5 checksums verified.
+
+Build 18 landscape and architectural materials — Poly Haven, CC0 1.0:
+Aerial Rocks 02 — Rob Tuytel. 2K diffuse, normal and roughness.
+https://polyhaven.com/a/aerial_rocks_02
+Clay Roof Tiles 02 — Amal Kumar. 2K diffuse, normal and roughness.
+https://polyhaven.com/a/clay_roof_tiles_02
+Fir Tree 01 — Rico Cilliers (modeling), Rob Tuytel (photography).
+https://polyhaven.com/a/fir_tree_01
+Shrub 01 — Poly Haven.
+https://polyhaven.com/a/shrub_01
+Kloofendal 48d Partly Cloudy (Pure Sky) — Greg Zaal, sky edits Jarod Guest.
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+https://polyhaven.com/license
+Changes: simplified fir branches with 466 alpha-cutout canopy fronds,
+18K-face shrub derivative, 1K botanical maps, 2K HDR sky background,
+native triplanar landscape shading and original closed villa roofs.
+Existing normalized coast HDR is retained for image-based lighting.
+Source downloads verified against vendor MD5 checksums.
+The generated coastal concept is development reference only, not a gameplay screenshot.

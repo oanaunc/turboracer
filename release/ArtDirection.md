@@ -39,3 +39,15 @@ The four district asset families are still shared. Build 14 had twenty road shap
 | Last Light | Snowbound summit research station |
 
 Landmarks use native geometric assemblies with the existing PBR material library. Three sites per circuit reserve their full horizontal footprint against the complete road curve. Terrain flattens beneath each site; surrounding buildings, rocks and trees avoid those reserved footprints. No additional third-party model license is introduced. These landmarks still need artist refinement and richer integration into the surrounding streetscape.
+
+## Build 18 — terrain and complete architecture
+
+The coastal concept in `concepts/coastal-direction.png` is generated reference art, not a game capture. Its prompt and tool provenance are saved beside it. Translate its irregular ridgelines, coherent plaster/tile architecture and layered vegetation into real geometry; never use it as an App Store screenshot.
+
+The runtime now has 72-by-72 sampled ridge meshes with domain-warped spines, erosion detail and calculated surface normals. A Metal surface modifier blends metre-scaled rock projections across three axes so steep slopes retain texture density. Broad color variation breaks repetition; vegetation follows shallow slopes and snow follows upward-facing high ground. Distant ridges do not cast shadows into the near-field map. Coastal ridges stay inland, leaving the sea horizon open.
+
+Coastal streets use three original villa variants with sealed gable roofs, PBR terracotta, ridge caps, plaster cornices, window frames, shutters/louvers, balcony railings, chimneys, sealed stone bases and courtyards. Chalet and ski-village roofs use the same closed prism construction, replacing the two intersecting slabs. Facades now face the track. Terrain normals follow the actual relief instead of all pointing straight up.
+
+Poly Haven CC0 2K rock/tile textures, a 2K daylight sky background, a fir with simplified branches and 466 alpha-cutout canopy fronds, and an 18K-face shrub derivative are bundled. The fir fronds preserve the source needle distribution; blind decimation of disconnected needles erased its canopy and was rejected after render inspection. The existing normalized coast HDR remains the image-based lighting source; the new sky is background only. The rock shader uses a constant roughness of 0.94; the downloaded rock roughness map is retained as source material. Attribution and download hashes are in AssetCredits.txt and `environment-build18-assets.json`. Markings and barriers are combined into static geometry to reduce draw submissions. Vegetation and buildings retain separate scene bounds for culling and clearance checks.
+
+Remaining art gap: these are improvements to the existing SceneKit world, not Asphalt-level scene production. Trackside composition, distant terrain transitions, remaining procedural landmarks, water, imported city facades, foliage silhouettes and vehicle art still need further art direction and player review. Resolution alone does not solve those issues.
