@@ -1,3 +1,24 @@
+# Development build 16 — steering and route identities
+
+The LEFT/RIGHT reversal is corrected in the physics-to-camera conversion. Actual touch-button tests passed in both landscape orientations; camera-space regression checks both displacement and vehicle yaw. See build 15 evidence in Validation.md.
+
+Build 14 supplied twenty road layouts inside four shared environment families. Build 16 gives each route its own setting profile and landmark complex, with ground, lighting, silhouette and scenery-density variations. These remain shared-region scenes with native procedural landmarks, not twenty fully bespoke high-fidelity environments. ArtDirection.md lists each route’s setting.
+
+Landmark placement reserves the complete horizontal footprint against the full circuit. Terrain levels under those footprints; buildings, rocks and foliage avoid them. The procedural primitives retain their node hierarchy: SceneKit flattening returned empty bounds in the initial attempt, which the new landmark validation caught. The corrected hierarchy passed all placement checks. The canyon arch was refined after an initial render review.
+
+Validation completed:
+
+- All 19 unit tests passed, including steering, progression, collisions, route clearance, district art identity and all sixty landmark sites.
+- The twenty-route capture sweep completed with TEST SUCCEEDED, with every route passing a 30 fps minimum simulator sample. This is not a physical-device performance claim.
+- After the final canyon mesh change, all 19 unit tests, canyon grid/racing captures and the complete race/results/next-event journey passed in a completed final invocation.
+- Device build 2.0.0 (16) compiled and installed on Oana’s iPhone. Automated launch was blocked by iOS reporting the phone locked; launch and sustained physical play remain user checks. Existing saves were preserved.
+
+Evidence: `/tmp/afterlight16-verified.log`, `/tmp/afterlight16-final.log`, `/tmp/afterlight16-phone-final.log`, `/tmp/afterlight16-install.log`, `/tmp/afterlight16-launch.log`. Representative actual simulator captures are in `release/screenshots-build16/`.
+
+The new settings make route identity more visible, but scenery density, landmark fidelity, terrain transitions, foliage, facade texture resolution and overall lighting remain below the requested Asphalt reference. App Store submission stays on hold. No new data collection or external services were added.
+
+---
+
 # Development build 14 — World Tour and full-screen Motorworks
 
 2 October 2026. App Store submission remains on hold for further artistic and physical-device review.

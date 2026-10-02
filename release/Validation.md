@@ -1,10 +1,20 @@
+# Development build 16 — 2 October 2026
+
+Version 2.0.0 (16) installed on Oana’s iPhone. Automated launch remained blocked by the device lock, including the retry after the user reported unlocking. Users can open the installed game directly. No physical-device frame-rate claim is made.
+
+Final validation completed with TEST SUCCEEDED: 19 unit tests, the refined canyon visual case and complete race-to-results/next-event UI journey (`/tmp/afterlight16-final.log`). The separate twenty-route visual sweep also completed successfully, with each route meeting the simulator 30 fps minimum (`/tmp/afterlight16-verified.log`). Actual LEFT/RIGHT touch input in both landscape orientations passed in build 15 and that correction is included in build 16.
+
+App Store submission remains held for further visual refinement and device playtesting. Privacy policy remains applicable: all changes are local/offline. Details and representative captures are recorded in VisualReview.md.
+
+---
+
 # Steering correction — development build 15
 
 The new camera-space regression reproduced reversed steering in build 14: both the car’s displacement and yaw opposed the labeled input. Corrected the conversion between screen-oriented steering and the authored road normal. The buttons retain LEFT = -1 and RIGHT = +1; the physics input now respects the rear-facing camera’s horizontal axis.
 
 All 18 unit tests passed after correction. The final targeted invocation completed with TEST SUCCEEDED, verifying camera-space displacement/yaw and the actual LEFT/RIGHT buttons in both landscape orientations. The first UI probe returned stale telemetry; observing the engine in SceneSurface fixed the probe, and all four touch cases then passed. Evidence: `/tmp/afterlight15-controls-before.log`, `/tmp/afterlight15-controls.log`, `/tmp/afterlight15-controls-final.log`.
 
-Device build 15 compiled and installed. Initial launch was blocked by the device lock; launch retried after the user unlocked the phone.
+Device build 15 compiled and installed. Initial launch and the retry were both blocked by iOS reporting the device locked. The user can launch the installed build directly; automated physical launch was not verified for build 15.
 
 # Development build 14 validation — 2 October 2026
 

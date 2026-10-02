@@ -6,7 +6,7 @@ A native offline arcade racing adventure for iPhone and iPad. The original 2024 
 
 Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join the Afterlight Festival. Race from Palm Coast through Neon Harbor and Ember Canyon to Cloudline. Earn five campaign stars in each region to open the next.
 
-- Four themed districts with five separately authored routes each. Constant-width roads and arc-length sampling keep corner widths and driving speed consistent.
+- Four themed districts with five separately authored routes each. Every route now has a setting-specific landmark complex, ground treatment, lighting profile and scenery density; shared district assets remain. Constant-width roads and arc-length sampling keep corner widths and driving speed consistent.
 - Twenty original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
 - Sixty campaign events: two-lap races with three rivals, time attack, and drift runs.
 - Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; VANTA uses an independent concept GT; the remaining three entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
@@ -35,11 +35,11 @@ xcodebuild -project Afterlight/Afterlight.xcodeproj -scheme Afterlight \
   test CODE_SIGNING_ALLOWED=NO
 ```
 
-Unit tests cover purchases, upgrade caps, persistence, campaign progression, daily rewards, circuit closure, race completion, pausing, nitro, drift, and off-road behavior. The UI journey covers home, garage, story, world map, a complete race, pause/resume, results, and settings. UI attachments capture actual app screens.
+Camera-space steering regression and UI touch checks cover both landscape orientations. Unit tests cover route landmark clearance, purchases, upgrade caps, persistence, campaign progression, daily rewards, circuit closure, race completion, pausing, nitro, drift, and off-road behavior. The UI journey covers home, garage, story, world map, a complete race, pause/resume, results, and settings. UI attachments capture actual app screens.
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 14. App Store submission is held while the visual/product redesign is reviewed.
+Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 16. App Store submission is held while the visual/product redesign is reviewed.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 

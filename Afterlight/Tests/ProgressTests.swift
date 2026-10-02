@@ -115,7 +115,7 @@ final class ProgressTests: XCTestCase {
             let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
             var rockCount=0
             engine.scene.rootNode.enumerateChildNodes { rock,_ in
-                guard ["roadside-rock","roadside-building"].contains(rock.name ?? "") else {return};rockCount += 1
+                guard ["roadside-rock","roadside-building","route-landmark"].contains(rock.name ?? "") else {return};rockCount += 1
                 let b=rock.boundingBox, center=rock.convertPosition(SCNVector3Zero,to:nil)
                 var radius:Float=0
                 for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {
@@ -189,6 +189,21 @@ final class ProgressTests: XCTestCase {
         }
         XCTAssertEqual(signatures.count,20)
     }
+    @MainActor func testEveryRouteHasDistinctArtAndClearLandmarks() {
+        XCTAssertEqual(RouteLook.all.count,Circuit.all.count)
+        XCTAssertEqual(Set(Circuit.all.map { $0.look.setting }).count,20)
+        XCTAssertEqual(Set(Circuit.all.map { $0.look.landmark }).count,20)
+        for circuit in Circuit.all {
+            let landmarks=RouteScenery.landmarks(circuit)
+            XCTAssertEqual(landmarks.childNodes.count,3,"Every route needs its three authored landmark sites: \(circuit.name)")
+            for node in landmarks.childNodes {
+                XCTAssertGreaterThan(node.boundingBox.max.y-node.boundingBox.min.y,4)
+                let center=node.position
+                XCTAssertEqual(RouteScenery.terrainRelief(center.x,center.z,circuit:circuit),0,"Landmark terrain must be level")
+            }
+        }
+    }
+
     func testExpandedCampaignPreservesSavesAndUnlocksDistrictRoutes() throws {
         var legacy=SaveData();legacy.medals=[0:3,1:3];legacy.owned=[0,1];legacy.selectedCar=1
         let restored=try JSONDecoder().decode(SaveData.self,from:JSONEncoder().encode(legacy))

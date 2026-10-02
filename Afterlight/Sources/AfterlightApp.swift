@@ -158,7 +158,7 @@ struct HomeView: View {
                             }.padding(7).background(ink.opacity(0.6),in:RacingPanel(cut:6))}.buttonStyle(.plain).disabled(locked)
                             .accessibilityIdentifier("event-\(circuit.id)-\(index)")
                         }
-                        Text(locked ? "EARN 5 STARS IN THE PREVIOUS DISTRICT":circuit.tagline.uppercased()).font(RacingType.data(7)).lineLimit(1).foregroundStyle(muted)
+                        Text(locked ? "EARN 5 STARS IN THE PREVIOUS DISTRICT":circuit.look.setting).font(RacingType.data(7)).lineLimit(1).foregroundStyle(muted)
                     }.padding(10).frame(width:310).background(LinearGradient(colors:[Color(hex:circuit.color).opacity(0.18),Color(hex:0x11212D)],startPoint:.topLeading,endPoint:.bottomTrailing),in:RacingPanel(cut:14)).opacity(locked ? 0.65:1)
                 }}.padding(.bottom,8)
             }.accessibilityIdentifier("race-calendar").id(calendarRegion)

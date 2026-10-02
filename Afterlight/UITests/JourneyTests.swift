@@ -87,6 +87,29 @@ final class JourneyTests: XCTestCase {
         app.buttons["Pause race"].tap();app.buttons["Leave race"].tap()
     }
 
+    func testRouteSceneryReview() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        for id in 0..<20 {
+            let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region",String(id)];app.launch()
+            XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:15))
+            app.buttons["control-NITRO"].press(forDuration:4)
+            capture("route-art-\(id)",app)
+            let sample=app.descendants(matching:.any)["race-scene"].value as? String ?? "0"
+            XCTAssertGreaterThanOrEqual(Double(sample.split(separator:" ").first ?? "0") ?? 0,30,"Route \(id) render timing")
+            app.terminate()
+        }
+    }
+
+    func testCanyonArchReview() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region","2"];app.launch()
+        XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:15))
+        capture("canyon-arch-grid",app)
+        app.buttons["control-NITRO"].press(forDuration:4)
+        capture("canyon-arch-racing",app)
+        app.terminate()
+    }
+
     func testLicensedRivalGridPerformance() {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region","0","--preview-grid"];app.launch()
