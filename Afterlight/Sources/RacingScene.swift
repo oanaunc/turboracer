@@ -20,6 +20,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     private(set) var collisionCount = 0
     var steering = 0.0; var braking = false; var drifting = false; var nitroHeld = false
     let circuit: Circuit; let mode: RaceMode; let car: Car; let upgrade: Int
+    let rivalCars:[Car]
     let sensitivity: Double; let haptics: Bool; private let audio: CarAudio
     let scene = SCNScene(); private let world = SCNNode(); private let trackLength: Double; let camera = SCNNode(); let player: SCNNode
     private let playerCollider:VehicleCollider
@@ -27,12 +28,26 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     private var rivals: [SCNNode] = []; private var rivalProgress = [-0.008,-0.016,-0.024]
     private var sparks: [SCNNode] = []; private var sparkCollected = Set<Int>(); private var messageTimer = 0.0
     private var progress = 0.0; private var lane = 0.0; private var lateral = 0.0
-    private var timer: Timer?; private var lastTime = 0.0; private var startTime = 0.0
+    private var displayLink: CADisplayLink?; private var lastTime = 0.0
+    private var nitroExhausted=false
+    private var boostCameraBlend=0.0
+    private(set) var simulationFrames=0
+    private(set) var boostFrameSamples=0
+    private(set) var maxBoostFrameGap=0.0
+    @MainActor private final class FrameDriver: NSObject {
+        weak var engine: RaceEngine?
+        init(_ engine:RaceEngine) {self.engine=engine}
+        @objc func frame(_ link:CADisplayLink) {
+            guard let engine else {link.invalidate();return}
+            engine.tick(at:link.timestamp)
+        }
+    }
     private var barrierCooldown = 0.0
     private var countdownTime = 0.0; private var driftFraction = 0.0; private var driftChain = 0.0; private var collisionCooldown = 0.0
     var routeProgress: Double { progress-floor(progress) }
     var totalLaps: Int { mode == .circuit ? 2 : 1 }
     init(circuit: Circuit, mode: RaceMode, car: Car, upgrade: Int, sensitivity: Double, haptics: Bool, sounds: Bool = false) {
+        rivalCars=mode == .circuit ? Car.rivals(for:car,route:circuit.id):[]
         self.circuit = circuit; self.trackLength = circuit.length; self.mode = mode; self.car = car; self.upgrade = upgrade
         self.sensitivity = sensitivity; self.haptics = haptics; audio = CarAudio(enabled:sounds); player = Self.makeCar(car);playerCollider=VehicleCollider(node:player)
         buildWorld(); scene.rootNode.addChildNode(player); camera.camera = SCNCamera()
@@ -41,26 +56,41 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         camera.camera?.exposureOffset = circuit.look.exposure; camera.camera?.wantsExposureAdaptation = false
         camera.camera?.screenSpaceAmbientOcclusionIntensity = 0.65; camera.camera?.screenSpaceAmbientOcclusionRadius = 2.2
         scene.rootNode.addChildNode(camera)
-        if mode == .circuit { for i in 0..<3 { let n = Self.makeCar(Car.all[[1,0,2][i]],model:["SportsCoupe","LuxurySedan","ConceptGT"][i]); rivals.append(n); rivalColliders.append(VehicleCollider(node:n)); scene.rootNode.addChildNode(n) } }
+        for rivalCar in rivalCars {let n=Self.makeCar(rivalCar);rivals.append(n);rivalColliders.append(VehicleCollider(node:n));scene.rootNode.addChildNode(n)}
         placeCars(); updateCamera(dt: 1)
     }
     func start() {
-        guard timer == nil else { return }; startTime = CACurrentMediaTime(); lastTime = startTime
-        timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { [weak self] _ in Task { @MainActor in self?.tick() } }
+        guard displayLink == nil else { return }
+        lastTime=CACurrentMediaTime()
+        let link=CADisplayLink(target:FrameDriver(self),selector:#selector(FrameDriver.frame(_:)))
+        link.preferredFrameRateRange=CAFrameRateRange(minimum:30,maximum:60,preferred:60)
+        // Keep simulation running while UIKit is tracking a held touch, and
+        // advance directly on the main thread without queuing a Task per frame.
+        link.add(to:.main,forMode:.common);displayLink=link
     }
-    func stop() { audio.stop(); timer?.invalidate(); timer = nil; steering = 0; braking = false; drifting = false; nitroHeld = false }
+    func stop() { audio.stop(); displayLink?.invalidate(); displayLink = nil; steering = 0; braking = false; drifting = false; nitroHeld = false }
     func setPaused(_ value: Bool) { if value { audio.stop() }; paused = value; steering = 0; braking = false; drifting = false; nitroHeld = false; lastTime = CACurrentMediaTime() }
-    private func tick() {
-        let now = CACurrentMediaTime(); let dt = min(0.1,now-lastTime); lastTime = now
-        advance(dt:dt)
+    private func tick(at timestamp:TimeInterval) {
+        let gap=max(0,timestamp-lastTime);lastTime=timestamp
+        if !paused && result==nil {simulationFrames += 1}
+        #if DEBUG
+        if nitroHeld && countdown==0 && !paused && result==nil {
+            boostFrameSamples += 1;maxBoostFrameGap=max(maxBoostFrameGap,gap)
+        }
+        #endif
+        advance(dt:min(0.1,gap))
     }
     func advance(dt:Double) {
         guard !paused, result == nil else { return }
+        SCNTransaction.begin();SCNTransaction.animationDuration=0;SCNTransaction.disableActions=true
+        defer {SCNTransaction.commit()}
         if countdown > 0 { countdownTime += dt; let next = max(0,3-Int(countdownTime)); if next != countdown { countdown = next; feedback() }; return }
         barrierCooldown=max(0,barrierCooldown-dt)
         elapsed += dt; messageTimer = max(0,messageTimer-dt); if messageTimer == 0 { sparkMessage = "" }; collisionCooldown = max(0,collisionCooldown-dt)
         let maxSpeed = car.speed + Double(upgrade)*3
-        boosting = nitroHeld && nitro > 0.015 && !braking && !offRoad
+        if !nitroHeld {nitroExhausted=false}
+        if nitroHeld && nitro<=0.015 {nitroExhausted=true}
+        boosting = nitroHeld && !nitroExhausted && !braking && !offRoad
         nitro = max(0,min(1,nitro + dt*(boosting ? -0.27 : drifting ? 0.10 : 0.035)))
         let desired = braking ? maxSpeed*0.30 : (offRoad ? maxSpeed*0.52 : maxSpeed*(boosting ? 1.38 : 1))
         speed += (desired-speed)*min(1,dt*(braking ? 3 : 0.65))
@@ -145,11 +175,12 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let p = circuit.point(progress,lane: lane); let heading = circuit.heading(progress)
         var smooth=chaseHeading ?? heading
         let difference=atan2(sin(heading-smooth),cos(heading-smooth));smooth += difference*Float(min(1,dt*8));chaseHeading=smooth
-        let distance: Float = boosting ? 9.5 : 8.3
+        boostCameraBlend += ((boosting ? 1.0:0.0)-boostCameraBlend)*(1-exp(-dt*7))
+        let distance=Float(8.3+1.2*boostCameraBlend)
         let target = SCNVector3(p.x-sin(smooth)*distance, 2.8, p.z-cos(smooth)*distance)
         camera.position = target
         let ahead = SIMD3<Float>(p.x+sin(heading)*5,1.0,p.z+cos(heading)*5)
-        camera.look(at: SCNVector3(ahead.x,0.6,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = boosting ? 76 : 68
+        camera.look(at: SCNVector3(ahead.x,0.6,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = 68+8*boostCameraBlend
     }
     static func makeCar(_ car: Car,model:String?=nil) -> SCNNode {
         if let model=SurfaceLibrary.grandTourer(car,model:model) { VehicleCollider.attach(to:model);return model }
@@ -391,7 +422,10 @@ struct SceneSurface: UIViewRepresentable {
     }
     func updateUIView(_ uiView:SCNView,context:Context) {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--controls-review") {
+        if ProcessInfo.processInfo.arguments.contains("--nitro-review") {
+            let sample:[String:Double]=["elapsed":engine.elapsed,"frames":Double(engine.simulationFrames),"boostSamples":Double(engine.boostFrameSamples),"maxBoostGap":engine.maxBoostFrameGap,"fov":Double(engine.camera.camera?.fieldOfView ?? 0)]
+            if let data=try? JSONSerialization.data(withJSONObject:sample),let value=String(data:data,encoding:.utf8) {uiView.accessibilityValue=value}
+        } else if ProcessInfo.processInfo.arguments.contains("--controls-review") {
             let center=engine.camera.convertPosition(vector(engine.circuit.point(engine.routeProgress)),from:nil)
             let player=engine.camera.convertPosition(engine.player.position,from:nil)
             uiView.accessibilityValue=String(format:"%.3f",player.x-center.x)

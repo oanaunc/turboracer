@@ -1,0 +1,2 @@
+Before: ["boostSamples": 0.0, "maxBoostGap": 0.0, "fov": 68.0, "elapsed": 2.3666666665812954, "frames": 304.0]
+After: ["elapsed": 7.466666666674428, "boostSamples": 250.0, "fov": 68.11996459960938, "maxBoostGap": 0.016666666720993817, "frames": 607.0]

@@ -63,6 +63,49 @@ final class ProgressTests: XCTestCase {
         XCTAssertTrue(engine.speed.isFinite)
     }
 
+    @MainActor func testRivalGridExcludesEveryPlayersBodyFamily() {
+        for car in Car.all {
+            for circuit in Circuit.all {
+                let grid=Car.rivals(for:car,route:circuit.id)
+                XCTAssertEqual(grid.count,3)
+                XCTAssertEqual(Set(grid.map(\.bodyFamily)).count,3)
+                XCTAssertFalse(grid.contains {$0.bodyFamily==car.bodyFamily},"Rivals must not duplicate \(car.name), including its platform variants")
+            }
+            let engine=RaceEngine(circuit:Circuit.all[0],mode:.circuit,car:car,upgrade:0,sensitivity:1,haptics:false)
+            XCTAssertEqual(engine.rivalCars.map(\.id),Car.rivals(for:car,route:0).map(\.id))
+            XCTAssertEqual(engine.scene.rootNode.childNodes.filter {$0.physicsBody?.categoryBitMask==1}.count,4)
+        }
+    }
+
+    @MainActor func testNitroCameraTransitionsWithoutASnap() {
+        let engine=RaceEngine(circuit:Circuit.all[4],mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+        engine.advance(dt:3.1)
+        for _ in 0..<60 {engine.advance(dt:1.0/60)}
+        func distance() -> Float {hypot(engine.camera.position.x-engine.player.position.x,engine.camera.position.z-engine.player.position.z)}
+        let beforeFOV=engine.camera.camera!.fieldOfView,beforeDistance=distance()
+        engine.nitroHeld=true;engine.advance(dt:1.0/60)
+        XCTAssertTrue(engine.boosting)
+        XCTAssertGreaterThan(engine.camera.camera!.fieldOfView,beforeFOV)
+        XCTAssertLessThan(engine.camera.camera!.fieldOfView-beforeFOV,2,"Boost must ease into its wider lens")
+        XCTAssertLessThan(distance()-beforeDistance,0.25,"Boost must not teleport the chase camera backward")
+        for _ in 0..<60 {engine.advance(dt:1.0/60)}
+        let boostedFOV=engine.camera.camera!.fieldOfView
+        XCTAssertGreaterThan(boostedFOV,75)
+        engine.nitroHeld=false;engine.advance(dt:1.0/60)
+        XCTAssertLessThan(boostedFOV-engine.camera.camera!.fieldOfView,2,"Releasing boost must ease back too")
+    }
+
+    @MainActor func testEmptyNitroDoesNotPulseWhileHeld() {
+        let engine=RaceEngine(circuit:Circuit.all[4],mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+        engine.advance(dt:3.1);engine.nitro=0.02;engine.nitroHeld=true
+        for _ in 0..<15 {engine.advance(dt:1.0/60)}
+        for _ in 0..<90 {engine.advance(dt:1.0/60);XCTAssertFalse(engine.boosting,"Empty boost must stay off until the player releases the button")}
+        XCTAssertGreaterThan(engine.nitro,0.02,"The tank still recovers while boost is exhausted")
+        engine.nitroHeld=false;engine.advance(dt:1.0/60)
+        engine.nitroHeld=true;engine.advance(dt:1.0/60)
+        XCTAssertTrue(engine.boosting,"A fresh press can use the recovered fuel")
+    }
+
     @MainActor func testSteeringMovesInTheRequestedCameraDirection() {
         for input in [-1.0, 1.0] {
             let circuit=Circuit.all[0]

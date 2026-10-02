@@ -26,7 +26,7 @@ import UIKit
     private static var tourers: [String:SCNNode] = [:]
     private static var platforms:[String:SCNNode]=[:]
     static func grandTourer(_ car: Car,model:String?=nil) -> SCNNode? {
-        let design = model ?? ["LuxurySedan","SportsCoupe","ConceptGT","Roadster","Hyper","Hyper"][car.id]
+        let design = model ?? car.modelName
         if platforms[design]==nil {platforms[design]=GLBAsset.load(design) ?? GLBAsset.load(design=="ConceptGT" ? "Hyper":"Concept")}
         let key="\(design)-\(car.id)"
         if tourers[key] == nil, let asset=platforms[design]?.clone() {

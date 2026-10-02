@@ -4,6 +4,19 @@ import SwiftUI
 struct Car: Identifiable {
     let id: Int; let name: String; let subtitle: String; let price: Int
     let speed: Double; let handling: Double; let color: UInt32
+    var modelName: String { ["LuxurySedan","SportsCoupe","ConceptGT","Roadster","Hyper","Hyper"][id] }
+    // The later three garage entries share a platform. Exclude the whole
+    // family so a rival cannot be a roof/wing variant of the player's body.
+    var bodyFamily: String { id<3 ? modelName : "ConceptPlatform" }
+    static func rivals(for player:Car,route:Int) -> [Car] {
+        var used=Set([player.bodyFamily]),grid:[Car]=[]
+        for offset in 0..<all.count {
+            let candidate=all[(route+offset)%all.count]
+            if used.insert(candidate.bodyFamily).inserted {grid.append(candidate)}
+            if grid.count==3 {break}
+        }
+        return grid
+    }
     static let all = [
         Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C),
         Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4),

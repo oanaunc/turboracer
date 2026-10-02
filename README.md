@@ -10,7 +10,7 @@ Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join 
 - Twenty original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
 - Sixty campaign events: two-lap races with three rivals, time attack, and drift runs.
 - Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; VANTA uses an independent concept GT; the remaining three entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
-- Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions with model-sized body volumes and swept contact checks.
+- Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions with model-sized body volumes and swept contact checks. The rival roster excludes the player’s body family and uses three different families. Nitro eases the chase camera in and out, and an exhausted tank stays off until the button is released. The simulation clock runs during touch tracking.
 - Twelve memory sparks per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages through district-wide progress. A live route map tracks your race position.
 - Daily rotating drift challenge; the first starred run awards 350 extra credits.
 - Persistent garage, best times, drift records, stars, statistics, and milestones.
@@ -39,7 +39,7 @@ Camera-space steering regression and UI touch checks cover both landscape orient
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 16. App Store submission is held while the visual/product redesign is reviewed.
+Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 17. App Store submission is held while the visual/product redesign is reviewed.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 

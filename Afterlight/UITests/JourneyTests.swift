@@ -100,6 +100,27 @@ final class JourneyTests: XCTestCase {
         }
     }
 
+    func testNitroHoldKeepsSimulationAdvancing() throws {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app=XCUIApplication();app.launchArguments=["--journey-review","--preview-region","18","--preview-grid","--nitro-review"];app.launch()
+        XCTAssertTrue(app.buttons["control-NITRO"].waitForExistence(timeout:15))
+        app.buttons["control-BRAKE"].press(forDuration:3)
+        func sample() throws -> [String:Double] {
+            let value=try XCTUnwrap(app.descendants(matching:.any)["race-scene"].value as? String)
+            return try JSONDecoder().decode([String:Double].self,from:Data(value.utf8))
+        }
+        let before=try sample()
+        for duration in [0.5,0.7,3.0] {app.buttons["control-NITRO"].press(forDuration:duration)}
+        let after=try sample()
+        XCTAssertGreaterThan(try XCTUnwrap(after["elapsed"])-XCTUnwrap(before["elapsed"]),3.8,"Held nitro must not suspend race time")
+        XCTAssertGreaterThan(try XCTUnwrap(after["frames"])-XCTUnwrap(before["frames"]),100)
+        XCTAssertGreaterThan(try XCTUnwrap(after["boostSamples"]),90)
+        XCTAssertLessThan(try XCTUnwrap(after["maxBoostGap"]),0.25,"Nitro input must not stall the simulation clock")
+        let note=XCTAttachment(string:"Before: \(before)\nAfter: \(after)");note.name="Nitro touch timing";note.lifetime = .keepAlways;add(note)
+        capture("nitro-with-varied-rivals",app)
+        app.buttons["Pause race"].tap();app.buttons["Leave race"].tap()
+    }
+
     func testCanyonArchReview() {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region","2"];app.launch()

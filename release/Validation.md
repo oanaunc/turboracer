@@ -1,3 +1,23 @@
+# Development build 17 — nitro and rival corrections
+
+2 October 2026. Version 2.0.0 (17) compiled and installed on Oana’s iPhone. The device still reports `passcodeRequired: true`; physical nitro validation remains pending unlock. Existing saves are preserved. The physical UI test runner is built and ready in `/tmp/AfterlightPhone8`.
+
+The new regressions reproduced the old 8-degree lens snap, 1.2-metre chase-camera jump, and repeated boost pulses near an empty tank. Build 17 eases the lens and chase distance with a time-based blend, latches exhausted nitro until release, and replaces the default-mode Timer/Task queue with a main-run-loop CADisplayLink registered in common modes. Scene transforms are applied without implicit animations. Apple documents display-link scheduling and run-loop modes in [CADisplayLink](https://developer.apple.com/documentation/quartzcore/cadisplaylink) and [add(to:forMode:)](https://developer.apple.com/documentation/quartzcore/cadisplaylink/add(to:formode:)). The exact physical-device symptom is not considered verified solely from simulator evidence.
+
+Rivals are selected from three different body families, excluding the player’s family. The later three garage entries are treated as one family so roof/wing variants cannot duplicate the player. Model selection is shared with the renderer. All cars retain their existing body colliders and rotating wheels.
+
+Completed validation:
+
+- 22 unit tests passed, including smooth nitro activation/release, exhausted-tank hold/repress, all six player cars across all twenty rival rosters, collisions, progression and scenery clearance.
+- The UI nitro case performed repeated 0.5-, 0.7- and 3-second holds with the full rival grid. It recorded 250 simulation callbacks during holds, with a maximum timestamp interval of 16.67 ms. Race elapsed time advanced from 2.367 to 7.467 seconds across the interaction sequence. This measures the simulation clock in the simulator, not GPU performance on the phone.
+- The full rival-grid simulator render sample recorded 58.5 fps. Actual steering buttons passed in both landscape orientations.
+- The complete race/results/next-event journey passed in a separate completed invocation after the simulation clock change.
+- `/tmp/afterlight17-check.log` and `/tmp/afterlight17-journey.log` both ended with TEST SUCCEEDED. Before-fix reproduction: `/tmp/afterlight17-nitro-before.log`. Device build/install: `/tmp/afterlight17-phone.log`, `/tmp/afterlight17-phone-tests-build.log`, `/tmp/afterlight17-install.log`.
+
+Native render and timing evidence: `release/screenshots-build17/`. No new collection or external services; existing privacy policy remains applicable. App Store submission stays on hold for broader product/art review.
+
+---
+
 # Development build 16 — 2 October 2026
 
 Version 2.0.0 (16) installed on Oana’s iPhone. Automated launch remained blocked by the device lock, including the retry after the user reported unlocking. Users can open the installed game directly. No physical-device frame-rate claim is made.

@@ -1,3 +1,13 @@
+# Development build 17 — nitro stability and a varied rival grid
+
+The nitro camera now eases its distance and lens instead of snapping. A held, exhausted tank no longer alternates boost on/off as tiny amounts of fuel regenerate. The simulation uses a display-linked clock in common run-loop modes, and scene updates explicitly disable implicit animation.
+
+Rival selection excludes the player’s entire body family. In the recorded Solstice race, the opponents are Komet, Vanta and Aurora, each retaining its collider and authored wheel pivots. The roster varies by route and player selection. This changes the lineup rather than adding new car assets.
+
+The camera/fuel regressions, all six player selections across twenty rosters, repeated touch holds, both landscape steering orientations and a complete race journey passed. See Validation.md for the measured simulator timing and physical-device limitation. Build 17 is installed; device nitro playtesting is pending unlock.
+
+---
+
 # Development build 16 — steering and route identities
 
 The LEFT/RIGHT reversal is corrected in the physics-to-camera conversion. Actual touch-button tests passed in both landscape orientations; camera-space regression checks both displacement and vehicle yaw. See build 15 evidence in Validation.md.
