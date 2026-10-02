@@ -4,7 +4,7 @@ The nitro camera now eases its distance and lens instead of snapping. A held, ex
 
 Rival selection excludes the player’s entire body family. In the recorded Solstice race, the opponents are Komet, Vanta and Aurora, each retaining its collider and authored wheel pivots. The roster varies by route and player selection. This changes the lineup rather than adding new car assets.
 
-The camera/fuel regressions, all six player selections across twenty rosters, repeated touch holds, both landscape steering orientations and a complete race journey passed. See Validation.md for the measured simulator timing and physical-device limitation. Build 17 is installed; device nitro playtesting is pending unlock.
+The camera/fuel regressions, all six player selections across twenty rosters, repeated touch holds, both landscape steering orientations and a complete race journey passed. See Validation.md for simulator and physical-device measurements. Build 17 is installed and launched; repeated nitro holds passed on the iPhone with a maximum simulation callback gap of 16.67 ms. Subjective visual review remains ongoing.
 
 ---
 

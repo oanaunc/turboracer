@@ -1,8 +1,8 @@
 # Development build 17 — nitro and rival corrections
 
-2 October 2026. Version 2.0.0 (17) compiled and installed on Oana’s iPhone. The device still reports `passcodeRequired: true`; physical nitro validation remains pending unlock. Existing saves are preserved. The physical UI test runner is built and ready in `/tmp/AfterlightPhone8`.
+2 October 2026. Version 2.0.0 (17) compiled, installed and launched on Oana’s iPhone. The physical-device repeated-nitro-hold test passed after unlock. Existing saves are preserved; UI reviews use an isolated fixture.
 
-The new regressions reproduced the old 8-degree lens snap, 1.2-metre chase-camera jump, and repeated boost pulses near an empty tank. Build 17 eases the lens and chase distance with a time-based blend, latches exhausted nitro until release, and replaces the default-mode Timer/Task queue with a main-run-loop CADisplayLink registered in common modes. Scene transforms are applied without implicit animations. Apple documents display-link scheduling and run-loop modes in [CADisplayLink](https://developer.apple.com/documentation/quartzcore/cadisplaylink) and [add(to:forMode:)](https://developer.apple.com/documentation/quartzcore/cadisplaylink/add(to:formode:)). The exact physical-device symptom is not considered verified solely from simulator evidence.
+The new regressions reproduced the old 8-degree lens snap, 1.2-metre chase-camera jump, and repeated boost pulses near an empty tank. Build 17 eases the lens and chase distance with a time-based blend, latches exhausted nitro until release, and replaces the default-mode Timer/Task queue with a main-run-loop CADisplayLink registered in common modes. Scene transforms are applied without implicit animations. Apple documents display-link scheduling and run-loop modes in [CADisplayLink](https://developer.apple.com/documentation/quartzcore/cadisplaylink) and [add(to:forMode:)](https://developer.apple.com/documentation/quartzcore/cadisplaylink/add(to:formode:)). The physical-device timing test also passed; subjective visual quality still needs player review.
 
 Rivals are selected from three different body families, excluding the player’s family. The later three garage entries are treated as one family so roof/wing variants cannot duplicate the player. Model selection is shared with the renderer. All cars retain their existing body colliders and rotating wheels.
 
@@ -10,9 +10,12 @@ Completed validation:
 
 - 22 unit tests passed, including smooth nitro activation/release, exhausted-tank hold/repress, all six player cars across all twenty rival rosters, collisions, progression and scenery clearance.
 - The UI nitro case performed repeated 0.5-, 0.7- and 3-second holds with the full rival grid. It recorded 250 simulation callbacks during holds, with a maximum timestamp interval of 16.67 ms. Race elapsed time advanced from 2.367 to 7.467 seconds across the interaction sequence. This measures the simulation clock in the simulator, not GPU performance on the phone.
+- On the physical iPhone, repeated nitro holds recorded 252 simulation callbacks with a maximum timestamp gap of 16.67 ms; elapsed race time advanced from 1.999 to 7.266 seconds. The UI test passed with no failures (`/tmp/afterlight17-phone-nitro.log`). This measures simulation callback timing, not GPU frame delivery. Xcode reported a separate post-test diagnostics-collection warning.
 - The full rival-grid simulator render sample recorded 58.5 fps. Actual steering buttons passed in both landscape orientations.
 - The complete race/results/next-event journey passed in a separate completed invocation after the simulation clock change.
 - `/tmp/afterlight17-check.log` and `/tmp/afterlight17-journey.log` both ended with TEST SUCCEEDED. Before-fix reproduction: `/tmp/afterlight17-nitro-before.log`. Device build/install: `/tmp/afterlight17-phone.log`, `/tmp/afterlight17-phone-tests-build.log`, `/tmp/afterlight17-install.log`.
+
+The physical-device twenty-route showcase completed all twenty launches and screenshot captures. Eighteen short render samples met the 30 fps threshold; Palm Coast (route 0) measured 28.4 fps and Metropolis (route 10) measured 29.5 fps, so the performance test failed two assertions. These routes need further profiling; this was a short opening-segment sweep, not full-lap validation. Log: `/tmp/afterlight17-phone-routes.log`. Result: `/tmp/AfterlightPhone8/Logs/Test/Test-Afterlight-2026.10.02_14-34-02-+0300.xcresult`. The app was relaunched without review arguments after the showcase.
 
 Native render and timing evidence: `release/screenshots-build17/`. No new collection or external services; existing privacy policy remains applicable. App Store submission stays on hold for broader product/art review.
 
