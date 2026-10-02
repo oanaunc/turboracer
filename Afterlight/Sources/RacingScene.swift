@@ -65,7 +65,9 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let desired = braking ? maxSpeed*0.30 : (offRoad ? maxSpeed*0.52 : maxSpeed*(boosting ? 1.38 : 1))
         speed += (desired-speed)*min(1,dt*(braking ? 3 : 0.65))
         audio.update(speed:speed,boost:boosting)
-        lateral += (steering*sensitivity*car.handling*(drifting ? 10 : 7)-lateral)*min(1,dt*5)
+        // The car travels along local +Z; the rear camera looks toward +Z,
+        // making its screen-right axis local -X. Authored lane normals use +X.
+        lateral += (-steering*sensitivity*car.handling*(drifting ? 10 : 7)-lateral)*min(1,dt*5)
         let bend = Double(atan2(sin(circuit.heading(progress+0.002)-circuit.heading(progress)),cos(circuit.heading(progress+0.002)-circuit.heading(progress))))
         let outward = -min(2,max(-2,bend*65))*pow(speed/maxSpeed,2)
         lane = max(-12,min(12,lane+(lateral+outward)*dt))
@@ -368,7 +370,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
 }
 
 struct SceneSurface: UIViewRepresentable {
-    let engine:RaceEngine
+    @ObservedObject var engine:RaceEngine
     final class Coordinator:NSObject,SCNSceneRendererDelegate {
         weak var view:SCNView?;var firstTime:TimeInterval?;var frames=0
         func renderer(_ renderer:SCNSceneRenderer,didRenderScene scene:SCNScene,atTime time:TimeInterval) {
@@ -386,7 +388,15 @@ struct SceneSurface: UIViewRepresentable {
         let v=SCNView();v.scene=engine.scene;v.pointOfView=engine.camera;v.isPlaying=true;v.preferredFramesPerSecond=60;v.antialiasingMode = .multisampling4X;v.backgroundColor = .black
         v.isAccessibilityElement=true;v.accessibilityLabel="Three-dimensional racing circuit";v.accessibilityIdentifier="race-scene";v.delegate=context.coordinator;context.coordinator.view=v;return v
     }
-    func updateUIView(_ uiView:SCNView,context:Context) {}
+    func updateUIView(_ uiView:SCNView,context:Context) {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--controls-review") {
+            let center=engine.camera.convertPosition(vector(engine.circuit.point(engine.routeProgress)),from:nil)
+            let player=engine.camera.convertPosition(engine.player.position,from:nil)
+            uiView.accessibilityValue=String(format:"%.3f",player.x-center.x)
+        }
+        #endif
+    }
     static func dismantleUIView(_ uiView:SCNView,coordinator:Coordinator) {uiView.isPlaying=false;uiView.scene=nil;uiView.delegate=nil}
 }
 struct CarShowroom: UIViewRepresentable {

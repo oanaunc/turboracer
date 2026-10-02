@@ -43,6 +43,26 @@ final class JourneyTests: XCTestCase {
         app.buttons["Leave race"].tap()
     }
 
+    func testSteeringButtonsMatchBothLandscapeOrientations() {
+        for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
+            XCUIDevice.shared.orientation=orientation
+            for (button,direction) in [("LEFT",-1.0),("RIGHT",1.0)] {
+                let app=XCUIApplication()
+                app.launchArguments=["--journey-review","--preview-region","0","--controls-review"]
+                app.launch()
+                let control=app.buttons["control-"+button]
+                XCTAssertTrue(control.waitForExistence(timeout:15))
+                control.press(forDuration:4.2)
+                let scene=app.descendants(matching:.any)["race-scene"]
+                let raw=scene.value as? String ?? "missing"
+                guard let offset=Double(raw) else {XCTFail("Missing camera-space telemetry: \(raw)");app.terminate();continue}
+                XCTAssertGreaterThan(offset*direction,1,"\(button) must steer in its labeled screen direction in \(orientation)")
+                capture("steering-\(orientation.rawValue)-\(button)",app)
+                app.terminate()
+            }
+        }
+    }
+
     func testAllTwentyCalendarRoutesAreReachable() {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-calendar"];app.launch()

@@ -63,6 +63,22 @@ final class ProgressTests: XCTestCase {
         XCTAssertTrue(engine.speed.isFinite)
     }
 
+    @MainActor func testSteeringMovesInTheRequestedCameraDirection() {
+        for input in [-1.0, 1.0] {
+            let circuit=Circuit.all[0]
+            let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+            engine.advance(dt:3.1)
+            engine.steering=input
+            for _ in 0..<45 {engine.advance(dt:1.0/60)}
+            let center=engine.camera.convertPosition(vector(circuit.point(engine.routeProgress)),from:nil)
+            let player=engine.camera.convertPosition(engine.player.position,from:nil)
+            XCTAssertGreaterThan((player.x-center.x)*Float(input),2,"LEFT must move screen-left and RIGHT screen-right in the actual chase camera")
+            let forward=engine.player.convertVector(SCNVector3(0,0,1),to:engine.camera)
+            let trackForward=engine.camera.convertVector(SCNVector3(sin(circuit.heading(engine.routeProgress)),0,cos(circuit.heading(engine.routeProgress))),from:nil)
+            XCTAssertGreaterThan((forward.x-trackForward.x)*Float(input),0,"The car must lean into the requested steering direction")
+        }
+    }
+
     @MainActor func testSafetyBarriersKeepTheCarBodyInsideEveryCircuit() {
         for circuit in Circuit.all {
             let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
@@ -162,7 +178,7 @@ final class ProgressTests: XCTestCase {
                 let t=Double(i)/240,center=points[i],edge=circuit.point(t,lane:9)
                 XCTAssertEqual(hypot(edge.x-center.x,edge.z-center.z),9,accuracy:0.002)
                 let h=circuit.heading(t)
-                XCTAssertGreaterThan((edge.x-center.x)*cos(h)-(edge.z-center.z)*sin(h),8.99,"Positive steering must move right in the driver's frame")
+                XCTAssertGreaterThan((edge.x-center.x)*cos(h)-(edge.z-center.z)*sin(h),8.99,"Positive lane coordinates must keep the authored road normal")
                 let next=points[(i+1)%240];steps.append(hypot(next.x-center.x,next.z-center.z))
                 // Non-adjacent parts of a course need a full road-width gap.
                 for j in (i+1)..<240 where min(j-i,240-(j-i))>12 {

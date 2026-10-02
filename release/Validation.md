@@ -1,3 +1,11 @@
+# Steering correction — development build 15
+
+The new camera-space regression reproduced reversed steering in build 14: both the car’s displacement and yaw opposed the labeled input. Corrected the conversion between screen-oriented steering and the authored road normal. The buttons retain LEFT = -1 and RIGHT = +1; the physics input now respects the rear-facing camera’s horizontal axis.
+
+All 18 unit tests passed after correction. The final targeted invocation completed with TEST SUCCEEDED, verifying camera-space displacement/yaw and the actual LEFT/RIGHT buttons in both landscape orientations. The first UI probe returned stale telemetry; observing the engine in SceneSurface fixed the probe, and all four touch cases then passed. Evidence: `/tmp/afterlight15-controls-before.log`, `/tmp/afterlight15-controls.log`, `/tmp/afterlight15-controls-final.log`.
+
+Device build 15 compiled and installed. Initial launch was blocked by the device lock; launch retried after the user unlocked the phone.
+
 # Development build 14 validation — 2 October 2026
 
 TurboRacer: Afterlight 2.0.0 (14). Existing App Store app 6478083613.
