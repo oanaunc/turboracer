@@ -1,0 +1,543 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		030C4AB8E544065136A82F74 /* afterlight.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9E0692DA14D77AC64F23D098 /* afterlight.wav */; };
+		2DF48A59364626D607A7C6B3 /* AfterlightApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B76445C974F31B48C52AEC5 /* AfterlightApp.swift */; };
+		385173C8FAA4833DD1578CF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC133CBA11C587F6DFF0E307 /* Assets.xcassets */; };
+		546C900917C51B60C519E185 /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB001ACA6F4D187C44BB425 /* World.swift */; };
+		5A8B9A971079A25A9E7B9506 /* RaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */; };
+		6F4A61CF9585CC74AF1DA589 /* spark.wav in Resources */ = {isa = PBXBuildFile; fileRef = E98698068EA00776741B1478 /* spark.wav */; };
+		80988CCA3AA8991448125184 /* RacingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE27317ED73D88347CBF2DA /* RacingScene.swift */; };
+		84E5F7676F2E668251BB92C0 /* JourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73568E18F43E4526F3C45272 /* JourneyTests.swift */; };
+		9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */; };
+		C1712C88491F4307442A06D6 /* engine.wav in Resources */ = {isa = PBXBuildFile; fileRef = B8B493669F9D3A4C0E36A495 /* engine.wav */; };
+		C810A6A082CCFCE1E45F16F4 /* CarAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED575DCAE51380271A0948F8 /* CarAudio.swift */; };
+		D4C90DEE1172D60D81CC5932 /* ProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6215F316E04772EAE3B3322E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FBAD6F253D2E674BE1BA2ABD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DFECBD0D00BD3F1C5006468A;
+			remoteInfo = Afterlight;
+		};
+		676566911D74AA80CABDC308 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FBAD6F253D2E674BE1BA2ABD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DFECBD0D00BD3F1C5006468A;
+			remoteInfo = Afterlight;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2AE27317ED73D88347CBF2DA /* RacingScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RacingScene.swift; sourceTree = "<group>"; };
+		3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceView.swift; sourceTree = "<group>"; };
+		73568E18F43E4526F3C45272 /* JourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyTests.swift; sourceTree = "<group>"; };
+		8B76445C974F31B48C52AEC5 /* AfterlightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterlightApp.swift; sourceTree = "<group>"; };
+		9E0692DA14D77AC64F23D098 /* afterlight.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = afterlight.wav; sourceTree = "<group>"; };
+		A4F0530148BAD281C6A5661B /* AfterlightTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AfterlightTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A631B3C61C7CCDFDFF51BE03 /* AfterlightUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AfterlightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTests.swift; sourceTree = "<group>"; };
+		B8B493669F9D3A4C0E36A495 /* engine.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = engine.wav; sourceTree = "<group>"; };
+		C2C7A93BE7CC9C31847064B8 /* Afterlight.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Afterlight.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDB001ACA6F4D187C44BB425 /* World.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
+		E98698068EA00776741B1478 /* spark.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = spark.wav; sourceTree = "<group>"; };
+		ED575DCAE51380271A0948F8 /* CarAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarAudio.swift; sourceTree = "<group>"; };
+		FC133CBA11C587F6DFF0E307 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		02750770D4EB60A5FD5BF287 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9E0692DA14D77AC64F23D098 /* afterlight.wav */,
+				FC133CBA11C587F6DFF0E307 /* Assets.xcassets */,
+				B8B493669F9D3A4C0E36A495 /* engine.wav */,
+				1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */,
+				E98698068EA00776741B1478 /* spark.wav */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1D7146CE19E2158FAF7B69EB /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8B76445C974F31B48C52AEC5 /* AfterlightApp.swift */,
+				ED575DCAE51380271A0948F8 /* CarAudio.swift */,
+				3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */,
+				2AE27317ED73D88347CBF2DA /* RacingScene.swift */,
+				CDB001ACA6F4D187C44BB425 /* World.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		2575085A7A90F94443A7DA62 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C2C7A93BE7CC9C31847064B8 /* Afterlight.app */,
+				A4F0530148BAD281C6A5661B /* AfterlightTests.xctest */,
+				A631B3C61C7CCDFDFF51BE03 /* AfterlightUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2D2660AC754991D61A022467 = {
+			isa = PBXGroup;
+			children = (
+				02750770D4EB60A5FD5BF287 /* Resources */,
+				1D7146CE19E2158FAF7B69EB /* Sources */,
+				E5611A70DB12E0FDEFE20231 /* Tests */,
+				FB217A8748DCA7AC26B192FC /* UITests */,
+				2575085A7A90F94443A7DA62 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E5611A70DB12E0FDEFE20231 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		FB217A8748DCA7AC26B192FC /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				73568E18F43E4526F3C45272 /* JourneyTests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		78A0FE1E53DA65A03222948B /* AfterlightTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DFCEB0697318576D7AF27FEE /* Build configuration list for PBXNativeTarget "AfterlightTests" */;
+			buildPhases = (
+				823C976CB5FA7132328CE5C9 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C9F92636CDC2AADDAF855DA /* PBXTargetDependency */,
+			);
+			name = AfterlightTests;
+			packageProductDependencies = (
+			);
+			productName = AfterlightTests;
+			productReference = A4F0530148BAD281C6A5661B /* AfterlightTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7F228E9DCAA5BE6F62157557 /* AfterlightUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76855B46E7B019156F82F3D7 /* Build configuration list for PBXNativeTarget "AfterlightUITests" */;
+			buildPhases = (
+				03CC5C8E0BA5546559B92B21 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FF5D7E7BF2EDBBBE6D6959D8 /* PBXTargetDependency */,
+			);
+			name = AfterlightUITests;
+			packageProductDependencies = (
+			);
+			productName = AfterlightUITests;
+			productReference = A631B3C61C7CCDFDFF51BE03 /* AfterlightUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		DFECBD0D00BD3F1C5006468A /* Afterlight */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 911D4DB7443A52ADF4BBC8A6 /* Build configuration list for PBXNativeTarget "Afterlight" */;
+			buildPhases = (
+				ABBDFAB0C3A882D4F9E4215D /* Sources */,
+				91AA79142FD983875E559BC9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Afterlight;
+			packageProductDependencies = (
+			);
+			productName = Afterlight;
+			productReference = C2C7A93BE7CC9C31847064B8 /* Afterlight.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FBAD6F253D2E674BE1BA2ABD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					78A0FE1E53DA65A03222948B = {
+						DevelopmentTeam = HBD3XXQK45;
+					};
+					7F228E9DCAA5BE6F62157557 = {
+						DevelopmentTeam = HBD3XXQK45;
+						TestTargetID = DFECBD0D00BD3F1C5006468A;
+					};
+					DFECBD0D00BD3F1C5006468A = {
+						DevelopmentTeam = HBD3XXQK45;
+					};
+				};
+			};
+			buildConfigurationList = 3F966F535C3FACEAAFA8AB4B /* Build configuration list for PBXProject "Afterlight" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2D2660AC754991D61A022467;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2575085A7A90F94443A7DA62 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DFECBD0D00BD3F1C5006468A /* Afterlight */,
+				78A0FE1E53DA65A03222948B /* AfterlightTests */,
+				7F228E9DCAA5BE6F62157557 /* AfterlightUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		91AA79142FD983875E559BC9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				385173C8FAA4833DD1578CF8 /* Assets.xcassets in Resources */,
+				9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */,
+				030C4AB8E544065136A82F74 /* afterlight.wav in Resources */,
+				C1712C88491F4307442A06D6 /* engine.wav in Resources */,
+				6F4A61CF9585CC74AF1DA589 /* spark.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		03CC5C8E0BA5546559B92B21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84E5F7676F2E668251BB92C0 /* JourneyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		823C976CB5FA7132328CE5C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4C90DEE1172D60D81CC5932 /* ProgressTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ABBDFAB0C3A882D4F9E4215D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DF48A59364626D607A7C6B3 /* AfterlightApp.swift in Sources */,
+				C810A6A082CCFCE1E45F16F4 /* CarAudio.swift in Sources */,
+				5A8B9A971079A25A9E7B9506 /* RaceView.swift in Sources */,
+				80988CCA3AA8991448125184 /* RacingScene.swift in Sources */,
+				546C900917C51B60C519E185 /* World.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2C9F92636CDC2AADDAF855DA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DFECBD0D00BD3F1C5006468A /* Afterlight */;
+			targetProxy = 676566911D74AA80CABDC308 /* PBXContainerItemProxy */;
+		};
+		FF5D7E7BF2EDBBBE6D6959D8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DFECBD0D00BD3F1C5006468A /* Afterlight */;
+			targetProxy = 6215F316E04772EAE3B3322E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0064E1C375FE6141920E27DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oanarinaldi.AfterlightTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Afterlight.app/Afterlight";
+			};
+			name = Release;
+		};
+		05D6BB02F094E70EBA843B19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.oanarinaldi.Turbo-Racer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		236E807DE356CA80EE8F350A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oanarinaldi.AfterlightUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Afterlight;
+			};
+			name = Debug;
+		};
+		644865F97519A821E800EDEE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = HBD3XXQK45;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 2.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		749691D2A177E94945230F8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oanarinaldi.AfterlightTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Afterlight.app/Afterlight";
+			};
+			name = Debug;
+		};
+		9BB2174724790EC12981C83C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = HBD3XXQK45;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 2.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9CA5FB282393F2FFDB8606ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.oanarinaldi.Turbo-Racer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EF361C9312DA4F6429A8749D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oanarinaldi.AfterlightUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Afterlight;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3F966F535C3FACEAAFA8AB4B /* Build configuration list for PBXProject "Afterlight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9BB2174724790EC12981C83C /* Debug */,
+				644865F97519A821E800EDEE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		76855B46E7B019156F82F3D7 /* Build configuration list for PBXNativeTarget "AfterlightUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				236E807DE356CA80EE8F350A /* Debug */,
+				EF361C9312DA4F6429A8749D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		911D4DB7443A52ADF4BBC8A6 /* Build configuration list for PBXNativeTarget "Afterlight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CA5FB282393F2FFDB8606ED /* Debug */,
+				05D6BB02F094E70EBA843B19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DFCEB0697318576D7AF27FEE /* Build configuration list for PBXNativeTarget "AfterlightTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				749691D2A177E94945230F8E /* Debug */,
+				0064E1C375FE6141920E27DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FBAD6F253D2E674BE1BA2ABD /* Project object */;
+}
