@@ -17,26 +17,30 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     @Published var countdown = 3; @Published var paused = false; @Published var result: RaceResult?
     @Published var collected = 0; @Published var sparkMessage = ""
     @Published var offRoad = false; @Published var boosting = false; @Published var combo = 1
+    private(set) var collisionCount = 0
     var steering = 0.0; var braking = false; var drifting = false; var nitroHeld = false
     let circuit: Circuit; let mode: RaceMode; let car: Car; let upgrade: Int
     let sensitivity: Double; let haptics: Bool; private let audio: CarAudio
     let scene = SCNScene(); private let world = SCNNode(); private let trackLength: Double; let camera = SCNNode(); let player: SCNNode
+    private let playerCollider:VehicleCollider
+    private var rivalColliders:[VehicleCollider]=[]
     private var rivals: [SCNNode] = []; private var rivalProgress = [-0.008,-0.016,-0.024]
     private var sparks: [SCNNode] = []; private var sparkCollected = Set<Int>(); private var messageTimer = 0.0
     private var progress = 0.0; private var lane = 0.0; private var lateral = 0.0
     private var timer: Timer?; private var lastTime = 0.0; private var startTime = 0.0
+    private var barrierCooldown = 0.0
     private var countdownTime = 0.0; private var driftFraction = 0.0; private var driftChain = 0.0; private var collisionCooldown = 0.0
     var totalLaps: Int { mode == .circuit ? 2 : 1 }
     init(circuit: Circuit, mode: RaceMode, car: Car, upgrade: Int, sensitivity: Double, haptics: Bool, sounds: Bool = false) {
         self.circuit = circuit; self.trackLength = circuit.length; self.mode = mode; self.car = car; self.upgrade = upgrade
-        self.sensitivity = sensitivity; self.haptics = haptics; audio = CarAudio(enabled:sounds); player = Self.makeCar(car)
+        self.sensitivity = sensitivity; self.haptics = haptics; audio = CarAudio(enabled:sounds); player = Self.makeCar(car);playerCollider=VehicleCollider(node:player)
         buildWorld(); scene.rootNode.addChildNode(player); camera.camera = SCNCamera()
         camera.camera?.projectionDirection = .horizontal; camera.camera?.fieldOfView = 72; camera.camera?.zFar = 1500
         camera.camera?.wantsHDR = true; camera.camera?.bloomIntensity = 0.12; camera.camera?.bloomThreshold = 1.1
         camera.camera?.exposureOffset = -0.15; camera.camera?.wantsExposureAdaptation = false
         camera.camera?.screenSpaceAmbientOcclusionIntensity = 0.65; camera.camera?.screenSpaceAmbientOcclusionRadius = 2.2
         scene.rootNode.addChildNode(camera)
-        if mode == .circuit { for i in 0..<3 { let n = Self.makeCar(Car.all[(i+1)%6]); rivals.append(n); scene.rootNode.addChildNode(n) } }
+        if mode == .circuit { for i in 0..<3 { let n = Self.makeCar(Car.all[[1,0,2][i]],model:["SportsCoupe","LuxurySedan","RivalPickup"][i]); rivals.append(n); rivalColliders.append(VehicleCollider(node:n)); scene.rootNode.addChildNode(n) } }
         placeCars(); updateCamera(dt: 1)
     }
     func start() {
@@ -52,6 +56,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     func advance(dt:Double) {
         guard !paused, result == nil else { return }
         if countdown > 0 { countdownTime += dt; let next = max(0,3-Int(countdownTime)); if next != countdown { countdown = next; feedback() }; return }
+        barrierCooldown=max(0,barrierCooldown-dt)
         elapsed += dt; messageTimer = max(0,messageTimer-dt); if messageTimer == 0 { sparkMessage = "" }; collisionCooldown = max(0,collisionCooldown-dt)
         let maxSpeed = car.speed + Double(upgrade)*3
         boosting = nitroHeld && nitro > 0.015 && !braking && !offRoad
@@ -70,15 +75,36 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             driftChain += dt; combo = min(5,1+Int(driftChain/2)); driftFraction += dt*(24+curve*1000)*Double(combo)
             driftScore = Int(driftFraction)
         } else { driftChain = 0; combo = 1 }
+        let previousProgress=progress
         progress += speed*dt/trackLength
         lap = min(totalLaps,Int(progress)+1)
         for i in rivals.indices {
             let rivalSpeed = maxSpeed * (0.88 + Double(i)*0.023 + 0.025*sin(elapsed*0.6+Double(i)))
+            let previousRival=rivalProgress[i]
             rivalProgress[i] += rivalSpeed*dt/trackLength
             let rivalLane = Double(i-1)*4
-            if abs(progress-rivalProgress[i])*trackLength < 4.5 && abs(lane-rivalLane)<2.1 && collisionCooldown == 0 {
-                speed *= 0.72; collisionCooldown = 1; lane += lane >= rivalLane ? 1.8 : -1.8; feedback()
+            let separation=VehicleCollider.trackSeparation(progress,rivalProgress[i],length:trackLength)
+            // Keep the sweep continuous at half a lap; independent wrapping
+            // of both endpoints would create a false crossing through the grid.
+            let previous=separation-((progress-rivalProgress[i])-(previousProgress-previousRival))*trackLength
+            let body=playerCollider.projected(yaw:lateral*0.022*(drifting ? 2:1)),other=rivalColliders[i]
+            if body.sweptContact(other,previous:previous,current:separation,lateral:lane-rivalLane) {
+                // Push clear of the complete body every frame; the cooldown only
+                // limits impact feedback and speed loss, never contact detection.
+                let side=lane >= rivalLane ? 1.0 : -1.0
+                lane=max(-12,min(12,rivalLane+side*(body.halfWidth+other.halfWidth+0.12)))
+                lateral=side*max(1,abs(lateral)*0.4)
+                if collisionCooldown == 0 {collisionCount += 1;speed=min(speed*0.76,rivalSpeed*0.92);collisionCooldown=0.5;feedback()}
             }
+        }
+        // Keep the full body inside the continuous safety rail, including on
+        // distorted curves where radial lane units differ from road-normal metres.
+        let normalFactor=max(0.4,abs(sin(progress*2 * .pi-Double(circuit.heading(progress)))))
+        let width=playerCollider.projected(yaw:lateral*0.022*(drifting ? 2:1)).halfWidth
+        let barrierLimit=max(6,10.8-width/normalFactor-0.25)
+        if abs(lane)>barrierLimit {
+            lane=lane<0 ? -barrierLimit:barrierLimit;lateral=0
+            if barrierCooldown==0 {speed=max(min(speed,maxSpeed*0.45),speed*0.85);barrierCooldown=0.4;feedback()}
         }
         position = 1+rivalProgress.filter { $0>progress }.count
         for i in sparks.indices where !sparkCollected.contains(i) {
@@ -118,14 +144,14 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let p = circuit.point(progress,lane: lane); let heading = circuit.heading(progress)
         var smooth=chaseHeading ?? heading
         let difference=atan2(sin(heading-smooth),cos(heading-smooth));smooth += difference*Float(min(1,dt*8));chaseHeading=smooth
-        let distance: Float = boosting ? 10.5 : 9.5
-        let target = SCNVector3(p.x-sin(smooth)*distance, 4.3, p.z-cos(smooth)*distance)
+        let distance: Float = boosting ? 9.5 : 8.3
+        let target = SCNVector3(p.x-sin(smooth)*distance, 2.8, p.z-cos(smooth)*distance)
         camera.position = target
         let ahead = SIMD3<Float>(p.x+sin(heading)*5,1.0,p.z+cos(heading)*5)
-        camera.look(at: SCNVector3(ahead.x,0.6,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = boosting ? 78 : 72
+        camera.look(at: SCNVector3(ahead.x,0.6,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = boosting ? 76 : 68
     }
-    static func makeCar(_ car: Car) -> SCNNode {
-        if let model=SurfaceLibrary.grandTourer(car) { return model }
+    static func makeCar(_ car: Car,model:String?=nil) -> SCNNode {
+        if let model=SurfaceLibrary.grandTourer(car,model:model) { VehicleCollider.attach(to:model);return model }
         let root = SCNNode(); let paint = SurfaceLibrary.paint(car.color)
         func box(_ w: CGFloat,_ h: CGFloat,_ l: CGFloat,_ x: Float,_ y: Float,_ z: Float,_ mat: SCNMaterial,_ bevel: CGFloat = 0.12) {
             let g = SCNBox(width:w,height:h,length:l,chamferRadius:bevel); g.materials=[mat]; let n=SCNNode(geometry:g); n.position=SCNVector3(x,y,z); root.addChildNode(n)
@@ -190,7 +216,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         } }
         if car.id>=3 { box(0.15,0.10,1.1,-0.66,0.86,-1.55,dark); box(0.15,0.10,1.1,0.66,0.86,-1.55,dark) }
         if car.id==5 { box(0.06,0.6,1.4,0,1.0,-1.6,paint) }
-        return root
+        VehicleCollider.attach(to:root);return root
     }
     private func buildWorld() {
         scene.background.contents = Self.skyImage(circuit)
@@ -280,7 +306,20 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
                 if index%3==0,let tree=SceneDressing.asset("island_tree_01",height:8) {tree.position=SCNVector3(p.x+Float(side)*14,0,p.z);world.addChildNode(tree)}
                 let palm=SceneDressing.palm(); palm.position=SCNVector3(p.x,0,p.z);palm.eulerAngles.y=Float(index)*0.73;palm.scale.y *= 0.8+Float(index%4)*0.1;world.addChildNode(palm)
             } else if circuit.id==1 {
-                let n=SceneDressing.tower(height:Float(12+index%37),seed:index);n.position=SCNVector3(p.x,0,p.z);n.eulerAngles.y=circuit.heading(t)+Float(side) * .pi/2;world.addChildNode(n)
+                let n=SceneDressing.tower(height:Float(12+index%37),seed:index)
+                n.eulerAngles.y=circuit.heading(t)+Float(side) * .pi/2
+                let b=n.boundingBox
+                // Include entrance steps, balconies and every descendant in the footprint.
+                var extent:Float=0
+                for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {
+                    let corner=n.convertPosition(SCNVector3(x,0,z),to:nil)
+                    extent=max(extent,hypot(corner.x,corner.z))
+                }}
+                for offset in stride(from:Double(extent)+18,through:Double(extent)+85,by:4) {
+                    let position=circuit.point(t,lane:side*offset)
+                    let clear=(0..<480).allSatisfy {step in let road=circuit.point(Double(step)/480);return hypot(road.x-position.x,road.z-position.z)>11+extent+3}
+                    if clear {n.position=SCNVector3(position.x,0,position.z);n.name="roadside-building";world.addChildNode(n);break}
+                }
             } else {
                 if circuit.id==3,let pine=SceneDressing.asset("pine_sapling_small",height:8+Float(index%4)) {pine.position=SCNVector3(p.x,0,p.z);world.addChildNode(pine)}
                 let h=CGFloat(15+index%23); let rock=SceneDressing.asset("coastal_cliff_01",height:Float(h),maxWidth:18) ?? SurfaceLibrary.hill(radius:12,height:Float(h),seed:index,vegetated:false,desert:circuit.id==2,snow:circuit.id==3); let rockPoint=circuit.point(t,lane:side*38)

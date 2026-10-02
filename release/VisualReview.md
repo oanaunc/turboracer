@@ -1,23 +1,29 @@
-# Development build 9 — reference-driven racing redesign
+# Development build 11 — authored vehicles and body contact
 
-2 October 2026. App Store submission remains on hold. The user's seven supplied references establish industrial garages, large contemporary vehicles, cyan performance telemetry, yellow actions and detailed street scenes. See ArtDirection.md.
+2 October 2026. App Store submission remains on hold. The seven supplied references establish large contemporary vehicles, industrial garages, cyan telemetry, yellow actions and detailed street scenes. Overall lighting, scenery density, coastal architecture and menu art still need further work; this is not a final visual sign-off.
 
-## Changes
+## Vehicles and landscaping
 
-The native GLB loader preserves authored geometry, normals, UVs, hierarchy and PBR maps. Three Blender-authored mesh derivatives of the credited concept platform add compact coupe, lower/wider hypercar and open roadster silhouettes. The fleet still shares one source platform; it is not six independent manufacturer models.
+The local licensed build now uses Pierre-Louis Baril's independent Generic Sport Sedan 2022 PL for SOLSTICE and Generic Sportscar PL for KOMET. The rival grid uses that coupe, the sedan and the author's Jotun pickup. The other garage entries remain concept-platform derivatives; the fleet is not six independent models. Author geometry is evaluated in Blender, adapted to mobile PBR materials and consolidated into body/four wheel assemblies. Authored wheel pivots rotate in races.
 
-The garage is a 3D architectural room with tiled flooring, structural beams, ceiling light panels, façade glazing, wall fixtures and signage. Performance information overlays the wide 3D scene. Compact segmented cyan bars, yellow selection actions and car switching follow the supplied references.
+Jan Hecl's coconut palm replaces the coastal placeholder in the local build. Conversion preserves bark and foliage maps with explicit alpha cutouts. UV layer names are normalized before joining the authored parts; otherwise leaf parts inherited empty UV coordinates. The native GLB loader uses the correct UIImage texture orientation and respects alpha cutoff.
 
-The city uses Quaternius' CC0 Downtown City MegaKit Standard buildings with brickwork, entrances, windows, stairs and rooftop details. Their façades face the road. Imported scenery remains in its authored scene hierarchy: flattening the entire world had hidden those assets. Coast and alpine import credited palm, scanned cliff and tree meshes. Roads use continuous textured geometry; the camera follows heading without falling behind as speed rises.
+BlenderKit Royalty Free source files, runtime packs and generated encryption keys stay outside public Git. App packs use AES-GCM and decrypt in memory. This avoids plainly extractable GLB files, without claiming unbreakable protection. Public source checkouts regenerate their project using Tools/generate_project.sh and use the credited bundled fallback art. AssetCredits.txt records exact authors, source pages and licenses.
 
-## Validation and remaining work
+## Gameplay fixes
 
-Ten unit tests pass in /tmp/AfterlightArt8/Logs/Test, including body silhouette differences, all environment imports, progression and driving effects. The six-car/four-region UI journey passed after the scenery hierarchy fix, including a minimum 30 fps simulator assertion. Its xcodebuild result finalization stalled, so it is not a complete release validation bundle. Direct simulator screenshots verify that imported city façades and landscaping now render.
+The landscape results overlay has visible return and next-event buttons without scrolling. Choosing the next event opens the calendar; five campaign stars unlock the next region. The introductory briefing appears only before the first race. Preview and journey checks use isolated saves.
 
-Build 8 was installed successfully. Physical build 9 checks require the connected phone to be unlocked. The game still needs further visual polish, especially lighting, landscaping, road furniture and consistent artwork across the calendar and journal. No claim of Asphalt-equivalent visual quality or final release readiness is made.
+All player/rival cars have model-sized kinematic body shapes. The arcade controller resolves swept body contact, including finish-line wrapping and the increased lateral reach during drifting. Impact cooldown limits speed penalties and feedback, never contact detection. Contact separates cars laterally and reduces speed. The continuous safety boundary also accounts for the whole player body on distorted curves; sustained rail scraping cannot compound penalties into a permanent stop. This is arcade body contact, not a rigid-body damage simulation.
 
-## Rights
+Imported city buildings are placed using their complete transformed bounds, including stairs, and rejected unless the whole circuit remains clear. Rock placement retains the full-circuit clearance rule.
 
-Vehicle derivatives: DGG / Eric Chadwick, CC BY 4.0. Palm: Wolfgang Wozniak, CC BY 3.0. Quaternius city architecture and Poly Haven environments: CC0. Original generated texture art and original code, circuits, story and synthesized audio. Full attribution is bundled in Settings. Reference screenshots are not runtime assets and are excluded from Git.
+## Validation
 
-Roadside rock fix: imported cliff footprints are capped at 18 metres, positioned 38 metres from the reference line, and rejected if they fail clearance from any of 480 road samples. Distant and shoreline cliff widths are also capped. A regression test checks actual transformed bounds against the full canyon and alpine circuits.
+Fourteen unit tests passed with all four local licensed packs present: decoding, wheel pivots, body colliders, swept contact, real rival contact, road clearance, purchases, persistence, progression and driving effects. Two UI cases passed: completing the first race and starting another event, and rendering the complete licensed rival grid with a minimum 30 fps simulator assertion. The separate six-car/four-region visual case also passed its 30 fps checks.
+
+Logs: /tmp/afterlight-final-barrier-tests.log, /tmp/afterlight-build11-final-tests.log and /tmp/afterlight-licensed-fleet-visual-test.log. Xcode's result-bundle finalization has previously stalled on this host; case-level success is reported separately from a completed result bundle. Physical build 11 compiled and installed on Oana's iPhone. Launch/performance verification needs the phone unlocked; iOS denied the initial launch because it was locked.
+
+## Remaining art work
+
+Garage architecture, coastal buildings, terrain silhouettes, road furniture and lighting still do not match the supplied references. Further professional art work and physical-device performance review are required before App Store submission.

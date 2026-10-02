@@ -3,7 +3,7 @@ final class JourneyTests: XCTestCase {
     func capture(_ name:String,_ app:XCUIApplication) { let a=XCTAttachment(screenshot:XCUIScreen.main.screenshot()); a.name=name; a.lifetime = .keepAlways; add(a) }
     func testJourneyAndRace() {
         XCUIDevice.shared.orientation = .landscapeLeft
-        let app=XCUIApplication(); app.launch()
+        let app=XCUIApplication(); app.launchArguments=["--journey-review"]; app.launch()
         XCTAssertTrue(app.buttons["HOME"].waitForExistence(timeout:10)); XCTAssertTrue(app.descendants(matching:.any)["showroom-ready-SOLSTICE"].waitForExistence(timeout:10)); capture("01-home",app)
         app.buttons["GARAGE"].tap(); XCTAssertTrue(app.descendants(matching:.any)["showroom-ready-SOLSTICE"].waitForExistence(timeout:10)); XCTAssertTrue(app.staticTexts["SOLSTICE"].waitForExistence(timeout:5)); capture("02-garage",app)
         app.buttons["STORY"].tap(); capture("03-story",app)
@@ -18,7 +18,12 @@ final class JourneyTests: XCTestCase {
         app.buttons["Pause race"].tap(); XCTAssertTrue(app.buttons.matching(NSPredicate(format:"label CONTAINS 'RESUME'")).firstMatch.waitForExistence(timeout:5)); capture("06-pause",app)
         app.buttons.matching(NSPredicate(format:"label CONTAINS 'RESUME'")).firstMatch.tap()
         let finish=app.buttons.matching(NSPredicate(format:"label CONTAINS 'BACK TO THE FESTIVAL'")).firstMatch
-        XCTAssertTrue(finish.waitForExistence(timeout:60)); capture("07-result",app); finish.tap()
+        XCTAssertTrue(finish.waitForExistence(timeout:60)); capture("07-result",app); XCTAssertTrue(finish.isHittable,"Finish navigation must be visible without scrolling"); app.buttons.matching(NSPredicate(format:"label CONTAINS 'CHOOSE NEXT EVENT'")).firstMatch.tap()
+        XCTAssertTrue(app.scrollViews["race-calendar"].waitForExistence(timeout:5))
+        app.buttons.matching(NSPredicate(format:"label CONTAINS 'Drift run'")).firstMatch.tap()
+        XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:5),"A second event must start after the first result")
+        XCTAssertFalse(brief.exists,"The introductory briefing must appear only before the first race")
+        app.buttons["Pause race"].tap(); app.buttons["Leave race"].tap()
         app.buttons["Settings"].tap(); XCTAssertTrue(app.staticTexts["Settings"].waitForExistence(timeout:5)); capture("08-settings",app)
     }
     func testTabletScreens() {
@@ -36,6 +41,19 @@ final class JourneyTests: XCTestCase {
         capture("05-racing",app)
         app.buttons["Pause race"].tap()
         app.buttons["Leave race"].tap()
+    }
+
+    func testLicensedRivalGridPerformance() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app=XCUIApplication();app.launchArguments=["--visual-review","--preview-region","0","--preview-grid"];app.launch()
+        XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:15))
+        capture("rival-grid-start",app)
+        app.buttons["control-NITRO"].press(forDuration:8)
+        let sample=app.descendants(matching:.any)["race-scene"].value as? String ?? "No frame sample"
+        let note=XCTAttachment(string:sample);note.name="Complete licensed rival grid frame rate";note.lifetime = .keepAlways;add(note)
+        XCTAssertGreaterThanOrEqual(Double(sample.split(separator:" ").first ?? "0") ?? 0,30)
+        capture("rival-grid-racing",app)
+        app.buttons["Pause race"].tap();app.buttons["Leave race"].tap()
     }
 
     func testVisualFleetAndRegions() {

@@ -11,7 +11,7 @@ final class ProgressTests: XCTestCase {
             var vertexCount=0;var glassFound=false
             node.enumerateChildNodes { child,_ in
                 vertexCount += child.geometry?.sources(for:.vertex).first?.vectorCount ?? 0
-                for material in child.geometry?.materials ?? [] where material.name=="Glass" {
+                for material in child.geometry?.materials ?? [] where material.name?.localizedCaseInsensitiveContains("glass") == true && material.name?.localizedCaseInsensitiveContains("red") != true {
                     glassFound=true
                     XCTAssertEqual(material.emission.contents as? UIColor,UIColor(red:0,green:0,blue:0,alpha:1),"Glazing must not glow")
                     XCTAssertEqual(material.lightingModel,.physicallyBased)
@@ -22,6 +22,62 @@ final class ProgressTests: XCTestCase {
         }
         for name in ["asphalt-art","asphalt-normal","rubber","rock","grass","sand"] { XCTAssertNotNil(SurfaceLibrary.image(name)) }
         XCTAssertNotNil(Bundle.main.url(forResource:"studio-light",withExtension:"hdr"))
+    }
+
+    @MainActor func testLocalProtectedArtDecodesWithoutSourceFiles() {
+        for name in GeneratedArtKeys.keys.keys {
+            XCTAssertNotNil(ArtVault.model(name))
+            guard let model=GLBAsset.load(name) else {XCTFail("Cannot decode local licensed art: \(name)");continue}
+            XCTAssertGreaterThan(model.boundingBox.max.y-model.boundingBox.min.y,0)
+            if name != "RoyalPalm" {
+                var wheels=0
+                model.enumerateChildNodes {node,_ in if node.name?.hasPrefix("Wheel") == true {wheels += 1}}
+                XCTAssertEqual(wheels,4,"Licensed cars must keep four authored wheel pivots")
+            }
+        }
+    }
+
+    @MainActor func testVehicleCollidersFitEveryCarAndCatchSweptContact() {
+        for car in Car.all {
+            let model=RaceEngine.makeCar(car),body=VehicleCollider(node:model)
+            XCTAssertNotNil(model.physicsBody?.physicsShape)
+            XCTAssertEqual(model.physicsBody?.type,.kinematic)
+            XCTAssertGreaterThan(body.halfWidth,0.8)
+            XCTAssertGreaterThan(body.halfLength,1.9)
+            XCTAssertTrue(body.overlaps(body,longitudinal:0,lateral:0))
+            XCTAssertGreaterThan(body.projected(yaw:0.3).halfWidth,body.halfWidth,"Drift contact must include the swung-out body")
+            XCTAssertFalse(body.overlaps(body,longitudinal:0,lateral:body.halfWidth*2+0.1))
+            XCTAssertTrue(body.sweptContact(body,previous:-12,current:12,lateral:0),"Fast cars must not tunnel through a competitor")
+            XCTAssertFalse(body.sweptContact(body,previous:-12,current:12,lateral:body.halfWidth*2+0.1))
+        }
+        XCTAssertEqual(VehicleCollider.trackSeparation(1.002,0.998,length:1000),4,accuracy:0.001,"Contact must wrap across the finish line")
+    }
+
+    @MainActor func testRivalGridHasBodyCollidersAndRespondsToContact() {
+        let engine=RaceEngine(circuit:Circuit.all[0],mode:.circuit,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+        let cars=engine.scene.rootNode.childNodes.filter {$0.physicsBody?.categoryBitMask == 1}
+        XCTAssertEqual(cars.count,4)
+        XCTAssertTrue(cars.allSatisfy {$0.physicsBody?.physicsShape != nil})
+        for _ in 0..<420 {engine.advance(dt:1.0/60)}
+        XCTAssertGreaterThan(engine.collisionCount,0,"The accelerating player must react when the rival grid catches its body")
+        XCTAssertTrue(engine.speed.isFinite)
+    }
+
+    @MainActor func testSafetyBarriersKeepTheCarBodyInsideEveryCircuit() {
+        for circuit in Circuit.all {
+            let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+            let track=(0..<720).map {circuit.point(Double($0)/720)}
+            let body=VehicleCollider(node:engine.player)
+            engine.steering=1
+            for frame in 0..<1000 {
+                engine.advance(dt:1.0/60)
+                if frame%60==0 {
+                    let p=engine.player.position
+                    let distance=track.map {hypot(Double($0.x-p.x),Double($0.z-p.z))}.min()!
+                    XCTAssertLessThan(distance+body.halfWidth,10.9,"Holding steering must not push a car through the safety rail")
+                }
+            }
+        }
     }
 
     @MainActor func testImportedCityAndLandscapingHaveUsableBounds() {
@@ -38,12 +94,12 @@ final class ProgressTests: XCTestCase {
         XCTAssertGreaterThan(hyper.max.x-hyper.min.x,tourer.max.x-tourer.min.x)
     }
 
-    @MainActor func testRoadsideRocksLeaveTheFullCircuitClear() {
-        for circuit in Circuit.all.suffix(2) {
+    @MainActor func testRoadsideModelsLeaveTheFullCircuitClear() {
+        for circuit in Circuit.all.dropFirst() {
             let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
             var rockCount=0
             engine.scene.rootNode.enumerateChildNodes { rock,_ in
-                guard rock.name=="roadside-rock" else {return};rockCount += 1
+                guard ["roadside-rock","roadside-building"].contains(rock.name ?? "") else {return};rockCount += 1
                 let b=rock.boundingBox, center=rock.convertPosition(SCNVector3Zero,to:nil)
                 var radius:Float=0
                 for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {
@@ -52,7 +108,7 @@ final class ProgressTests: XCTestCase {
                 }}
                 for step in 0..<480 {
                     let road=circuit.point(Double(step)/480)
-                    XCTAssertGreaterThan(hypot(road.x-center.x,road.z-center.z)-radius,11,"Imported rock intersects the road corridor")
+                    XCTAssertGreaterThan(hypot(road.x-center.x,road.z-center.z)-radius,11,"Imported scenery intersects the road corridor")
                 }
             }
             XCTAssertGreaterThan(rockCount,0)

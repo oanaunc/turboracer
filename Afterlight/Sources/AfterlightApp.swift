@@ -53,11 +53,12 @@ struct HomeView: View {
                 }.padding(.bottom,8)
             }
         }.sheet(isPresented:$settings) { SettingsView() }
-        .fullScreenCover(item:$activeRace) { request in RaceView(request:request,garage:garage) }
+        .fullScreenCover(item:$activeRace) { request in RaceView(request:request,garage:garage,openCalendar:{tab=1}) }
         .onAppear { Soundtrack.shared.play(enabled:garage.save.music)
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--preview-garage") {tab=2}
-            if let index=ProcessInfo.processInfo.arguments.firstIndex(of:"--preview-region"),ProcessInfo.processInfo.arguments.count>index+1,let region=Int(ProcessInfo.processInfo.arguments[index+1]),Circuit.all.indices.contains(region) {garage.save.races=1;activeRace=RaceRequest(circuit:Circuit.all[region],mode:.sprint,daily:false)}
+            if let index=ProcessInfo.processInfo.arguments.firstIndex(of:"--preview-car"),ProcessInfo.processInfo.arguments.count>index+1,let car=Int(ProcessInfo.processInfo.arguments[index+1]),Car.all.indices.contains(car) {garage.save.selectedCar=car}
+            if let index=ProcessInfo.processInfo.arguments.firstIndex(of:"--preview-region"),ProcessInfo.processInfo.arguments.count>index+1,let region=Int(ProcessInfo.processInfo.arguments[index+1]),Circuit.all.indices.contains(region) {garage.save.races=1;activeRace=RaceRequest(circuit:Circuit.all[region],mode:ProcessInfo.processInfo.arguments.contains("--preview-grid") ? .circuit:.sprint,daily:false)}
             #endif
         }
         .onChange(of:garage.save.music) { _,value in Soundtrack.shared.play(enabled:value) }

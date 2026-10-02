@@ -3,13 +3,14 @@ import SwiftUI
 struct RaceView: View {
     let request: RaceRequest
     @ObservedObject var garage: Garage
+    var openCalendar: () -> Void
     @StateObject private var engine: RaceEngine
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var recorded = false
     @State private var tutorial = false
-    init(request:RaceRequest,garage:Garage) {
-        self.request=request; self.garage=garage
+    init(request:RaceRequest,garage:Garage,openCalendar:@escaping () -> Void = {}) {
+        self.request=request; self.garage=garage; self.openCalendar=openCalendar
         _engine=StateObject(wrappedValue:RaceEngine(circuit:request.circuit,mode:request.mode,car:garage.car,upgrade:garage.save.upgrades[garage.car.id] ?? 0,sensitivity:garage.save.steeringSensitivity,haptics:garage.save.haptics,sounds:garage.save.sounds ?? true))
     }
     var body: some View {
@@ -49,16 +50,31 @@ struct RaceView: View {
                 Text("Collect gold memory sparks to recover your father's notebook and recharge nitro. DRIFT + steering builds a combo. NITRO gives you a burst of speed. BRAKE helps you settle into a tight turn.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
                 ActionButton(title:"LET'S RACE",icon:"flag.checkered") { tutorial=false; engine.setPaused(false); engine.start() }
             } }
-            if let result=engine.result { overlay {
-                Eyebrow(text:"OFFICIAL SESSION RESULT")
-                Text(result.stars==3 ? "PODIUM FINISH" : "SESSION COMPLETE").font(RacingType.title(34))
-                HStack(spacing:12) { ForEach(0..<3) { i in Image(systemName:i<result.stars ? "star.fill" : "star").font(.system(size:30)).foregroundStyle(i<result.stars ? Color(hex:0xFFD76E) : muted.opacity(0.4)) } }.padding(.vertical,8)
-                Text("\(result.collected) memory sparks recovered").font(.system(size:12,weight:.bold)).foregroundStyle(Color(hex:0xFFD76E))
-                Text(request.mode == .circuit ? "Finished \(result.position) of 4 • \(String(format:"%.1f",result.time)) seconds" : "\(String(format:"%.1f",result.time)) seconds • \(result.drift) drift points").font(.system(size:14)).foregroundStyle(muted)
-                HStack { Text("RACE REWARD").font(RacingType.data(9)).tracking(0.6); Spacer(); Text("+\(result.credits) CREDITS").font(RacingType.data(16)).foregroundStyle(mint) }.padding(16).background(ink,in:RacingPanel(cut:8))
-                Text(result.stars==3 ? "Mika: “That's a line worth remembering. Bring that energy to the next race.”" : "Mika: “Use nitro on the straights, drift through the bends, and spend your credits on engine tuning. You've got this.”").font(.system(size:12)).foregroundStyle(muted).lineSpacing(4)
-                ActionButton(title:"BACK TO THE FESTIVAL",icon:"arrow.right") { dismiss() }
-            } }
+            if let result=engine.result {
+                ZStack {
+                    ink.opacity(0.92).ignoresSafeArea()
+                    VStack(alignment:.leading,spacing:16) {
+                        HStack(alignment:.top,spacing:28) {
+                            VStack(alignment:.leading,spacing:12) {
+                                Eyebrow(text:"OFFICIAL SESSION RESULT")
+                                Text(result.stars==3 ? "PODIUM FINISH" : "SESSION COMPLETE").font(RacingType.title(30))
+                                HStack(spacing:12) { ForEach(0..<3) { i in Image(systemName:i<result.stars ? "star.fill" : "star").font(.system(size:26)).foregroundStyle(i<result.stars ? mint : muted.opacity(0.4)) } }
+                                Text(request.mode == .circuit ? "Finished \(result.position) of 4 • \(String(format:"%.1f",result.time)) seconds" : "\(String(format:"%.1f",result.time)) seconds • \(result.drift) drift points").font(.system(size:13)).foregroundStyle(muted)
+                            }.frame(maxWidth:.infinity,alignment:.leading)
+                            VStack(alignment:.leading,spacing:12) {
+                                Eyebrow(text:"RACE REWARD",color:racingBlue)
+                                Text("+\(result.credits) CREDITS").font(RacingType.title(27)).foregroundStyle(mint)
+                                Text("\(result.collected) memory sparks recovered").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
+                                Text("Choose another event in the calendar. Earn five stars across this region to open the next destination.").font(.system(size:12)).foregroundStyle(muted).fixedSize(horizontal:false,vertical:true)
+                            }.frame(maxWidth:.infinity,alignment:.leading)
+                        }
+                        HStack(spacing:14) {
+                            ActionButton(title:"BACK TO THE FESTIVAL",icon:"arrow.left",accent:racingBlue) { dismiss() }
+                            ActionButton(title:"CHOOSE NEXT EVENT",icon:"flag.checkered") { openCalendar(); dismiss() }
+                        }
+                    }.padding(24).frame(maxWidth:850).background(Color(hex:0x1A2228),in:RacingPanel(cut:18)).padding(.horizontal,32)
+                }
+            }
         }.frame(width:geometry.size.width,height:geometry.size.height) }.ignoresSafeArea().onAppear { if garage.save.races==0 { tutorial=true; engine.setPaused(true) } else { engine.start() } }
         .onDisappear { engine.stop() }
         .onChange(of:engine.result != nil) { _,finished in if finished && !recorded,let result=engine.result { recorded=true; garage.record(result,circuit:request.circuit,mode:request.mode,daily:request.daily) } }

@@ -43,3 +43,16 @@ https://quaternius.itch.io/downtown-city-megakit
 Rosewood Veneer 1 and Pine Sapling Small — Poly Haven, CC0.
 https://polyhaven.com/a/rosewood_veneer1
 https://polyhaven.com/a/pine_sapling_small
+
+Local licensed model pack (not redistributed through public source Git):
+Generic Sport Sedan 2022 PL, Generic Sportscar PL and Jotun Midsize Pickup Truck PL — Pierre-Louis Baril.
+BlenderKit Royalty Free license; author describes both as original fictional designs.
+https://www.blendkit.com/asset-gallery-detail/d3d94329-838b-46c3-9cc1-1e07c4c7b705/
+https://www.blendkit.com/asset-gallery-detail/e4ac3813-f337-4c62-a61f-3fb85cab9a78/
+https://www.blendkit.com/asset-gallery-detail/29d62e78-8db8-4d19-bb24-074fae2879c7/
+Palm Tree — Jan Hecl. BlenderKit Royalty Free license.
+https://www.blendkit.com/asset-gallery-detail/b549671d-9836-4f62-a269-1a3a85902247/
+https://www.blendkit.com/docs/licenses/
+Changes: evaluated and reduced geometry, mobile PBR material adaptation,
+selectable paint, consolidated body/wheel assemblies, reduced palm textures
+and alpha-cutout foliage. Encrypted app packs decoded in memory.

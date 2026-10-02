@@ -16,3 +16,7 @@ build/
 Afterlight/Resources/Models/*.obj
 Afterlight/Resources/Models/*.mtl
 Afterlight/Resources/Models/*.blend
+
+# Licensed BlenderKit sources and runtime packs are local build inputs.
+Afterlight/Resources/Protected/
+Afterlight/Sources/GeneratedArtKeys.swift

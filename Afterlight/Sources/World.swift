@@ -63,6 +63,11 @@ struct SaveData: Codable {
     private let storage: UserDefaults
     init(storage: UserDefaults = .standard) {
         #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--journey-review") {
+            let fixture=UserDefaults(suiteName:"afterlight.journey.review")!
+            fixture.removePersistentDomain(forName:"afterlight.journey.review")
+            self.storage=fixture;save=SaveData();return
+        }
         if ProcessInfo.processInfo.arguments.contains("--visual-review") {
             let fixture=UserDefaults(suiteName:"afterlight.visual.review")!
             fixture.removePersistentDomain(forName:"afterlight.visual.review")

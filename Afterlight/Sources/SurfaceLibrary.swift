@@ -22,20 +22,21 @@ import UIKit
         m.clearCoat.contents=0.85; m.clearCoatRoughness.contents=0.12
         return m
     }
-    private static var tourers: [Int:SCNNode] = [:]
+    private static var tourers: [String:SCNNode] = [:]
     private static var platforms:[String:SCNNode]=[:]
-    static func grandTourer(_ car: Car) -> SCNNode? {
-        let design = ["Concept","Sprint","Hyper","Roadster","Hyper","Hyper"][car.id]
-        if platforms[design]==nil {platforms[design]=GLBAsset.load(design)}
-        if tourers[car.id] == nil, let asset=platforms[design]?.clone() {
-            let root=SCNNode();asset.position=SCNVector3(0,0.159,-0.238);root.addChildNode(asset)
+    static func grandTourer(_ car: Car,model:String?=nil) -> SCNNode? {
+        let design = model ?? ["LuxurySedan","SportsCoupe","Hyper","Roadster","Hyper","Hyper"][car.id]
+        if platforms[design]==nil {platforms[design]=GLBAsset.load(design) ?? GLBAsset.load("Concept")}
+        let key="\(design)-\(car.id)"
+        if tourers[key] == nil, let asset=platforms[design]?.clone() {
+            let root=SCNNode();let bounds=asset.boundingBox;asset.position=SCNVector3(-(bounds.min.x+bounds.max.x)/2,-bounds.min.y,-(bounds.min.z+bounds.max.z)/2);root.addChildNode(asset)
             asset.enumerateChildNodes { node,_ in
                 if node.name?.contains("Emblem") == true {node.isHidden=true}
                 guard let geometry=node.geometry else{return}
                 node.geometry=geometry.copy() as? SCNGeometry
                 node.geometry?.materials=geometry.materials.map {original in
                     let m=original.copy() as! SCNMaterial
-                    if m.name?.hasPrefix("Paint 1") == true {return paint(car.color)}
+                    if m.name?.hasPrefix("Paint 1") == true || m.name?.hasPrefix("LuxuryBodyPaint") == true {let body=paint(car.color);if design=="LuxurySedan" || design=="SportsCoupe" {body.metalness.contents=0.35;body.roughness.contents=0.4;body.clearCoat.contents=0.35;body.clearCoatRoughness.contents=0.2};return body}
                     if m.name=="Glass" {m.diffuse.contents=UIColor(hex:0x142B38);m.multiply.contents=UIColor.white;m.transparency=0.96;m.metalness.contents=0.05;m.roughness.contents=0.08}
                     return m
                 }
@@ -47,14 +48,14 @@ import UIKit
                 let pivot=SCNNode();pivot.name="rolling-wheel";pivot.position=wheel.position
                 wheel.position=SCNVector3Zero;wheel.removeFromParentNode();pivot.addChildNode(wheel);parent.addChildNode(pivot)
             }
-            if car.id==3 {asset.childNode(withName:"BodyRoofPanel",recursively:true)?.isHidden=true}
-            if car.id>=4 {
+            if model==nil && car.id==3 {asset.childNode(withName:"BodyRoofPanel",recursively:true)?.isHidden=true}
+            if model==nil && car.id>=4 {
                 let wing=SCNNode(geometry:SCNBox(width:2.05,height:0.08,length:0.4,chamferRadius:0.035));wing.position=SCNVector3(0,1.1,-1.8);wing.geometry?.materials=[surface("carbon")];root.addChildNode(wing)
                 for x:Float in [-0.7,0.7] {let support=SCNNode(geometry:SCNBox(width:0.07,height:0.3,length:0.14,chamferRadius:0.02));support.position=SCNVector3(x,0.96,-1.8);support.geometry?.materials=[material(0x18202A)];root.addChildNode(support)}
             }
-            tourers[car.id]=root
+            tourers[key]=root
         }
-        return tourers[car.id]?.clone()
+        return tourers[key]?.clone()
     }
     static func rock(radius: Float, height: Float, seed: Int, desert: Bool, snow:Bool=false) -> SCNNode {
         let sides=18, rings=10

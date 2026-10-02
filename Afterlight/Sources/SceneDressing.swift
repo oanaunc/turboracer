@@ -156,7 +156,7 @@ extension SceneDressing {
     }
     private static var palmTemplate:SCNNode?
     static func palm() -> SCNNode {
-        if let asset=asset("CoastalPalm",height:11) {return asset}
+        if let asset=asset("RoyalPalm",height:11) ?? asset("CoastalPalm",height:11) {return asset}
         if let template=palmTemplate {return template.clone()}
         let root=SCNNode(), bark=SurfaceLibrary.surface("bark")
         for segment in 0..<8 {

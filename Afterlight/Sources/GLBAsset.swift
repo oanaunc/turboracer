@@ -6,7 +6,8 @@ import UIKit
 /// reducing a professionally authored vehicle to a single flat material.
 @MainActor enum GLBAsset {
     static func load(_ name: String) -> SCNNode? {
-        guard let url=Bundle.main.url(forResource:name,withExtension:"glb"),let file=try? Data(contentsOf:url),file.count>20 else{return nil}
+        let publicFile=Bundle.main.url(forResource:name,withExtension:"glb").flatMap {try? Data(contentsOf:$0)}
+        guard let file=ArtVault.model(name) ?? publicFile,file.count>20 else{return nil}
         func uint(_ offset:Int)->Int {file.withUnsafeBytes{Int($0.loadUnaligned(fromByteOffset:offset,as:UInt32.self))}}
         let length=uint(12)
         guard let json=try? JSONSerialization.jsonObject(with:file.subdata(in:20..<20+length)) as? [String:Any] else{return nil}
@@ -43,14 +44,16 @@ import UIKit
                 let info=(p[key] ?? definition[key]) as? [String:Any] ?? [:]
                 let ext=info["extensions"] as? [String:Any] ?? [:],transform=ext["KHR_texture_transform"] as? [String:Any] ?? [:]
                 let scale=transform["scale"] as? [Double] ?? [1,1]
-                var matrix=SCNMatrix4MakeScale(Float(scale[0]),Float(-scale[1]),1);matrix.m42=1
+                // SceneKit maps UIImage contents in the glTF image orientation.
+                // Flipping V here cut away the atlas foliage and inverted vehicle textures.
+                let matrix=SCNMatrix4MakeScale(Float(scale[0]),Float(scale[1]),1)
                 property.contentsTransform=matrix;property.wrapS = .repeat;property.wrapT = .repeat
                 property.mappingChannel=info["texCoord"] as? Int ?? 0
             }
             if let normal=definition["normalTexture"] as? [String:Any] {m.normal.intensity=normal["scale"] as? CGFloat ?? 1}
             m.isDoubleSided=definition["doubleSided"] as? Bool ?? false
             let alpha=m.name=="PalmAtlas" ? "MASK":(definition["alphaMode"] as? String ?? "OPAQUE")
-            if alpha=="MASK" {m.shaderModifiers=[.fragment:"if (_surface.diffuse.a < 0.5) discard_fragment();"];m.transparencyMode = .aOne}
+            if alpha=="MASK" {let cutoff=definition["alphaCutoff"] as? Double ?? 0.5;m.shaderModifiers=[.fragment:"if (_surface.diffuse.a < \(cutoff)) discard_fragment();"];m.transparencyMode = .aOne}
             if alpha=="BLEND" {m.transparency=factor.count>3 ? factor[3]:1;m.writesToDepthBuffer=false;m.blendMode = .alpha}
             // Trademark-bearing plates and dashboard marks are replaced with plain trim.
             if m.name=="License" || m.name=="Dashboard" {m.diffuse.contents=UIColor(hex:0x111820);m.emission.contents=UIColor.black;m.multiply.contents=UIColor.white}
