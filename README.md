@@ -38,7 +38,7 @@ Unit tests cover purchases, upgrade caps, persistence, campaign progression, dai
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 11. App Store submission is held while the visual/product redesign is reviewed.
+Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 13. App Store submission is held while the visual/product redesign is reviewed.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 
@@ -52,8 +52,8 @@ The app uses UserDefaults for on-device saves with required reason CA92.1 declar
 
 ## Local licensed art
 
-BlenderKit Royalty Free models are local build inputs and are deliberately excluded from public Git. The sedan, coupe and rival-only Jotun pickup are designs by Pierre-Louis Baril; the coconut palm is by Jan Hecl. See bundled AssetCredits.txt for source links. Public checkouts fall back to the bundled concept cars and coastal palm.
+BlenderKit Royalty Free models are local build inputs and are deliberately excluded from public Git. The sedan, coupe and rival-only Jotun pickup are designs by Pierre-Louis Baril; the coconut palm is by Jan Hecl, warehouse by Dennis Hafemann and five city buildings by Alex Samusenko. See bundled AssetCredits.txt for source links. Public checkouts fall back to the bundled concept cars, coastal palm, original showroom and Quaternius architecture.
 
-Convert legitimately downloaded Blender sources using `prepare_licensed_sedan.py` (optional second argument `SportsCoupe` or `RivalPickup`) and `prepare_licensed_palm.py`. These write to the local ArtSources directory. Package each GLB with `swift Afterlight/Tools/pack_art.swift <source.glb> Afterlight/Resources/Protected/<name>.asset Afterlight/Sources/GeneratedArtKeys.swift`, then regenerate the project. The packer preserves keys in a private manifest outside the repository. Never publish source models, protected packs or generated keys.
+Convert legitimately downloaded Blender sources using `prepare_licensed_sedan.py` (optional second argument `SportsCoupe` or `RivalPickup`) and `prepare_licensed_palm.py`. These write to the local ArtSources directory. `prepare_licensed_garage.py` and `prepare_licensed_city.py` take the downloaded source and a private output path; they bake facade/color and normal atlases for the native renderer. Package each GLB with `swift Afterlight/Tools/pack_art.swift <source.glb> Afterlight/Resources/Protected/<name>.asset Afterlight/Sources/GeneratedArtKeys.swift`, then regenerate the project. The packer preserves keys in a private manifest outside the repository. Never publish source models, protected packs or generated keys.
 
 The app decrypts AES-GCM packs in memory. This avoids distributing plainly extractable source files; it is not a claim of tamper-proof protection. Assets remain subject to the provider's license.

@@ -27,6 +27,7 @@
 		34B0EB7209A6FF91EE23096C /* CityLandmark.glb in Resources */ = {isa = PBXBuildFile; fileRef = 19DF2380DE676FFC1E79E580 /* CityLandmark.glb */; };
 		385173C8FAA4833DD1578CF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC133CBA11C587F6DFF0E307 /* Assets.xcassets */; };
 		38903E508F8DDABAB03CE08B /* CityAC.glb in Resources */ = {isa = PBXBuildFile; fileRef = 4C9E4EF5DDA56AC155345F3D /* CityAC.glb */; };
+		394A16D1E6511B349AA78EC1 /* FestivalGarage.asset in Resources */ = {isa = PBXBuildFile; fileRef = 2E4963673709A35011C0CA63 /* FestivalGarage.asset */; };
 		3E060E0FC7F3086A58A47892 /* rubber-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = B4634C35DED1721C0320DBBA /* rubber-normal.png */; };
 		43386D55747DE6B052C300ED /* rock-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 76F7E7F44075DFB29C9A2A9F /* rock-roughness.png */; };
 		44DA5FCD65C5B27089E8F47E /* RivalPickup.asset in Resources */ = {isa = PBXBuildFile; fileRef = F582ECB1DD80906278872207 /* RivalPickup.asset */; };
@@ -37,9 +38,11 @@
 		4C3DB4FE3972184AC784915E /* facade-emission.png in Resources */ = {isa = PBXBuildFile; fileRef = 06D3AACD1507B6DD9A746EFB /* facade-emission.png */; };
 		546C900917C51B60C519E185 /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB001ACA6F4D187C44BB425 /* World.swift */; };
 		5A8B9A971079A25A9E7B9506 /* RaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */; };
+		5F3B83835DFB8BEDC670305F /* CityBank.asset in Resources */ = {isa = PBXBuildFile; fileRef = 1EEAC4C78B5BDCF84A3BAB15 /* CityBank.asset */; };
 		60BE60BF90FF984D7E183B85 /* island_tree_01.glb in Resources */ = {isa = PBXBuildFile; fileRef = 7ED75DD507C3A274EE4E5831 /* island_tree_01.glb */; };
 		625449705078678DE3529013 /* sand-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = D632F37D209BBA789CD0DBD0 /* sand-roughness.png */; };
 		65BC43D6DC7A48EE9E714631 /* LuxurySedan.asset in Resources */ = {isa = PBXBuildFile; fileRef = 806F76B47BFF96265044120E /* LuxurySedan.asset */; };
+		6DDF1483411E88887B6DCEAF /* CityOffice.asset in Resources */ = {isa = PBXBuildFile; fileRef = FA1D857417466CAE822B169A /* CityOffice.asset */; };
 		6F4A61CF9585CC74AF1DA589 /* spark.wav in Resources */ = {isa = PBXBuildFile; fileRef = E98698068EA00776741B1478 /* spark.wav */; };
 		7AA5504A1BD8C6E0D6114757 /* sand.png in Resources */ = {isa = PBXBuildFile; fileRef = 231AC8F2433F29A32E4A1543 /* sand.png */; };
 		80988CCA3AA8991448125184 /* RacingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE27317ED73D88347CBF2DA /* RacingScene.swift */; };
@@ -49,6 +52,7 @@
 		8E406DB6AC50E99E8B953667 /* coast-light.hdr in Resources */ = {isa = PBXBuildFile; fileRef = 2EC7DBAB30F5FF3AFC8EE351 /* coast-light.hdr */; };
 		8FD4A90851D74AE0023418A5 /* SceneDressing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C282CFAD583F91E9D38B485 /* SceneDressing.swift */; };
 		934250295A7B2C2730E6E84E /* ArtVault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D9519C60E04B3BD0DDE621 /* ArtVault.swift */; };
+		9A556033911C41EA2F343862 /* CityApartment.asset in Resources */ = {isa = PBXBuildFile; fileRef = 02432870E6B5BAC3C6BB5418 /* CityApartment.asset */; };
 		9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */; };
 		9DC0E4D718379A99C69A3DAF /* VehicleCollider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEB57C333909B963E638AF1 /* VehicleCollider.swift */; };
 		9E555E967CDA81953272A683 /* CityPlanter.glb in Resources */ = {isa = PBXBuildFile; fileRef = D737A156BBF4F4C3B64B1774 /* CityPlanter.glb */; };
@@ -56,6 +60,7 @@
 		A783BA0F061C841B3997EB17 /* grass.png in Resources */ = {isa = PBXBuildFile; fileRef = D677A262542FC3290728387D /* grass.png */; };
 		AAD2F00DADC266FCC325CF82 /* coastal_cliff_01.glb in Resources */ = {isa = PBXBuildFile; fileRef = 390DEAE3296BDA7EA83743C0 /* coastal_cliff_01.glb */; };
 		B18DD57D9DC5B076B2E22299 /* SportsCoupe.asset in Resources */ = {isa = PBXBuildFile; fileRef = 6001A2527D703E8704A0292F /* SportsCoupe.asset */; };
+		B4BEFF07B45E4E3F40827E96 /* CityTerrace.asset in Resources */ = {isa = PBXBuildFile; fileRef = F610CF80C5114A542E08A0A1 /* CityTerrace.asset */; };
 		B50B5958DAE06183A6161B04 /* carbon-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = EBFE5936D7AD8B5D089A1239 /* carbon-normal.png */; };
 		BBC2A5C3805115E1A8D3F790 /* showroom-wood.png in Resources */ = {isa = PBXBuildFile; fileRef = EA6F9E396FF2DAD6BB0C16D6 /* showroom-wood.png */; };
 		C10DD2E36855A8761E6981E1 /* RoyalPalm.asset in Resources */ = {isa = PBXBuildFile; fileRef = 25950F3A9B68E55E040E8C77 /* RoyalPalm.asset */; };
@@ -71,6 +76,7 @@
 		DC170E1E36A1D156C36E7354 /* rock-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = FA17B7086BEE99EEDB6C3C75 /* rock-normal.png */; };
 		DFA551F0594F88F76196BD2E /* SurfaceLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A67240EAC7159778A89AD2 /* SurfaceLibrary.swift */; };
 		E7E45986E893C076FB607510 /* rubber.png in Resources */ = {isa = PBXBuildFile; fileRef = 6407763D7CFD3A0B2D7CB7B7 /* rubber.png */; };
+		E85E790C01BEC55BAFD69425 /* CityBrick.asset in Resources */ = {isa = PBXBuildFile; fileRef = 4F26A815CE05755707824E79 /* CityBrick.asset */; };
 		EA3463AD26B58C20918A96C8 /* sand-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = D4AFA5FBA0BC81CE27149F30 /* sand-normal.png */; };
 		EB501B5D388B3B13AB23172D /* RacingTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C185D2AE64E7A9F8D5FBB7 /* RacingTheme.swift */; };
 		F0C68A25A800C2188FE8313E /* carbon.png in Resources */ = {isa = PBXBuildFile; fileRef = 876C37B033309B2F7D72F8AA /* carbon.png */; };
@@ -99,6 +105,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02432870E6B5BAC3C6BB5418 /* CityApartment.asset */ = {isa = PBXFileReference; path = CityApartment.asset; sourceTree = "<group>"; };
 		06D3AACD1507B6DD9A746EFB /* facade-emission.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facade-emission.png"; sourceTree = "<group>"; };
 		06D9519C60E04B3BD0DDE621 /* ArtVault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtVault.swift; sourceTree = "<group>"; };
 		0B19FE3BDCFF666F2C926E37 /* rock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rock.png; sourceTree = "<group>"; };
@@ -106,6 +113,7 @@
 		1C282CFAD583F91E9D38B485 /* SceneDressing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDressing.swift; sourceTree = "<group>"; };
 		1C29DA17BAF2FB9FF4971A3F /* Sprint.glb */ = {isa = PBXFileReference; path = Sprint.glb; sourceTree = "<group>"; };
 		1DE31FE44126182C1F19BFBE /* GLBAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLBAsset.swift; sourceTree = "<group>"; };
+		1EEAC4C78B5BDCF84A3BAB15 /* CityBank.asset */ = {isa = PBXFileReference; path = CityBank.asset; sourceTree = "<group>"; };
 		1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		231AC8F2433F29A32E4A1543 /* sand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sand.png; sourceTree = "<group>"; };
 		25950F3A9B68E55E040E8C77 /* RoyalPalm.asset */ = {isa = PBXFileReference; path = RoyalPalm.asset; sourceTree = "<group>"; };
@@ -113,6 +121,7 @@
 		2713A6D5559A32E4ACD110CC /* CityMidrise.glb */ = {isa = PBXFileReference; path = CityMidrise.glb; sourceTree = "<group>"; };
 		2A3B2761108A5275011D94F3 /* grass-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grass-roughness.png"; sourceTree = "<group>"; };
 		2AE27317ED73D88347CBF2DA /* RacingScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RacingScene.swift; sourceTree = "<group>"; };
+		2E4963673709A35011C0CA63 /* FestivalGarage.asset */ = {isa = PBXFileReference; path = FestivalGarage.asset; sourceTree = "<group>"; };
 		2EC7DBAB30F5FF3AFC8EE351 /* coast-light.hdr */ = {isa = PBXFileReference; path = "coast-light.hdr"; sourceTree = "<group>"; };
 		331626AB019E55A79537C826 /* asphalt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = asphalt.png; sourceTree = "<group>"; };
 		33EA6800993C532DE7713B9F /* bark-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bark-roughness.png"; sourceTree = "<group>"; };
@@ -125,6 +134,7 @@
 		4C9E4EF5DDA56AC155345F3D /* CityAC.glb */ = {isa = PBXFileReference; path = CityAC.glb; sourceTree = "<group>"; };
 		4E095B7584A2F8F8A29F1DD5 /* showroom-wood-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "showroom-wood-normal.png"; sourceTree = "<group>"; };
 		4E77DCF9E617163501C069FD /* showroom-wood-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "showroom-wood-roughness.png"; sourceTree = "<group>"; };
+		4F26A815CE05755707824E79 /* CityBrick.asset */ = {isa = PBXFileReference; path = CityBrick.asset; sourceTree = "<group>"; };
 		51931C7D5814E734881A334E /* GeneratedArtKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedArtKeys.swift; sourceTree = "<group>"; };
 		5AF1714CC42D10473C7CFF11 /* studio-light.hdr */ = {isa = PBXFileReference; path = "studio-light.hdr"; sourceTree = "<group>"; };
 		5CA84F88B33B107D093491C9 /* asphalt-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "asphalt-roughness.png"; sourceTree = "<group>"; };
@@ -169,7 +179,9 @@
 		EFFAB0263EB173BF39452CA8 /* CityCorner.glb */ = {isa = PBXFileReference; path = CityCorner.glb; sourceTree = "<group>"; };
 		F108D15024F286CD1DBC84E0 /* sky-coast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sky-coast.png"; sourceTree = "<group>"; };
 		F582ECB1DD80906278872207 /* RivalPickup.asset */ = {isa = PBXFileReference; path = RivalPickup.asset; sourceTree = "<group>"; };
+		F610CF80C5114A542E08A0A1 /* CityTerrace.asset */ = {isa = PBXFileReference; path = CityTerrace.asset; sourceTree = "<group>"; };
 		FA17B7086BEE99EEDB6C3C75 /* rock-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rock-normal.png"; sourceTree = "<group>"; };
+		FA1D857417466CAE822B169A /* CityOffice.asset */ = {isa = PBXFileReference; path = CityOffice.asset; sourceTree = "<group>"; };
 		FAC562E95FAD02B317D28502 /* stucco-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stucco-normal.png"; sourceTree = "<group>"; };
 		FAEB57C333909B963E638AF1 /* VehicleCollider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleCollider.swift; sourceTree = "<group>"; };
 		FC133CBA11C587F6DFF0E307 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -236,6 +248,12 @@
 		32F553F9D6E4CEA68DAA94BB /* Protected */ = {
 			isa = PBXGroup;
 			children = (
+				02432870E6B5BAC3C6BB5418 /* CityApartment.asset */,
+				1EEAC4C78B5BDCF84A3BAB15 /* CityBank.asset */,
+				4F26A815CE05755707824E79 /* CityBrick.asset */,
+				FA1D857417466CAE822B169A /* CityOffice.asset */,
+				F610CF80C5114A542E08A0A1 /* CityTerrace.asset */,
+				2E4963673709A35011C0CA63 /* FestivalGarage.asset */,
 				806F76B47BFF96265044120E /* LuxurySedan.asset */,
 				F582ECB1DD80906278872207 /* RivalPickup.asset */,
 				25950F3A9B68E55E040E8C77 /* RoyalPalm.asset */,
@@ -437,12 +455,18 @@
 				F5B34B6D59D826FC94B5581B /* AssetCredits.txt in Resources */,
 				385173C8FAA4833DD1578CF8 /* Assets.xcassets in Resources */,
 				38903E508F8DDABAB03CE08B /* CityAC.glb in Resources */,
+				9A556033911C41EA2F343862 /* CityApartment.asset in Resources */,
+				5F3B83835DFB8BEDC670305F /* CityBank.asset in Resources */,
+				E85E790C01BEC55BAFD69425 /* CityBrick.asset in Resources */,
 				03C094CD4FE428E678504566 /* CityCorner.glb in Resources */,
 				34B0EB7209A6FF91EE23096C /* CityLandmark.glb in Resources */,
 				CE5FB4F93F7B4D929C135A62 /* CityMidrise.glb in Resources */,
+				6DDF1483411E88887B6DCEAF /* CityOffice.asset in Resources */,
 				9E555E967CDA81953272A683 /* CityPlanter.glb in Resources */,
+				B4BEFF07B45E4E3F40827E96 /* CityTerrace.asset in Resources */,
 				206880275C044C3E1CC78053 /* CoastalPalm.glb in Resources */,
 				1883B34E910653D9203382EE /* Concept.glb in Resources */,
+				394A16D1E6511B349AA78EC1 /* FestivalGarage.asset in Resources */,
 				0385190F4F1AFB68AE834764 /* Hyper.glb in Resources */,
 				65BC43D6DC7A48EE9E714631 /* LuxurySedan.asset in Resources */,
 				9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */,
@@ -633,7 +657,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 13;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = HBD3XXQK45;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -709,7 +733,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 13;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HBD3XXQK45;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

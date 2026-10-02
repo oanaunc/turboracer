@@ -29,7 +29,7 @@ final class ProgressTests: XCTestCase {
             XCTAssertNotNil(ArtVault.model(name))
             guard let model=GLBAsset.load(name) else {XCTFail("Cannot decode local licensed art: \(name)");continue}
             XCTAssertGreaterThan(model.boundingBox.max.y-model.boundingBox.min.y,0)
-            if name != "RoyalPalm" {
+            if ["LuxurySedan","SportsCoupe","RivalPickup"].contains(name) {
                 var wheels=0
                 model.enumerateChildNodes {node,_ in if node.name?.hasPrefix("Wheel") == true {wheels += 1}}
                 XCTAssertEqual(wheels,4,"Licensed cars must keep four authored wheel pivots")
@@ -95,7 +95,7 @@ final class ProgressTests: XCTestCase {
     }
 
     @MainActor func testRoadsideModelsLeaveTheFullCircuitClear() {
-        for circuit in Circuit.all.dropFirst() {
+        for circuit in Circuit.all {
             let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
             var rockCount=0
             engine.scene.rootNode.enumerateChildNodes { rock,_ in
@@ -111,7 +111,7 @@ final class ProgressTests: XCTestCase {
                     XCTAssertGreaterThan(hypot(road.x-center.x,road.z-center.z)-radius,11,"Imported scenery intersects the road corridor")
                 }
             }
-            XCTAssertGreaterThan(rockCount,0)
+            if circuit.id != 0 || GeneratedArtKeys.keys["CityTerrace"] != nil {XCTAssertGreaterThan(rockCount,0)}
         }
     }
 

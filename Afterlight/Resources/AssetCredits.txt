@@ -56,3 +56,15 @@ https://www.blendkit.com/docs/licenses/
 Changes: evaluated and reduced geometry, mobile PBR material adaptation,
 selectable paint, consolidated body/wheel assemblies, reduced palm textures
 and alpha-cutout foliage. Encrypted app packs decoded in memory.
+
+Industrial Old Warehouse — Dennis Hafemann. BlenderKit Royalty Free license.
+https://www.blendkit.com/asset-gallery-detail/b7b5e898-0db6-4ce1-a3d2-443919cadd93/
+Adaptation: baked mobile concrete atlas and normals, simplified portable metal,
+removed atmosphere/loose debris, enlarged bay, original festival lighting and props.
+Encrypted local app pack; source scene excluded from public Git.
+
+City Scene — Alex Samusenko. BlenderKit Royalty Free license.
+https://www.blendkit.com/asset-gallery-detail/a1600774-b49a-4590-82f8-f663047f5c8d/
+Adaptation: five isolated buildings, baked 1024px facade/normal atlases,
+portable glazing, centered meshes and circuit-wide placement clearance.
+Complete source city and unencrypted derivatives excluded from public Git.

@@ -33,6 +33,19 @@ import UIKit
         }
         for i in 0..<9 {
             let t=Double(i)/9+0.035, p=circuit.point(t,lane:33)
+            if let building=asset(["CityTerrace","CityOffice","CityBrick"][i%3],height:Float(10+i%3*2)) {
+                building.eulerAngles.y=circuit.heading(t)
+                let b=building.boundingBox
+                var extent:Float=0
+                for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {let corner=building.convertPosition(SCNVector3(x,0,z),to:nil);extent=max(extent,hypot(corner.x,corner.z))}}
+                for offset in stride(from:Double(extent)+24,through:Double(extent)+90,by:4) {
+                    let q=circuit.point(t,lane:offset)
+                    if (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
+                        building.position=SCNVector3(q.x,0,q.z);building.name="roadside-building";root.addChildNode(building);break
+                    }
+                }
+                continue
+            }
             let villa=SCNNode();villa.position=SCNVector3(p.x,0,p.z);villa.eulerAngles.y=circuit.heading(t)
             villa.addChildNode(block(SCNVector3(9,5.5,7),SCNVector3(0,2.75,0),stucco))
             villa.addChildNode(block(SCNVector3(9.6,0.22,7.6),SCNVector3(0,5.6,0),roof))
@@ -50,14 +63,17 @@ import UIKit
         return root
     }
     static func tower(height:Float,seed:Int) -> SCNNode {
-        let names=["CityCorner","CityMidrise","CityLandmark"]
-        if let building=asset(names[abs(seed/6)%3],height:max(12,min(32,height))) {
+        let authored=["CityBank","CityOffice","CityTerrace","CityBrick","CityApartment"]
+        let fallback=["CityCorner","CityMidrise","CityLandmark"]
+        let choice=abs(seed/6)
+        if let building=asset(authored[choice%authored.count],height:max(12,min(32,height))) ?? asset(fallback[choice%fallback.count],height:max(12,min(32,height))) {
             building.enumerateChildNodes { node,_ in
                 guard let g=node.geometry else {return}
                 node.geometry=g.copy() as? SCNGeometry
                 node.geometry?.materials=g.materials.map {original in
                     let m=original.copy() as! SCNMaterial
                     if m.name?.contains("FakeInterior") == true {m.emission.contents=m.diffuse.contents;m.emission.intensity=0.24}
+                    if m.name?.contains("Glazing") == true {m.emission.contents=UIColor(hex:seed%2==0 ? 0xA3C3D3:0xC9AD7C);m.emission.intensity=0.10}
                     return m
                 }
             }
@@ -86,6 +102,7 @@ import UIKit
         return root.flattenedClone()
     }
     static func studio() -> SCNScene {
+        if let architecture=GLBAsset.load("FestivalGarage") {return festivalStudio(architecture)}
         let scene=SCNScene();scene.background.contents=UIColor(hex:0x12202C)
         scene.lightingEnvironment.contents=Bundle.main.url(forResource:"studio-light",withExtension:"hdr");scene.lightingEnvironment.intensity=0.65
         let stone=SurfaceLibrary.surface("stucco",tint:UIColor(hex:0x87857D));stone.multiply.contents=UIColor(hex:0x394B58);stone.roughness.contents=0.3
@@ -134,6 +151,43 @@ import UIKit
         }
         for (p,power) in [(SCNVector3(-3,5,4),CGFloat(500)),(SCNVector3(5,4,-5),CGFloat(300))] {
             let n=SCNNode();n.light=SCNLight();n.light?.type = .spot;n.light?.spotInnerAngle=55;n.light?.spotOuterAngle=100;n.light?.intensity=power;n.light?.color=UIColor(hex:0xDBEDFF);n.light?.castsShadow=true;n.light?.shadowRadius=4;n.light?.shadowMapSize=CGSize(width:2048,height:2048);n.light?.shadowColor=UIColor(white:0,alpha:0.45);n.position=p;n.look(at:SCNVector3(0,0,0));scene.rootNode.addChildNode(n)
+        }
+        return scene
+    }
+
+    private static func festivalStudio(_ architecture:SCNNode) -> SCNScene {
+        let scene=SCNScene();scene.background.contents=UIColor(hex:0x172330)
+        scene.rootNode.addChildNode(architecture)
+        scene.lightingEnvironment.contents=Bundle.main.url(forResource:"studio-light",withExtension:"hdr")
+        scene.lightingEnvironment.intensity=0.32
+        let steel=material(0x182633);steel.metalness.contents=0.75;steel.roughness.contents=0.38
+        func box(_ size:SCNVector3,_ position:SCNVector3,_ m:SCNMaterial) {
+            let geometry=SCNBox(width:CGFloat(size.x),height:CGFloat(size.y),length:CGFloat(size.z),chamferRadius:0.015)
+            geometry.materials=[m];let node=SCNNode(geometry:geometry);node.position=position;scene.rootNode.addChildNode(node)
+        }
+        // Display-bay markings and suspended fixtures give the workshop a
+        // motorsport identity while the authored walls retain their texture.
+        for x:Float in [-2.1,2.1] {
+            box(SCNVector3(0.07,0.012,7),SCNVector3(x,0.014,0),material(0xFFD52A))
+            box(SCNVector3(0.05,0.08,7),SCNVector3(x,6.4,0),material(0xC7E7F2,glow:true))
+            box(SCNVector3(0.18,0.12,7.2),SCNVector3(x,6.48,0),steel)
+        }
+        for z:Float in [-3.5,3.5] {box(SCNVector3(4.2,0.012,0.07),SCNVector3(0,0.014,z),material(0xFFD52A))}
+        for x:Float in [-7.5,7.5] {
+            box(SCNVector3(0.06,4.2,0.08),SCNVector3(x,2.7,-8.85),material(0x47CFFF,glow:true))
+            // Tool cabinets, individually modeled drawers and black worktops.
+            box(SCNVector3(2.2,1.1,0.85),SCNVector3(x,0.55,-7.7),material(0x16577B))
+            box(SCNVector3(2.3,0.08,0.95),SCNVector3(x,1.13,-7.7),steel)
+            for y:Float in [0.22,0.48,0.74,1] {box(SCNVector3(1.95,0.025,0.04),SCNVector3(x,y,-7.25),steel)}
+        }
+        let text=SCNText(string:"AFTERLIGHT / MOTORWORKS",extrusionDepth:0.005)
+        text.font=UIFont.systemFont(ofSize:1,weight:.bold);text.flatness=0.15;text.materials=[material(0xCBE7F1,glow:true)]
+        let sign=SCNNode(geometry:text);sign.scale=SCNVector3(0.21,0.21,0.21);sign.position=SCNVector3(-2.6,5.75,-8.86);scene.rootNode.addChildNode(sign)
+        for (position,power,color) in [(SCNVector3(-5,5.5,3),CGFloat(380),UInt32(0xE6EFF5)),(SCNVector3(4,5,-4),CGFloat(240),UInt32(0x83C8ED)),(SCNVector3(-7,3,-5),CGFloat(160),UInt32(0xFFD6A3))] {
+            let node=SCNNode();let light=SCNLight();light.type = .spot;light.intensity=power;light.color=UIColor(hex:color)
+            light.spotInnerAngle=45;light.spotOuterAngle=105;light.castsShadow=true;light.shadowRadius=5
+            light.shadowMapSize=CGSize(width:2048,height:2048);light.shadowColor=UIColor(white:0,alpha:0.4)
+            node.light=light;node.position=position;node.look(at:SCNVector3(0,0.5,0));scene.rootNode.addChildNode(node)
         }
         return scene
     }

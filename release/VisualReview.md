@@ -1,6 +1,6 @@
-# Development build 11 — authored vehicles and body contact
+# Development build 13 — industrial garage and varied city architecture
 
-2 October 2026. App Store submission remains on hold. The seven supplied references establish large contemporary vehicles, industrial garages, cyan telemetry, yellow actions and detailed street scenes. Overall lighting, scenery density, coastal architecture and menu art still need further work; this is not a final visual sign-off.
+2 October 2026. App Store submission remains on hold. The seven supplied references establish large contemporary vehicles, industrial garages, cyan telemetry, yellow actions and detailed street scenes. Vehicle surface polish, lighting, terrain silhouettes and remaining menu art still need further work; this is not a final visual sign-off.
 
 ## Vehicles and landscaping
 
@@ -9,6 +9,12 @@ The local licensed build now uses Pierre-Louis Baril's independent Generic Sport
 Jan Hecl's coconut palm replaces the coastal placeholder in the local build. Conversion preserves bark and foliage maps with explicit alpha cutouts. UV layer names are normalized before joining the authored parts; otherwise leaf parts inherited empty UV coordinates. The native GLB loader uses the correct UIImage texture orientation and respects alpha cutoff.
 
 BlenderKit Royalty Free source files, runtime packs and generated encryption keys stay outside public Git. App packs use AES-GCM and decrypt in memory. This avoids plainly extractable GLB files, without claiming unbreakable protection. Public source checkouts regenerate their project using Tools/generate_project.sh and use the credited bundled fallback art. AssetCredits.txt records exact authors, source pages and licenses.
+
+## Garage and city art
+
+Dennis Hafemann's Industrial Old Warehouse replaces the enclosed tile showroom in the local build. Its concrete color/normal atlas is baked at 2048px; authored windows and shutter geometry are retained, loose debris and atmosphere removed, and the bay enlarged for the fleet. Suspended light rails, yellow bay markings, cyan accents and tool cabinets establish the Motorworks setting. The camera avoids the front pillar and places the hero car beside a narrower performance panel. HDR/spot lighting is reduced to improve paint highlights.
+
+Five meshes from Alex Samusenko's City Scene add a bank, office, terrace, brick building and apartment block. Each uses a private 1024px facade/normal atlas and portable glazing. Complete city geometry is not bundled. These buildings also replace the simple coastal villas when the local packs are available. Brown coastal tree placeholders are removed. White road paint, concrete curbs and pavement now follow continuous circuit ribbons instead of glowing rectangular segments that separated on bends.
 
 ## Gameplay fixes
 
@@ -20,10 +26,10 @@ Imported city buildings are placed using their complete transformed bounds, incl
 
 ## Validation
 
-Fourteen unit tests passed with all four local licensed packs present: decoding, wheel pivots, body colliders, swept contact, real rival contact, road clearance, purchases, persistence, progression and driving effects. Two UI cases passed: completing the first race and starting another event, and rendering the complete licensed rival grid with a minimum 30 fps simulator assertion. The separate six-car/four-region visual case also passed its 30 fps checks.
+Fourteen unit tests passed with all ten local licensed packs present, including decryption, wheel pivots, body contact, driving effects, progression and complete-circuit scenery clearance. The clearance case now includes the coast. The six-car/four-region visual case passed its minimum 30 fps simulator checks in 64.824 seconds. Earlier first/second-race navigation and complete rival-grid checks remain recorded for build 11; those flows were not changed in this art pass.
 
-Logs: /tmp/afterlight-final-barrier-tests.log, /tmp/afterlight-build11-final-tests.log and /tmp/afterlight-licensed-fleet-visual-test.log. Xcode's result-bundle finalization has previously stalled on this host; case-level success is reported separately from a completed result bundle. Physical build 11 compiled and installed on Oana's iPhone. Launch/performance verification needs the phone unlocked; iOS denied the initial launch because it was locked.
+Logs: /tmp/afterlight-city13-final-tests.log, /tmp/afterlight-city13-final-phone.log and /tmp/afterlight-city13-final-install.log. Physical build 13 compiled and installed on Oana's iPhone. Physical launch/performance verification remains pending because iOS reports the phone locked. Simulator timing is not a physical-device frame-rate claim. Native render evidence: /tmp/afterlight-garage12-final.png and subsequent build 13 city/coast screenshots.
 
 ## Remaining art work
 
-Garage architecture, coastal buildings, terrain silhouettes, road furniture and lighting still do not match the supplied references. Further professional art work and physical-device performance review are required before App Store submission.
+The garage and architecture have improved, but vehicle surface fidelity, terrain silhouettes, lighting, distant scenery and remaining menu art still need further refinement against the supplied references. Further professional art work and physical-device performance review are required before App Store submission.

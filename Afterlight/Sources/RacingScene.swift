@@ -227,8 +227,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:0xFFD4AD); sun.light?.intensity=circuit.id == 1 ? 700 : 1100; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .deferred; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=90; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.35); sun.eulerAngles=SCNVector3(-0.65,-0.5,0); scene.rootNode.addChildNode(sun)
         let distantFloor=SCNFloor();distantFloor.materials=[SurfaceLibrary.surface(circuit.id==2 ? "sand" : "grass")];let distantLand=SCNNode(geometry:distantFloor);distantLand.position.y = -4;world.addChildNode(distantLand)
         world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit))
-        let roadMat=SurfaceLibrary.surface("asphalt"), stripe=material(0xDDDCD1), pink=material(0xC56C55), aqua=material(0xBEC4C4)
-        if circuit.id==1 { pink.emission.contents=UIColor(hex:0xDB568C); aqua.emission.contents=UIColor(hex:0x69CFC1) }
+        let roadMat=SurfaceLibrary.surface("asphalt"), stripe=material(0xDDDCD1), aqua=material(0x47CFFF,glow:true)
         if circuit.id==1 {roadMat.roughness.contents=0.28;roadMat.normal.intensity=0.35}
         buildRoadSurface(roadMat)
         for i in 0..<12 {
@@ -244,7 +243,6 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             let heading=atan2(b.x-a.x,b.z-a.z)
             // Continuous UV-mapped road replaces overlapping rectangular road slabs.
             for side in [-1.0,1.0] {
-                let edge=circuit.point(t,lane:side*9.1); let rail=SCNNode(geometry:SCNBox(width:0.36,height:0.10,length:distance+0.1,chamferRadius:0.02)); rail.geometry?.materials=[side<0 ? pink : aqua]; rail.position=SCNVector3(edge.x,0.17,edge.z); rail.eulerAngles.y=heading; world.addChildNode(rail)
                 if i%2==0 { let mark=SCNNode(geometry:SCNBox(width:0.12,height:0.02,length:distance*0.65,chamferRadius:0)); mark.geometry?.materials=[stripe]; let p=circuit.point(t,lane:side*3); mark.position=SCNVector3(p.x,0.12,p.z); mark.eulerAngles.y=heading; world.addChildNode(mark) }
             }
             if i%6==0 { scenery(t,index:i) }
@@ -269,6 +267,24 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         }
         let geometry=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:Array(repeating:SCNVector3(0,1,0),count:vertices.count)),SCNGeometrySource(textureCoordinates:uv)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
         mat.isDoubleSided=true; geometry.materials=[mat]; world.addChildNode(SCNNode(geometry:geometry))
+        // Continuous pavement follows the actual outer curve. Rectangular
+        // curb segments left bright gaps on bends and looked like neon blocks.
+        func ribbon(_ inner:Double,_ outer:Double,_ height:Float,_ material:SCNMaterial) {
+            var points:[SCNVector3]=[],coordinates:[CGPoint]=[]
+            for i in 0...count {
+                let t=Double(i)/Double(count)
+                for lane in [inner,outer] {let p=circuit.point(t,lane:lane);points.append(SCNVector3(p.x,height,p.z));coordinates.append(CGPoint(x:lane/2,y:t*circuit.length/2))}
+            }
+            let g=SCNGeometry(sources:[SCNGeometrySource(vertices:points),SCNGeometrySource(normals:Array(repeating:SCNVector3(0,1,0),count:points.count)),SCNGeometrySource(textureCoordinates:coordinates)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
+            material.isDoubleSided=true;g.materials=[material];world.addChildNode(SCNNode(geometry:g))
+        }
+        let pavement=SurfaceLibrary.surface("stucco",tint:UIColor(hex:0x9C9B93));pavement.roughness.contents=0.9
+        let curb=material(0xB9BBB5),edgePaint=material(0xE8E4D7)
+        for side in [-1.0,1.0] {
+            ribbon(side*8.72,side*8.85,0.122,edgePaint)
+            ribbon(side*9.05,side*9.65,0.17,curb)
+            ribbon(side*9.65,side*(circuit.id==1 ? 14:11.7),0.15,pavement)
+        }
         // Roadside safety barriers are metal rather than luminous boundary walls.
         let metal=material(0x9FAAAF);metal.metalness.contents=0.75;metal.roughness.contents=0.4
         for i in stride(from:0,to:count,by:4) {
@@ -303,7 +319,6 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         for side in [-1.0,1.0] {
             let p=circuit.point(t,lane:side*(22+Double(index%4)*6))
             if circuit.id==0 {
-                if index%3==0,let tree=SceneDressing.asset("island_tree_01",height:8) {tree.position=SCNVector3(p.x+Float(side)*14,0,p.z);world.addChildNode(tree)}
                 let palm=SceneDressing.palm(); palm.position=SCNVector3(p.x,0,p.z);palm.eulerAngles.y=Float(index)*0.73;palm.scale.y *= 0.8+Float(index%4)*0.1;world.addChildNode(palm)
             } else if circuit.id==1 {
                 let n=SceneDressing.tower(height:Float(12+index%37),seed:index)
@@ -385,6 +400,6 @@ struct CarShowroom: UIViewRepresentable {
     func updateUIView(_ v:SCNView,context:Context) {
         guard context.coordinator.name != car.name else {return};context.coordinator.name=car.name;context.coordinator.ready=false;v.accessibilityIdentifier="showroom-loading"
         let s=SceneDressing.studio();let n=RaceEngine.makeCar(car);s.rootNode.addChildNode(n);n.runAction(.repeatForever(.rotateBy(x:0,y:2 * .pi,z:0,duration:28)))
-        let camera=SCNNode();camera.camera=SCNCamera();camera.camera?.fieldOfView=36;camera.camera?.wantsHDR=true;camera.camera?.wantsExposureAdaptation=false;camera.camera?.screenSpaceAmbientOcclusionIntensity=0.65;camera.camera?.exposureOffset = -0.25;camera.position=SCNVector3(6.0,2.4,6.0);camera.look(at:SCNVector3(0,0.5,0));s.rootNode.addChildNode(camera);v.scene=s;v.pointOfView=camera
+        let camera=SCNNode();camera.camera=SCNCamera();camera.camera?.fieldOfView=36;camera.camera?.wantsHDR=true;camera.camera?.wantsExposureAdaptation=false;camera.camera?.screenSpaceAmbientOcclusionIntensity=0.65;camera.camera?.exposureOffset = -0.4;camera.position=SCNVector3(3.7,2.15,6.7);camera.look(at:SCNVector3(-0.8,0.65,0.6));s.rootNode.addChildNode(camera);v.scene=s;v.pointOfView=camera
     }
 }

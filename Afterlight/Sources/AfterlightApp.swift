@@ -181,10 +181,11 @@ struct GarageView: View {
             VStack(alignment:.leading,spacing:10) {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:12) {
-                        Text(car.name).font(RacingType.title(32));Text(car.subtitle.uppercased()).font(RacingType.data(8)).foregroundStyle(racingBlue)
+                        Text("MOTORWORKS / COLLECTION").font(RacingType.data(7)).tracking(1.5).foregroundStyle(racingBlue)
+                        Text(car.name).font(RacingType.title(30));Text(car.subtitle.uppercased()).font(RacingType.data(8)).foregroundStyle(racingBlue)
                         rating("TOP SPEED",car.speed/80);rating("HANDLING",car.handling/1.4);rating("TUNING",Double(garage.save.upgrades[car.id] ?? 0)/4)
                         Text("\(Int(car.speed*3.6)) KM/H  /  STAGE \(garage.save.upgrades[car.id] ?? 0)").font(RacingType.data(9)).foregroundStyle(.white)
-                    }.frame(width:210,alignment:.leading).padding(18).background(ink.opacity(0.65),in:RacingPanel(cut:8))
+                    }.frame(width:185,alignment:.leading).padding(14).background(ink.opacity(0.52),in:RacingPanel(cut:8))
                     Spacer()
                     Text("CLASS \(["GT","C","S","S","R","X"][car.id])").font(RacingType.title(22)).foregroundStyle(mint).padding(12).background(ink.opacity(0.6),in:RacingPanel(cut:8))
                 }
