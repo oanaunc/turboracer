@@ -1,3 +1,17 @@
+# Build 20 — Afterlight: Racing Festival
+
+2 October 2026. Replaced spherical/orb collectibles with original beveled graphite memory cartridges: clipped corner, cyan data strips and amber contacts. Pickup positions/rewards remain unchanged. UI, story and privacy wording now consistently say memory chips.
+
+Fixed foliage cutouts that left surviving leaf pixels translucent, corrected texture transforms, and increased texture filtering. Added grounded roadside planters, shrubs, benches, festival flags and deeper alpine tree clusters with full-circuit footprint clearance. Lighting and fog, original vehicle contact shadows, sea surface shading and a distant night skyline improve depth. Terrain normals and district color grading were refined; the closed roofs and grounded foundations from build 18 remain.
+
+Twenty calendar cards now show actual native circuit captures. The Crew page uses an original fictional four-character panorama generated with built-in image_gen; exact prompt and provenance: `concepts/crew-prompt.txt`. The home/settings identity now matches the independent Afterlight release.
+
+The local fleet remains six entries across four body families, with three concept-platform derivatives. No new independent car model was added in this pass. Scene density and building variety still repeat within districts, and these mobile procedural scenes should not be described as matching Asphalt's production quality. Current store screenshots represent the actual game rather than rendered marketing concepts.
+
+Native iPhone/iPad captures: `screenshots-build20/`. All twenty physical route-opening render samples passed the minimum 30 fps check after scene render-scale/MSAA tuning and stopping the hidden showroom renderer. These short samples do not establish sustained full-lap performance. See Validation.md for exact evidence and earlier failures.
+
+---
+
 # Development build 18 — landscape and roof repair
 
 New original coastal villas have complete gables, tiled roofs, shutters, balconies, chimneys and sealed bases. Chalet roofs now use closed triangular prisms instead of intersecting slabs. Facades face the circuit; existing full-road clearance checks remain in place.

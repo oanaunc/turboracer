@@ -1,4 +1,4 @@
-# TurboRacer: Afterlight
+# Afterlight: Racing Festival
 
 A native offline arcade racing adventure for iPhone and iPad. The original 2024 Unity export remains at the repository root as an archive. Active development is in **Afterlight/**; no Unity installation is required.
 
@@ -11,7 +11,7 @@ Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join 
 - Sixty campaign events: two-lap races with three rivals, time attack, and drift runs.
 - Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; VANTA uses an independent concept GT; the remaining three entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
 - Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions with model-sized body volumes and swept contact checks. The rival roster excludes the player’s body family and uses three different families. Nitro eases the chase camera in and out, and an exhausted tank stays off until the button is released. The simulation clock runs during touch tracking.
-- Twelve memory sparks per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages through district-wide progress. A live route map tracks your race position.
+- Twelve metallic memory chips per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages through district-wide progress. A live route map tracks your race position.
 - Daily rotating drift challenge; the first starred run awards 350 extra credits.
 - Persistent garage, best times, drift records, stars, statistics, and milestones.
 - Landscape racing and landscape menus, with a full-screen industrial car showroom, blue service bay, cyan telemetry and yellow actions, side navigation and thumb controls at the lower corners.
@@ -39,7 +39,7 @@ Camera-space steering regression and UI touch checks cover both landscape orient
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 17. App Store submission is held while the visual/product redesign is reviewed.
+Bundle ID: `com.oanarinaldi.afterlight`. Team: `HBD3XXQK45`. App Store Connect app ID: `6818519420`. Version 1.0.0, build 20. The separate app identity was requested by the owner; the original Turbo Racer record and its saves remain untouched. The new installation uses its own save container. See `release/SubmissionStrategy.md` for submission status and `release/Validation.md` for the test evidence.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 
@@ -49,7 +49,7 @@ Car names and circuits are fictional. The concept vehicle is by Eric Chadwick / 
 
 The score can be regenerated with `python3 Afterlight/Tools/compose_soundtrack.py`. Material maps use `Afterlight/Tools/compose_materials.py` (Python, NumPy, Pillow). Car derivatives use Blender with `Afterlight/Tools/design_fleet.py`. Environment and city conversion scripts are in `Afterlight/Tools/`. Source model attribution and derivative changes are recorded in the bundled credits.
 
-The app uses UserDefaults for on-device saves with required reason CA92.1 declared in its privacy manifest. Players can reset progress from Settings. Website privacy policy: https://oanarinaldi.com/turboracerprivacy.html.
+The app uses UserDefaults for on-device saves with required reason CA92.1 declared in its privacy manifest. Players can reset progress from Settings. Website privacy policy: https://oanarinaldi.com/afterlightprivacy.html.
 
 ## Local licensed art
 

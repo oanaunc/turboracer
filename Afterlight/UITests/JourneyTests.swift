@@ -104,7 +104,14 @@ final class JourneyTests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app=XCUIApplication();app.launchArguments=["--journey-review","--preview-region","18","--preview-grid","--nitro-review"];app.launch()
         XCTAssertTrue(app.buttons["control-NITRO"].waitForExistence(timeout:15))
-        app.buttons["control-BRAKE"].press(forDuration:3)
+        // Cold scene creation can delay the countdown on a physical device.
+        // Start measuring only once the race clock is actually advancing.
+        let running=NSPredicate { _,_ in
+            guard let raw=app.descendants(matching:.any)["race-scene"].value as? String,
+                  let value=try? JSONDecoder().decode([String:Double].self,from:Data(raw.utf8)) else{return false}
+            return (value["elapsed"] ?? 0)>0.5
+        }
+        XCTAssertEqual(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:running,object:nil)],timeout:15),.completed)
         func sample() throws -> [String:Double] {
             let value=try XCTUnwrap(app.descendants(matching:.any)["race-scene"].value as? String)
             return try JSONDecoder().decode([String:Double].self,from:Data(value.utf8))

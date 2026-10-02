@@ -26,3 +26,15 @@ struct TelemetryBar: View {
     let value:Double; var color=mint
     var body:some View { HStack(spacing:3) { ForEach(0..<20,id:\.self) { i in Rectangle().fill(Double(i)/20<value ? color : .white.opacity(0.07)) } }.frame(height:7) }
 }
+
+struct CircuitArtwork: View {
+    let circuit:Circuit
+    var body:some View {
+        GeometryReader { size in ZStack(alignment:.bottomLeading) {
+            if let image=SurfaceLibrary.image("circuit-\(circuit.id)") {Image(uiImage:image).resizable().scaledToFill().frame(width:size.size.width,height:size.size.height).clipped()}
+            else {Color(hex:circuit.sky);TrackMap(circuit:circuit).padding(20)}
+            LinearGradient(colors:[.clear,.black.opacity(0.55)],startPoint:.center,endPoint:.bottom)
+            Text(circuit.look.setting).font(RacingType.data(8)).tracking(1).padding(9).foregroundStyle(.white)
+        }}.accessibilityHidden(true)
+    }
+}

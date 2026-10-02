@@ -1,3 +1,20 @@
+# Release candidate 1.0.0 (20) — 2 October 2026
+
+New identity: `com.oanarinaldi.afterlight`, App Store Connect `6818519420`, Afterlight: Racing Festival. The distribution archive succeeded and Apple accepted the upload at 15:48 EEST. Store submission status is tracked in SubmissionStrategy.md.
+
+- Final physical iPhone 17 Pro Max sweep passed all twenty route-opening render checks, each at least 30 fps, with zero failures in 198.746 seconds. This is a short opening-segment sample per route, not a sustained full-lap thermal benchmark. Result: `/tmp/AfterlightPhone20/Logs/Test/Test-Afterlight-2026.10.02_15-43-41-+0300.xcresult`; log: `/tmp/afterlight20-phone-final-routes.log`.
+- Physical repeated nitro holds passed: elapsed race time advanced from 1.01674 to 6.36050 seconds, 237 boost samples, maximum simulation callback interval 54.45 ms. Callback timing does not measure GPU presentation. The test now waits for the actual countdown to finish instead of assuming cold startup always takes three seconds. Earlier build 19 failures remain recorded in the local logs.
+- Render cost was reduced to 2x scene scale and 2x MSAA while SwiftUI remains at native display resolution. The hidden showroom renderer stops while a race is presented or the application is inactive. Earlier build 20 samples failed routes 0 and 17 before this showroom fix; the final sweep above passed both.
+- Final simulator run passed 26 unit/art checks and the iPad layout journey (`/tmp/afterlight20-tablet-final.log`). Checks include all-route road clearance, models/colliders, progression, steering, nitro, closed roofs, finite terrain normals and foliage alpha cutouts.
+- Complete simulator race/results/next-event flow and repeated nitro input passed (`/tmp/afterlight20-journey.log`). That run preceded the final hidden-showroom lifecycle adjustment; the final physical sweep and iPad/unit invocation include it.
+- Six iPhone and five iPad screenshots in `screenshots-build20/` are actual native captures, normalized for image orientation only. Circuit thumbnails are native scene renders; the fictional crew illustration is generated artwork.
+- Build 20 is installed on the phone. Relaunch after the completed sweep returned the iOS Locked error; the user can open Afterlight directly after unlocking.
+- Dedicated privacy policy published at https://oanarinaldi.com/afterlightprivacy.html; website commits `81d1ce5` and `25337a3`. Apple Data Not Collected label published after the owner's explicit approval. No accounts, ads, analytics, purchases or network game services were added.
+
+Licensed source art and generated decryption keys remain excluded from Git. The archive contains the local licensed runtime art; public source builds use credited fallback assets. Remaining visual limitations are documented in VisualReview.md.
+
+---
+
 # Development build 18 — terrain, roofs and vegetation
 
 2 October 2026. Version 2.0.0 (18) compiled and installed on Oana’s iPhone. The subsequent launch request returned the iOS `Locked` error. The physical route sweep waited for unlock and was canceled without running; build 18 physical launch and performance are unverified. The installed app can be opened directly. Existing saves are preserved; review launches use isolated fixtures.

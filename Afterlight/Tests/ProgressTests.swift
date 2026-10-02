@@ -158,7 +158,7 @@ final class ProgressTests: XCTestCase {
             let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
             var rockCount=0
             engine.scene.rootNode.enumerateChildNodes { rock,_ in
-                guard ["roadside-rock","roadside-building","route-landmark"].contains(rock.name ?? "") else {return};rockCount += 1
+                guard ["roadside-rock","roadside-building","route-landmark","trackside-garden","trackside-forest","trackside-marker"].contains(rock.name ?? "") else {return};rockCount += 1
                 let b=rock.boundingBox, center=rock.convertPosition(SCNVector3Zero,to:nil)
                 var radius:Float=0
                 for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {

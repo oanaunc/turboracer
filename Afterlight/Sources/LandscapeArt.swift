@@ -47,13 +47,13 @@ import UIKit
         float3 macro = cliffColor.sample(terrainSampler,p.xz/143.0+0.37).rgb;
         stone *= mix(float3(0.78),float3(1.18),macro);
         float grey = dot(stone,float3(0.2126,0.7152,0.0722));
-        stone = mix(stone,mix(float3(grey),float3(grey)*float3(1.42,1.05,0.73),isDesert),0.65);
+        stone = mix(stone,mix(float3(grey),float3(grey)*float3(1.65,0.91,0.50),isDesert),0.65);
         float3 soil = soilColor.sample(terrainSampler,p.xz/7.0).rgb;
         float patch = 0.5+0.25*sin(p.x*0.019+p.z*0.026)+0.25*cos(p.z*0.031-p.x*0.013);
-        float coverage = smoothstep(0.68,0.94,n.y)*mix(0.35,0.9,patch)*hasGrass;
-        float3 albedo = mix(stone,soil*float3(0.78,0.94,0.72),coverage);
+        float coverage = smoothstep(0.68,0.94,n.y)*mix(0.68,0.98,patch)*hasGrass;
+        float3 albedo = mix(stone,soil*float3(0.72,1.12,0.64),coverage);
         float snowCover = hasSnow*smoothstep(0.45,0.82,n.y)*smoothstep(12.0,65.0,p.y+patch*20.0);
-        albedo = mix(albedo,float3(0.76,0.84,0.89),snowCover);
+        albedo = mix(albedo,float3(0.56,0.65,0.72),snowCover);
         _surface.diffuse = float4(albedo,1.0);
         float3 nx = cliffNormal.sample(terrainSampler,q.zy).xyz*2.0-1.0;
         float3 ny = cliffNormal.sample(terrainSampler,q.xz).xyz*2.0-1.0;
@@ -99,6 +99,14 @@ import UIKit
             uv.append(CGPoint(x:Double(x)/38,y:Double(z)/38))
         }}
         for row in 0..<steps {for col in 0..<steps {let a=Int32(row*(steps+1)+col),c=a+Int32(steps+1);indices += [a,c,a+1,a+1,c,c+1]}}
+        // Match normals to the rendered triangles, not sub-grid noise derivatives.
+        var accumulated=Array(repeating:SIMD3<Float>.zero,count:vertices.count)
+        for i in stride(from:0,to:indices.count,by:3) {
+            let a=Int(indices[i]),b=Int(indices[i+1]),c=Int(indices[i+2])
+            func point(_ i:Int)->SIMD3<Float> {let p=vertices[i];return SIMD3(p.x,p.y,p.z)}
+            let n=simd_cross(point(b)-point(a),point(c)-point(a));accumulated[a] += n;accumulated[b] += n;accumulated[c] += n
+        }
+        normals=accumulated.map {vector(simd_normalize($0))}
         let g=SCNGeometry(sources:[SCNGeometrySource(vertices:vertices),SCNGeometrySource(normals:normals),SCNGeometrySource(textureCoordinates:uv)],elements:[SCNGeometryElement(indices:indices,primitiveType:.triangles)])
         g.materials=[terrainMaterial(vegetated:vegetated,desert:desert,snow:snow)]
         let node=SCNNode(geometry:g);node.name="landscape-ridge";node.castsShadow=false;return node

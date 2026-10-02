@@ -96,3 +96,11 @@ native triplanar landscape shading and original closed villa roofs.
 Existing normalized coast HDR is retained for image-based lighting.
 Source downloads verified against vendor MD5 checksums.
 The generated coastal concept is development reference only, not a gameplay screenshot.
+
+Build 19 original additions (2 October 2026)
+Crew panorama: original artwork generated with the built-in image_gen tool.
+Exact production prompt: release/concepts/crew-prompt.txt in the source repository.
+Memory-chip collectible, trackside furniture, city skyline and sea shading:
+original native SceneKit geometry/materials authored for Afterlight.
+Circuit selection images: captures of the actual native game scenes.
+Existing models and surface maps retain the licenses credited above.

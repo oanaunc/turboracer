@@ -48,7 +48,7 @@ extension Circuit { var look: RouteLook { RouteLook.all[id] } }
     }
     static func ground(_ circuit:Circuit) -> SCNMaterial {
         if circuit.look.ground=="snow" {
-            let m=material(0xDAE4EC);m.normal.contents=SurfaceLibrary.image("sand-normal");m.normal.intensity=0.2;m.roughness.contents=0.94
+            let m=material(0xA3B4C3);m.normal.contents=SurfaceLibrary.image("sand-normal");m.normal.intensity=0.2;m.roughness.contents=0.94
             m.normal.wrapS = .repeat;m.normal.wrapT = .repeat;return m
         }
         return SurfaceLibrary.surface(circuit.look.ground)

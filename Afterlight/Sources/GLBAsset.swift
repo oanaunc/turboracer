@@ -5,6 +5,17 @@ import UIKit
 /// Preserves authored normals, UV sets, hierarchy and PBR textures instead of
 /// reducing a professionally authored vehicle to a single flat material.
 @MainActor enum GLBAsset {
+    /// glTF MASK is binary coverage, not translucent leaf layers. UIKit decodes
+    /// premultiplied RGBA; restore color before forcing surviving pixels opaque.
+    static func configureCutout(_ material:SCNMaterial,cutoff:Double) {
+        material.shaderModifiers=[.surface:"""
+        if (_surface.diffuse.a < \(cutoff)) discard_fragment();
+        _surface.diffuse.rgb /= max(_surface.diffuse.a, 0.001);
+        _surface.diffuse.a = 1.0;
+        """,.fragment:"_output.color.a = 1.0;"]
+        material.transparencyMode = .aOne;material.blendMode = .replace
+        material.writesToDepthBuffer=true;material.readsFromDepthBuffer=true
+    }
     static func load(_ name: String) -> SCNNode? {
         let publicFile=Bundle.main.url(forResource:name,withExtension:"glb").flatMap {try? Data(contentsOf:$0)}
         guard let file=ArtVault.model(name) ?? publicFile,file.count>20 else{return nil}
@@ -46,14 +57,24 @@ import UIKit
                 let scale=transform["scale"] as? [Double] ?? [1,1]
                 // SceneKit maps UIImage contents in the glTF image orientation.
                 // Flipping V here cut away the atlas foliage and inverted vehicle textures.
-                let matrix=SCNMatrix4MakeScale(Float(scale[0]),Float(scale[1]),1)
+                let offset=transform["offset"] as? [Double] ?? [0,0]
+                let rotation=transform["rotation"] as? Double ?? 0
+                var matrix=SCNMatrix4MakeScale(Float(scale[0]),Float(scale[1]),1)
+                matrix=SCNMatrix4Mult(matrix,SCNMatrix4MakeRotation(Float(rotation),0,0,1))
+                matrix.m41=Float(offset[0]);matrix.m42=Float(offset[1])
                 property.contentsTransform=matrix;property.wrapS = .repeat;property.wrapT = .repeat
-                property.mappingChannel=info["texCoord"] as? Int ?? 0
+                property.mappingChannel=transform["texCoord"] as? Int ?? info["texCoord"] as? Int ?? 0
+                property.mipFilter = .linear;property.maxAnisotropy=8
             }
             if let normal=definition["normalTexture"] as? [String:Any] {m.normal.intensity=normal["scale"] as? CGFloat ?? 1}
             m.isDoubleSided=definition["doubleSided"] as? Bool ?? false
             let alpha=m.name=="PalmAtlas" ? "MASK":(definition["alphaMode"] as? String ?? "OPAQUE")
-            if alpha=="MASK" {let cutoff=definition["alphaCutoff"] as? Double ?? 0.5;m.shaderModifiers=[.fragment:"if (_surface.diffuse.a < \(cutoff)) discard_fragment();"];m.transparencyMode = .aOne}
+            if alpha=="MASK" {
+                let botanical=["RoyalPalm","CoastalPalm","AlpineFir","CoastalShrub","island_tree_01","pine_sapling_small"].contains(name)
+                let authored=definition["alphaCutoff"] as? Double ?? 0.5
+                // Thin botanical atlases lose coverage in filtered mobile mip levels.
+                configureCutout(m,cutoff:botanical ? min(authored,0.18):authored)
+            }
             if alpha=="BLEND" {m.transparency=factor.count>3 ? factor[3]:1;m.writesToDepthBuffer=false;m.blendMode = .alpha}
             // Trademark-bearing plates and dashboard marks are replaced with plain trim.
             if m.name=="License" || m.name=="Dashboard" {m.diffuse.contents=UIColor(hex:0x111820);m.emission.contents=UIColor.black;m.multiply.contents=UIColor.white}

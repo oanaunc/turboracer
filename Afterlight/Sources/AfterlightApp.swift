@@ -40,14 +40,14 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             if tab==2 {
-                CarShowroom(car:Car.all[inspectedCar]).ignoresSafeArea()
+                CarShowroom(car:Car.all[inspectedCar],isActive:activeRace==nil && scenePhase == .active).ignoresSafeArea()
                 LinearGradient(colors:[ink.opacity(0.85),.clear,.clear],startPoint:.leading,endPoint:.trailing).ignoresSafeArea().allowsHitTesting(false)
                 LinearGradient(colors:[ink.opacity(0.65),.clear,ink.opacity(0.25)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
             } else {PaddockBackground()}
             VStack(spacing:0) {
                 HStack(spacing:10) {
                     Image(systemName:"flag.checkered").foregroundStyle(mint).font(.system(size:20))
-                    VStack(alignment:.leading,spacing:1) { Text("AFTERLIGHT").font(RacingType.title(21)).tracking(1); Text("TURBORACER / MOTORSPORT FESTIVAL").font(RacingType.data(7)).tracking(1).foregroundStyle(muted) }
+                    VStack(alignment:.leading,spacing:1) { Text("AFTERLIGHT").font(RacingType.title(21)).tracking(1); Text("MOTORSPORT / RACING FESTIVAL").font(RacingType.data(7)).tracking(1).foregroundStyle(muted) }
                     Spacer()
                     VStack(alignment:.trailing,spacing:2) {Text(garage.save.credits.formatted()).font(RacingType.data(15));Text("RACE CREDITS").font(RacingType.data(7)).foregroundStyle(mint)}
                     Button { settings=true } label: { Image(systemName:"gearshape").foregroundStyle(muted).padding(10).background(.white.opacity(0.04),in:RacingPanel(cut:6)) }.accessibilityLabel("Settings")
@@ -79,7 +79,7 @@ struct HomeView: View {
         let next=Circuit.all[garage.save.unlockedRegion]
         return HStack(spacing:16) {
             ZStack(alignment:.bottomLeading) {
-                CarShowroom(car:garage.car)
+                CarShowroom(car:garage.car,isActive:activeRace==nil && scenePhase == .active)
                 LinearGradient(colors:[.clear,ink.opacity(0.9)],startPoint:.center,endPoint:.bottom).allowsHitTesting(false)
                 VStack(alignment:.leading,spacing:5) {Eyebrow(text:"SEASON 01 / YOUR CURRENT DRIVE");Text(garage.car.name).font(RacingType.title(36));Text("\(Int(garage.car.speed*3.6)) KM/H  /  STAGE \(garage.save.upgrades[garage.car.id] ?? 0)").font(RacingType.data(9)).foregroundStyle(muted)}.padding(20)
             }.clipShape(RacingPanel(cut:18)).frame(maxWidth:.infinity,maxHeight:.infinity)
@@ -148,6 +148,7 @@ struct HomeView: View {
                 HStack(alignment:.top,spacing:14) {ForEach(Circuit.all.filter {$0.environment==calendarRegion}) {circuit in
                     let locked = !garage.save.isUnlocked(circuit)
                     VStack(alignment:.leading,spacing:6) {
+                        CircuitArtwork(circuit:circuit).frame(height:102).clipShape(RacingPanel(cut:8))
                         HStack {Eyebrow(text:String(format:"ROUTE %02d",circuit.route+1),color:Color(hex:circuit.color));Spacer();Text(locked ? "LOCKED":"\((0..<3).reduce(0) {$0+(garage.save.medals[circuit.id*3+$1] ?? 0)})/9 ★").font(RacingType.data(8)).foregroundStyle(muted)}
                         HStack {VStack(alignment:.leading,spacing:5) {Text(circuit.name).font(RacingType.title(21));Text("\(String(format:"%.2f",circuit.length/1000)) KM / \(circuit.character)").font(RacingType.data(8)).foregroundStyle(muted)};Spacer();TrackMap(circuit:circuit).frame(width:66,height:44)}
                         ForEach(Array(RaceMode.allCases.enumerated()),id:\.offset) {index,mode in
@@ -167,10 +168,11 @@ struct HomeView: View {
     var journal: some View {
         VStack(alignment:.leading,spacing:22) {
             SectionHeading(number:"04",title:"THE PIT WALL",detail:"CREW & LEGACY")
+            if let art=SurfaceLibrary.image("crew") { Image(uiImage:art).resizable().aspectRatio(contentMode:.fit).clipShape(RacingPanel(cut:16)).accessibilityLabel("Luca, Nova, Rafa and Iris in the Afterlight workshop") }
             Text("You inherited a shuttered garage and your father's Solstice. Mika, your oldest friend and mechanic, has a plan: enter the Afterlight Festival, win back the garage's reputation, and reach the summit race your father never finished.").font(.system(size:15)).foregroundStyle(muted).lineSpacing(6)
             ForEach(Array(Circuit.all.prefix(4))) { c in
                 VStack(alignment:.leading,spacing:12) { HStack { Text(String(c.rival.prefix(1))).font(.system(size:28,weight:.black)).frame(width:58,height:58).background(Color(hex:c.color).opacity(0.15),in:Circle()).foregroundStyle(Color(hex:c.color)); VStack(alignment:.leading,spacing:5) { Eyebrow(text:c.region,color:Color(hex:c.color)); Text(c.rival.uppercased()).font(RacingType.title(24)) } }
-                    HStack { Image(systemName:"sparkle").foregroundStyle(Color(hex:0xFFD76E)); Text("FATHER'S NOTEBOOK • \(garage.save.memories(in:c.environment))/12 SPARKS").font(.system(size:9,weight:.bold,design:.monospaced)).foregroundStyle(muted) }
+                    HStack { Image(systemName:"memorychip.fill").foregroundStyle(racingBlue); Text("FATHER'S NOTEBOOK • \(garage.save.memories(in:c.environment))/12 CHIPS").font(.system(size:9,weight:.bold,design:.monospaced)).foregroundStyle(muted) }
                     if garage.save.memories(in:c.environment) >= 12 { Text(notebook(c.id)).font(.system(size:13,weight:.medium,design:.serif)).italic().foregroundStyle(Color(hex:0xF0D8AA)).lineSpacing(5).padding(14).background(ink,in:RacingPanel(cut:6)) }
                     Text(story(c.id)).font(.system(size:13)).foregroundStyle(muted).lineSpacing(5)
                     if c.id <= garage.save.unlockedRegion { Text(c.id==0 ? "“Speed is easy. A clean line takes heart.”" : c.id==1 ? "“The lights don't make the city. The people do.”" : c.id==2 ? "“Out here, patience is faster than pride.”" : "“Your father left a road. You get to choose where it leads.”").font(.system(size:14,weight:.semibold)).foregroundStyle(Color(hex:c.color)) }
@@ -247,9 +249,9 @@ struct SettingsView: View {
     var body: some View { NavigationStack { Form {
         Section("The driving experience") { Toggle("Original synth soundtrack",isOn:$garage.save.music); Toggle("Engine and collectible sounds",isOn:Binding(get:{ garage.save.sounds ?? true },set:{ garage.save.sounds=$0 })); Toggle("Haptic feedback",isOn:$garage.save.haptics); VStack(alignment:.leading) { Text("Steering sensitivity"); Slider(value:$garage.save.steeringSensitivity,in:0.65...1.5) } }
         Section("How to drive") { Text("Your car accelerates automatically. Hold the left and right arrows to move across the track. Hold BRAKE to slow down; hold DRIFT while steering to build a combo. NITRO gives a burst of speed and recharges as you drive. Stay inside the road markings and safety barriers.").font(.subheadline) }
-        Section("Your data") { Text("Your garage, race records, and settings stay on this device. No account, advertising, analytics, or tracking."); Link("Privacy policy",destination:URL(string:"https://oanarinaldi.com/turboracerprivacy.html")!); Button("Reset all progress",role:.destructive) { reset=true } }
+        Section("Your data") { Text("Your garage, race records, and settings stay on this device. No account, advertising, analytics, or tracking."); Link("Privacy policy",destination:URL(string:"https://oanarinaldi.com/afterlightprivacy.html")!); Button("Reset all progress",role:.destructive) { reset=true } }
         Section("Art credits") {if let url=Bundle.main.url(forResource:"AssetCredits",withExtension:"txt"),let credits=try? String(contentsOf:url) {Text(credits).font(.caption).textSelection(.enabled)}}
-        Section { Text("TurboRacer: Afterlight • 2.0\nFictional racing cars, original circuits, story, and soundtrack.\nCreated by Oana Rinaldi.").font(.footnote).foregroundStyle(.secondary) }
+        Section { Text("Afterlight: Racing Festival • 1.0\nFictional racing cars, original circuits, story, and soundtrack.\nCreated by Oana Rinaldi.").font(.footnote).foregroundStyle(.secondary) }
     }.navigationTitle("Settings").toolbar { Button("Done") { dismiss() } }.confirmationDialog("Erase your garage and all race records?",isPresented:$reset,titleVisibility:.visible) { Button("Erase all progress",role:.destructive) { garage.reset() } } } }
 }
 struct RaceRequest: Identifiable { let id=UUID(); let circuit:Circuit; let mode:RaceMode; let daily:Bool }

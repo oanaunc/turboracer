@@ -7,8 +7,8 @@ settings:
   base:
     SWIFT_VERSION: '5.0'
     DEVELOPMENT_TEAM: HBD3XXQK45
-    MARKETING_VERSION: '2.0.0'
-    CURRENT_PROJECT_VERSION: '18'
+    MARKETING_VERSION: '1.0.0'
+    CURRENT_PROJECT_VERSION: '20'
 targets:
   Afterlight:
     type: application
@@ -19,13 +19,13 @@ targets:
         excludes: ["Models/*.blend", "Models/*.blend1", "Models/*.obj", "Models/*.mtl"]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.oanarinaldi.Turbo-Racer
+        PRODUCT_BUNDLE_IDENTIFIER: com.oanarinaldi.afterlight
         TARGETED_DEVICE_FAMILY: '1,2'
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: 'TurboRacer: Afterlight'
+        CFBundleDisplayName: 'Afterlight'
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}

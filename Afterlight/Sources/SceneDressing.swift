@@ -34,7 +34,7 @@ import UIKit
     static func promenade(_ circuit:Circuit) -> SCNNode {
         let root=SCNNode()
         guard circuit.environment==0 else { return root }
-        let count=[14,7,7,9,5][circuit.route]
+        let count=[24,12,12,18,10][circuit.route]
         for i in 0..<count {
             let t=Double(i)/Double(count)+0.035
             let building=ArchitectureArt.villa(variant:i)
@@ -66,7 +66,7 @@ import UIKit
             let p=circuit.point(t,lane:side*(15.5+Double(i%4)*2.2))
             let radius:Float=2.5
             guard (circuit.environment != 0 || p.x-radius > -153),RouteScenery.allowsScenery(p,radius:radius,circuit:circuit),road.allSatisfy({hypot($0.x-p.x,$0.z-p.z)>13.5+radius}) else {continue}
-            if let shrub=asset("CoastalShrub",height:0.8+Float(i%4)*0.22,maxWidth:4) {
+            if let shrub=asset("CoastalShrub",height:1.4+Float(i%4)*0.30,maxWidth:4) {
                 shrub.position=SCNVector3(p.x,-0.05,p.z);shrub.eulerAngles.y=Float(i)*2.39
                 shrub.name="roadside-shrub";root.addChildNode(shrub)
             }

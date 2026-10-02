@@ -16,7 +16,7 @@ struct RaceView: View {
     var body: some View {
         GeometryReader { geometry in ZStack {
             SceneSurface(engine:engine).frame(width:geometry.size.width,height:geometry.size.height).ignoresSafeArea()
-            LinearGradient(colors:[ink.opacity(0.75),.clear,.clear,ink.opacity(0.75)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
+            LinearGradient(colors:[ink.opacity(0.28),.clear,.clear,ink.opacity(0.45)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
             VStack(spacing:8) {
                 HStack(alignment:.top,spacing:24) {
                     VStack(alignment:.leading,spacing:3) {Eyebrow(text:request.circuit.name);Text(request.mode.rawValue.uppercased()).font(RacingType.data(8)).foregroundStyle(muted)}
@@ -36,7 +36,7 @@ struct RaceView: View {
                     HoldControl(symbol:"chevron.right",title:"RIGHT",color:.white) {held in engine.steering=held ? 1:(engine.steering>0 ? 0:engine.steering)}
                     HoldControl(symbol:"minus",title:"BRAKE",color:Color(hex:0xFF9A82),compact:true) {engine.braking=$0}
                     Spacer()
-                    VStack(spacing:2) {HStack(alignment:.firstTextBaseline,spacing:5) {Text(Int(engine.speed*3.6).formatted()).font(RacingType.title(42)).monospacedDigit();Text("KM/H").font(RacingType.data(8)).foregroundStyle(muted)};TelemetryBar(value:engine.nitro,color:Color(hex:0x78D8DB)).frame(width:115,height:4);Text("\(engine.collected)/12 MEMORY").font(RacingType.data(8)).foregroundStyle(mint)}
+                    VStack(spacing:2) {HStack(alignment:.firstTextBaseline,spacing:5) {Text(Int(engine.speed*3.6).formatted()).font(RacingType.title(42)).monospacedDigit();Text("KM/H").font(RacingType.data(8)).foregroundStyle(muted)};TelemetryBar(value:engine.nitro,color:Color(hex:0x78D8DB)).frame(width:115,height:4);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}
                     Spacer()
                     HoldControl(symbol:"wind",title:"DRIFT",color:Color(hex:0xFFD76E)) {engine.drifting=$0}
                     HoldControl(symbol:"bolt.fill",title:"NITRO",color:Color(hex:0x78D8DB)) {engine.nitroHeld=$0}
@@ -48,7 +48,7 @@ struct RaceView: View {
             } }
             if tutorial { overlay {
                 Eyebrow(text:"PIT RADIO / MIKA"); Text("GRID BRIEFING").font(RacingType.title(34)); Text("Your car accelerates for you. Hold the arrows to steer across the road. Corners push you outward, so keep your line inside the white markings.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
-                Text("Collect gold memory sparks to recover your father's notebook and recharge nitro. DRIFT + steering builds a combo. NITRO gives you a burst of speed. BRAKE helps you settle into a tight turn.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
+                Text("Collect cyan memory chips to recover your father's notebook and recharge nitro. DRIFT + steering builds a combo. NITRO gives you a burst of speed. BRAKE helps you settle into a tight turn.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
                 ActionButton(title:"LET'S RACE",icon:"flag.checkered") { tutorial=false; engine.setPaused(false); engine.start() }
             } }
             if let result=engine.result {
@@ -65,7 +65,7 @@ struct RaceView: View {
                             VStack(alignment:.leading,spacing:12) {
                                 Eyebrow(text:"RACE REWARD",color:racingBlue)
                                 Text("+\(result.credits) CREDITS").font(RacingType.title(27)).foregroundStyle(mint)
-                                Text("\(result.collected) memory sparks recovered").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
+                                Text("\(result.collected) memory chips recovered").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
                                 Text("Choose another event in the calendar. Earn five stars across this region to open the next destination.").font(.system(size:12)).foregroundStyle(muted).fixedSize(horizontal:false,vertical:true)
                             }.frame(maxWidth:.infinity,alignment:.leading)
                         }

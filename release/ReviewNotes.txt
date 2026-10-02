@@ -1,0 +1,11 @@
+Afterlight: Racing Festival 1.0.0
+
+Afterlight is submitted as a separate game under com.oanarinaldi.afterlight. Development began from the Turbo Racer project previously reviewed in September 2024 (app 6478083613); that legacy app is not being resubmitted in parallel. The current app is a new native Swift/SceneKit implementation. It does not embed the old Unity runtime or its game template.
+
+Afterlight is an offline arcade racing campaign about restoring a family garage and completing a motorsport festival. It includes twenty authored circuits across coastal, urban, desert and alpine districts; circuit races with three opponents, time attacks and drift trials; persistent medals, upgrades and car unlocks; and a notebook story recovered through memory-chip pickups. There are no accounts, advertisements, purchases or external game services.
+
+Review path: choose Start Your First Race on the Paddock screen, dismiss the short driving briefing, and complete the two-lap event. The car accelerates automatically; hold the arrows to change your line, use Brake for corners, Drift with steering for combos, and Nitro for a speed boost. Results offer a return to the festival or selection of the next event. The Calendar contains all routes and three event types per route. Five stars earned across a district unlock the next district. The Garage supports car selection, earned-credit purchases and upgrades. The Crew screen records story and notebook progress.
+
+The gameplay, track layouts, progression, interface and narrative were authored for Afterlight. Some environment and vehicle models are licensed third-party art, adapted for mobile rendering; the complete credits and source licenses are available in Settings. We do not claim exclusive ownership of those source models. All car names are fictional, and the game is not affiliated with another racing-game publisher or a car manufacturer.
+
+The screenshots supplied with this submission show the actual current app. No login or special review credentials are required. Saves remain on the device; the linked privacy policy describes this offline behavior.

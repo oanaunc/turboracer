@@ -25,6 +25,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     let scene = SCNScene(); private let world = SCNNode(); private let roadFurniture = SCNNode(); private let trackLength: Double; let camera = SCNNode(); let player: SCNNode
     private let playerCollider:VehicleCollider
     private var rivalColliders:[VehicleCollider]=[]
+    private var vehicleShadows:[SCNNode]=[]
     private var rivals: [SCNNode] = []; private var rivalProgress = [-0.008,-0.016,-0.024]
     private var sparks: [SCNNode] = []; private var sparkCollected = Set<Int>(); private var messageTimer = 0.0
     private var progress = 0.0; private var lane = 0.0; private var lateral = 0.0
@@ -57,6 +58,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         camera.camera?.screenSpaceAmbientOcclusionIntensity = 0.65; camera.camera?.screenSpaceAmbientOcclusionRadius = 2.2
         scene.rootNode.addChildNode(camera)
         for rivalCar in rivalCars {let n=Self.makeCar(rivalCar);rivals.append(n);rivalColliders.append(VehicleCollider(node:n));scene.rootNode.addChildNode(n)}
+        for vehicle in [player]+rivals {let shadow=SceneAtmosphere.contactShadow(for:vehicle);scene.rootNode.addChildNode(shadow);vehicleShadows.append(shadow)}
         placeCars(); updateCamera(dt: 1)
     }
     func start() {
@@ -145,7 +147,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             sparks[i].eulerAngles.y += Float(dt*1.6)
             if distance < 4.5 && abs(lane-sparkLane) < 2.3 {
                 audio.collect(); sparkCollected.insert(i); sparks[i].isHidden=true; collected += 1; nitro=min(1,nitro+0.12)
-                sparkMessage = "MEMORY SPARK +35 • NITRO RESTORED"; messageTimer=2; feedback()
+                sparkMessage = "MEMORY CHIP +35 • NITRO RESTORED"; messageTimer=2; feedback()
             }
         }
         for vehicle in [player]+rivals {
@@ -167,8 +169,12 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     }
     private func feedback() { if haptics { UIImpactFeedbackGenerator(style: .light).impactOccurred() } }
     private func placeCars() {
+        defer {placeShadows()}
         player.position = vector(circuit.point(progress,lane: lane)); player.eulerAngles.y = circuit.heading(progress)+Float(lateral*0.022*(drifting ? 2 : 1))
         for i in rivals.indices { rivals[i].position = vector(circuit.point(rivalProgress[i],lane: Double(i-1)*4)); rivals[i].eulerAngles.y = circuit.heading(rivalProgress[i]) }
+    }
+    private func placeShadows() {
+        for (vehicle,shadow) in zip([player]+rivals,vehicleShadows) {shadow.position=SCNVector3(vehicle.position.x,0.13,vehicle.position.z);shadow.eulerAngles=SCNVector3(-.pi/2,0,-vehicle.eulerAngles.y)}
     }
     private var chaseHeading:Float?
     private func updateCamera(dt: Double) {
@@ -255,18 +261,18 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let daylight=(circuit.environment==0 && circuit.route != 4) || (circuit.environment==3 && circuit.route<3)
         if circuit.environment != 1, let sky=Bundle.main.url(forResource:daylight ? "daylight-sky":"coast-sky",withExtension:"hdr") { scene.background.contents=sky }
         scene.lightingEnvironment.contents = circuit.environment==1 ? Self.skyImage(circuit) : Bundle.main.url(forResource:"coast-light",withExtension:"hdr"); scene.lightingEnvironment.intensity = circuit.environment == 1 ? 0.8 : 0.65
-        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = 320; scene.fogEndDistance = 1250
-        let ambient=SCNNode(); ambient.light=SCNLight(); ambient.light?.type = .ambient; ambient.light?.color=UIColor(hex:0xCDDCEA); ambient.light?.intensity=circuit.environment == 1 ? 260 : 95; scene.rootNode.addChildNode(ambient)
-        let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:circuit.look.sun); sun.light?.intensity=circuit.environment == 1 ? 700 : 1400; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .forward; sun.light?.shadowBias=2; sun.light?.shadowCascadeCount=3; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=180; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.35); sun.eulerAngles=SCNVector3(-0.4-Float(circuit.route)*0.12,-0.5+Float(circuit.route)*0.65,0); scene.rootNode.addChildNode(sun)
+        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = circuit.environment==1 ? 200:240; scene.fogEndDistance = circuit.environment==1 ? 850:950
+        let ambient=SCNNode(); ambient.light=SCNLight(); ambient.light?.type = .ambient; ambient.light?.color=UIColor(hex:0xCDDCEA); ambient.light?.intensity=160; scene.rootNode.addChildNode(ambient)
+        let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:circuit.look.sun); sun.light?.intensity=circuit.environment == 1 ? 700 : 1400; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .forward; sun.light?.shadowBias=0.03; sun.light?.shadowCascadeCount=3; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=180; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.55); sun.eulerAngles=SCNVector3(-0.4-Float(circuit.route)*0.12,-0.5+Float(circuit.route)*0.65,0); scene.rootNode.addChildNode(sun)
         let distantFloor=SCNFloor();distantFloor.materials=[RouteScenery.ground(circuit)];let distantLand=SCNNode(geometry:distantFloor);distantLand.position.y = -4;world.addChildNode(distantLand)
-        world.addChildNode(RouteScenery.landmarks(circuit)); world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit));world.addChildNode(SceneDressing.undergrowth(circuit))
+        world.addChildNode(RouteScenery.landmarks(circuit)); world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit));world.addChildNode(SceneDressing.undergrowth(circuit));world.addChildNode(TracksideArt.dress(circuit))
         let roadMat=SurfaceLibrary.surface("asphalt"), stripe=material(0xDDDCD1), aqua=material(0x47CFFF,glow:true)
         if circuit.environment==1 {roadMat.roughness.contents=0.28;roadMat.normal.intensity=0.35}
         buildRoadSurface(roadMat)
         for i in 0..<12 {
-            let n=SCNNode(geometry:SCNTorus(ringRadius:0.85,pipeRadius:0.12)); n.geometry?.materials=[material(0xFFD76E,glow:true)]; n.eulerAngles.x = .pi/2
+            let n=SceneAtmosphere.memoryChip();n.eulerAngles.z = -0.12
             let p=circuit.point(Double(i+1)/13,lane:Double(i%3-1)*5); n.position=SCNVector3(p.x,1.65,p.z)
-            let core=SCNNode(geometry:SCNSphere(radius:0.28)); core.geometry?.materials=[material(0xFFF0B2,glow:true)]; n.addChildNode(core); sparks.append(n); scene.rootNode.addChildNode(n)
+            sparks.append(n); scene.rootNode.addChildNode(n)
         }
         addAtmosphere()
         let count=240
@@ -333,17 +339,17 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     private func addAtmosphere() {
         // Surrounding world gives each region its own recognizable silhouette.
         if circuit.environment==0 {
-            let water=SCNPlane(width:1400,height:1400); let m=material(0x28758B); m.metalness.contents=0.35; m.roughness.contents=0.16; m.normal.contents=SurfaceLibrary.image("water-normal"); m.normal.wrapS = .repeat; m.normal.wrapT = .repeat; m.normal.contentsTransform=SCNMatrix4MakeScale(80,80,1); water.materials=[m]
-            let n=SCNNode(geometry:water); n.eulerAngles.x = -.pi/2; n.position=SCNVector3(-580,-0.30,0); world.addChildNode(n)
+            world.addChildNode(SceneAtmosphere.sea())
             for i in 0..<9 { let yacht=SCNNode(geometry:SCNBox(width:3,height:1,length:10,chamferRadius:0.9)); yacht.geometry?.materials=[material(0xE9DCD3)]; yacht.position=SCNVector3(-180-Float(i)*18,0.5,Float(i*25-100)); yacht.eulerAngles.y=Float(i)*0.2; world.addChildNode(yacht) }
         }
-        let ridgeCount=circuit.environment==0 ? 7:12
+        if circuit.environment==1 {world.addChildNode(SceneAtmosphere.skyline(circuit))}
+        let ridgeCount=circuit.environment==1 ? 0:circuit.environment==0 ? 7:12
         for i in 0..<ridgeCount {
             // Keep the coast open to the sea; interlock broad inland ridges.
             let angle=circuit.environment==0 ? -Float.pi*0.40+Float(i)*Float.pi*0.8/Float(ridgeCount-1):Float(i)*2 * .pi/Float(ridgeCount)
             let distance:Float=570+Float(i%3)*55
             let radius:Float=205+Float(i%3)*15
-            let h:Float=circuit.environment==0 ? 85+Float(i%4)*23 : circuit.environment==1 ? 65+Float(i%3)*18:145+Float(i%4)*35
+            let h:Float=circuit.environment==0 ? 55+Float(i%4)*17 : circuit.environment==1 ? 65+Float(i%3)*18:145+Float(i%4)*35
             let n=SurfaceLibrary.hill(radius:radius,height:h,seed:i+circuit.id*13,vegetated:circuit.environment==0 || circuit.look.ground=="grass",desert:circuit.environment==2,snow:circuit.look.ground=="snow")
             n.position=SCNVector3(cos(angle)*distance,-1.5,sin(angle)*distance);n.eulerAngles.y=angle+Float.pi/2;world.addChildNode(n)
         }
@@ -424,7 +430,10 @@ struct SceneSurface: UIViewRepresentable {
     }
     func makeCoordinator() -> Coordinator {Coordinator()}
     func makeUIView(context:Context) -> SCNView {
-        let v=SCNView();v.scene=engine.scene;v.pointOfView=engine.camera;v.isPlaying=true;v.preferredFramesPerSecond=60;v.antialiasingMode = .multisampling4X;v.backgroundColor = .black
+        let v=SCNView();v.scene=engine.scene;v.pointOfView=engine.camera;v.isPlaying=true;v.preferredFramesPerSecond=60;v.antialiasingMode = .multisampling2X;v.backgroundColor = .black
+        // Keep HUD text at native resolution while avoiding a 4x MSAA render
+        // of the entire 3x Retina surface for the moving 3D world.
+        v.contentScaleFactor=min(UIScreen.main.scale,2)
         v.isAccessibilityElement=true;v.accessibilityLabel="Three-dimensional racing circuit";v.accessibilityIdentifier="race-scene";v.delegate=context.coordinator;context.coordinator.view=v;return v
     }
     func updateUIView(_ uiView:SCNView,context:Context) {
@@ -443,6 +452,7 @@ struct SceneSurface: UIViewRepresentable {
 }
 struct CarShowroom: UIViewRepresentable {
     let car: Car
+    var isActive=true
     final class Coordinator: NSObject, SCNSceneRendererDelegate {
         weak var view:SCNView?; var name="";var ready=false
         func renderer(_ renderer:SCNSceneRenderer,didRenderScene scene:SCNScene,atTime time:TimeInterval) {
@@ -456,8 +466,11 @@ struct CarShowroom: UIViewRepresentable {
     }
     static func dismantleUIView(_ v:SCNView,coordinator:Coordinator) {v.isPlaying=false;v.scene=nil;v.delegate=nil}
     func updateUIView(_ v:SCNView,context:Context) {
+        // A full-screen race keeps its presenting SwiftUI view alive. Stop
+        // the hidden showroom's renderer so it does not compete with racing.
+        v.isPlaying=isActive
         guard context.coordinator.name != car.name else {return};context.coordinator.name=car.name;context.coordinator.ready=false;v.accessibilityIdentifier="showroom-loading"
-        let s=SceneDressing.studio();let n=RaceEngine.makeCar(car);s.rootNode.addChildNode(n);n.runAction(.repeatForever(.rotateBy(x:0,y:2 * .pi,z:0,duration:28)))
+        let s=SceneDressing.studio();let n=RaceEngine.makeCar(car);s.rootNode.addChildNode(n);let contact=SceneAtmosphere.contactShadow(for:n);contact.position.y=0.03;s.rootNode.addChildNode(contact);n.runAction(.repeatForever(.rotateBy(x:0,y:2 * .pi,z:0,duration:28)))
         let camera=SCNNode();camera.camera=SCNCamera();camera.camera?.fieldOfView=36;camera.camera?.wantsHDR=true;camera.camera?.wantsExposureAdaptation=false;camera.camera?.screenSpaceAmbientOcclusionIntensity=0.65;camera.camera?.exposureOffset = -0.4;camera.position=SCNVector3(3.7,2.15,6.7);camera.look(at:SCNVector3(-0.8,0.65,0.6));s.rootNode.addChildNode(camera);v.scene=s;v.pointOfView=camera
     }
 }

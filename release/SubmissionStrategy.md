@@ -1,15 +1,15 @@
 # Afterlight submission identity
 
-2 October 2026. Keep the existing `com.oanarinaldi.Turbo-Racer` bundle identifier and App Store record while completing the rebuild. No replacement identifier has been registered.
+2 October 2026. At the user's explicit request, Afterlight has its own bundle identifier and App Store record:
 
-A new identifier does not establish that a game satisfies review requirements or guarantee independence from an earlier rejection. Apple guideline 4.3(a) discourages multiple bundle IDs for the same app. A genuinely separate product may warrant a separate record, but changing identity solely to avoid the earlier rejection is not the recommended submission strategy.
+- Bundle ID: `com.oanarinaldi.afterlight`, registered with team `HBD3XXQK45`.
+- App Store Connect: `6818519420` — Afterlight: Racing Festival.
+- First version: `1.0.0`; development build sequence continues at 20.
+- SKU: `afterlight-racing-festival-ios`.
+- Privacy/support: https://oanarinaldi.com/afterlightprivacy.html
 
-Before submission, review the exact original rejection, finish the remaining art and physical-device performance work, update all screenshots to actual current gameplay, and explain the rebuilt gameplay, progression, tracks, assets and original identity in reviewer notes. Do not describe the product as an Asphalt clone or imply rights to Gameloft assets. If the rebuilt app is rejected on an inapplicable basis, respond with concrete evidence and use App Review support/appeal channels.
+The old `com.oanarinaldi.Turbo-Racer` app (6478083613) is retained and is not being resubmitted in parallel. The user's existing installation and save are preserved. The separate app has its own local save container; it does not automatically inherit the old installation's progress.
 
-The existing record cannot have its bundle identifier changed after a build has been uploaded. A different identifier would require a different app record and signing configuration. No such migration is part of build 18.
+Review notes disclose the earlier project's origin, new native implementation, original gameplay and licensed art. A new bundle ID is a product-identity choice, not a guarantee of approval. Apple's content and spam guidelines still apply.
 
-Sources checked:
-- [App Review Guidelines, 4.3 Spam](https://developer.apple.com/app-store/review/guidelines/#spam)
-- [App information: Bundle ID](https://developer.apple.com/help/app-store-connect/reference/app-information/app-information)
-
-Submission remains pending product refinement; this document is a preparation note, not an approval prediction or a record of submission.
+Submission remains pending successful physical-device validation, current screenshots, distribution upload and completion of the new record's requirements. Record creation and saved metadata are not a review submission.
