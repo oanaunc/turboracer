@@ -6,3 +6,13 @@ build/
 *.xcarchive
 *.ipa
 *.xcresult
+
+*.blend1
+
+# User supplied visual references; not licensed runtime assets.
+/car games ui examples/
+
+# Superseded procedural vehicle authoring exports.
+Afterlight/Resources/Models/*.obj
+Afterlight/Resources/Models/*.mtl
+Afterlight/Resources/Models/*.blend

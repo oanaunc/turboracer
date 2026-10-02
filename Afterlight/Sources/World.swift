@@ -5,7 +5,7 @@ struct Car: Identifiable {
     let id: Int; let name: String; let subtitle: String; let price: Int
     let speed: Double; let handling: Double; let color: UInt32
     static let all = [
-        Car(id: 0, name: "SOLSTICE", subtitle: "The beginning of a legend", price: 0, speed: 54, handling: 1.0, color: 0xFF704D),
+        Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C),
         Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4),
         Car(id: 2, name: "VANTA", subtitle: "Born for the midnight run", price: 3600, speed: 61, handling: 0.95, color: 0xA68CFF),
         Car(id: 3, name: "AURORA", subtitle: "A beautiful kind of chaos", price: 6000, speed: 65, handling: 1.1, color: 0xFFD76E),
@@ -62,6 +62,16 @@ struct SaveData: Codable {
     @Published var save: SaveData { didSet { persist() } }
     private let storage: UserDefaults
     init(storage: UserDefaults = .standard) {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--visual-review") {
+            let fixture=UserDefaults(suiteName:"afterlight.visual.review")!
+            fixture.removePersistentDomain(forName:"afterlight.visual.review")
+            self.storage=fixture
+            var demo=SaveData();demo.credits=30000;demo.owned=Array(0..<6)
+            for region in 0..<3 { demo.medals[region*3]=3;demo.medals[region*3+1]=3 }
+            save=demo;return
+        }
+        #endif
         self.storage = storage
         save = storage.data(forKey: "afterlight.save.v1").flatMap { try? JSONDecoder().decode(SaveData.self, from: $0) } ?? SaveData()
     }

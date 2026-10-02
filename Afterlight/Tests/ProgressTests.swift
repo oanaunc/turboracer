@@ -1,6 +1,64 @@
 import XCTest
+import SceneKit
 @testable import Afterlight
 final class ProgressTests: XCTestCase {
+    @MainActor func testFleetModelsAndMaterialsAreBundled() {
+        for car in Car.all {
+            guard let node=SurfaceLibrary.grandTourer(car) else { XCTFail("Missing concept model: \(car.name)");continue }
+            let bounds=node.boundingBox
+            XCTAssertGreaterThan(bounds.max.z-bounds.min.z,3.8)
+            XCTAssertLessThan(bounds.max.z-bounds.min.z,5.6)
+            var vertexCount=0;var glassFound=false
+            node.enumerateChildNodes { child,_ in
+                vertexCount += child.geometry?.sources(for:.vertex).first?.vectorCount ?? 0
+                for material in child.geometry?.materials ?? [] where material.name=="Glass" {
+                    glassFound=true
+                    XCTAssertEqual(material.emission.contents as? UIColor,UIColor(red:0,green:0,blue:0,alpha:1),"Glazing must not glow")
+                    XCTAssertEqual(material.lightingModel,.physicallyBased)
+                }
+            }
+            XCTAssertGreaterThan(vertexCount,10000)
+            XCTAssertTrue(glassFound)
+        }
+        for name in ["asphalt-art","asphalt-normal","rubber","rock","grass","sand"] { XCTAssertNotNil(SurfaceLibrary.image(name)) }
+        XCTAssertNotNil(Bundle.main.url(forResource:"studio-light",withExtension:"hdr"))
+    }
+
+    @MainActor func testImportedCityAndLandscapingHaveUsableBounds() {
+        for name in ["CityCorner","CityMidrise","CityLandmark","CoastalPalm","coastal_cliff_01","island_tree_01","pine_sapling_small"] {
+            guard let node=SceneDressing.asset(name,height:12) else {XCTFail("Missing or empty environment: \(name)");continue}
+            let bounds=node.boundingBox
+            XCTAssertGreaterThan(bounds.max.y-bounds.min.y,0)
+            XCTAssertTrue(node.scale.y.isFinite)
+        }
+        let tourer=SurfaceLibrary.grandTourer(Car.all[0])!.boundingBox
+        let compact=SurfaceLibrary.grandTourer(Car.all[1])!.boundingBox
+        let hyper=SurfaceLibrary.grandTourer(Car.all[2])!.boundingBox
+        XCTAssertLessThan(compact.max.z-compact.min.z,tourer.max.z-tourer.min.z)
+        XCTAssertGreaterThan(hyper.max.x-hyper.min.x,tourer.max.x-tourer.min.x)
+    }
+
+    @MainActor func testRoadsideRocksLeaveTheFullCircuitClear() {
+        for circuit in Circuit.all.suffix(2) {
+            let engine=RaceEngine(circuit:circuit,mode:.sprint,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+            var rockCount=0
+            engine.scene.rootNode.enumerateChildNodes { rock,_ in
+                guard rock.name=="roadside-rock" else {return};rockCount += 1
+                let b=rock.boundingBox, center=rock.convertPosition(SCNVector3Zero,to:nil)
+                var radius:Float=0
+                for x in [b.min.x,b.max.x] {for z in [b.min.z,b.max.z] {
+                    let corner=rock.convertPosition(SCNVector3(x,0,z),to:nil)
+                    radius=max(radius,hypot(corner.x-center.x,corner.z-center.z))
+                }}
+                for step in 0..<480 {
+                    let road=circuit.point(Double(step)/480)
+                    XCTAssertGreaterThan(hypot(road.x-center.x,road.z-center.z)-radius,11,"Imported rock intersects the road corridor")
+                }
+            }
+            XCTAssertGreaterThan(rockCount,0)
+        }
+    }
+
     @MainActor func testPurchaseCannotOverspendAndPersists() {
         let defaults = UserDefaults(suiteName:UUID().uuidString)!
         let garage=Garage(storage:defaults)

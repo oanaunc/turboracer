@@ -8,12 +8,15 @@ settings:
     SWIFT_VERSION: '5.0'
     DEVELOPMENT_TEAM: HBD3XXQK45
     MARKETING_VERSION: '2.0.0'
-    CURRENT_PROJECT_VERSION: '5'
+    CURRENT_PROJECT_VERSION: '9'
 targets:
   Afterlight:
     type: application
     platform: iOS
-    sources: [Sources, Resources]
+    sources:
+      - Sources
+      - path: Resources
+        excludes: ["Models/*.blend", "Models/*.blend1", "Models/*.obj", "Models/*.mtl"]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.oanarinaldi.Turbo-Racer
@@ -27,20 +30,26 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UIRequiresFullScreen: true
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
-        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UIStatusBarHidden: true
         ITSAppUsesNonExemptEncryption: false
   AfterlightTests:
     type: bundle.unit-test
     platform: iOS
     sources: [Tests]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: Afterlight
   AfterlightUITests:
     type: bundle.ui-testing
     platform: iOS
     sources: [UITests]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: Afterlight
 schemes:

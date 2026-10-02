@@ -1,0 +1,45 @@
+TurboRacer: Afterlight — asset provenance
+
+Original road geometry, architecture and track layouts: Afterlight project. Licensed concept vehicle and environment assets are credited below.
+Original terrain, story, interface, procedural material maps and synthesized music: Afterlight project.
+Cover, icon and asphalt base color: generated with OpenAI ImageGen for this project.
+
+HDR environment lighting, CC0 1.0 public domain:
+Studio Small 09 — Sergej Majboroda / Poly Haven
+https://polyhaven.com/a/studio_small_09
+Kloppenheim 06 (Pure Sky) — Greg Zaal; sky edits Jarod Guest / Poly Haven
+https://polyhaven.com/a/kloppenheim_06_puresky
+License: https://polyhaven.com/license
+Downloaded 1K HDR assets; vendor checksums verified.
+
+All runtime assets are bundled. No runtime downloads or asset-service accounts required.
+
+Concept vehicle: Eric Chadwick / Darmstadt Graphics Group GmbH, 2024.
+Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept
+Changes: native SceneKit material adaptation, selectable body paint; Sprint, Hyper and
+Roadster geometry derivatives change body proportions, cabin and roof; trademark
+plates and emblems suppressed/replaced with plain trim. No endorsement implied.
+
+Environment meshes: Coastal Cliff 01 and Island Tree 01, Poly Haven.
+CC0 1.0 Universal. Mobile derivatives reduce mesh density and texture sizes.
+https://polyhaven.com/a/coastal_cliff_01
+https://polyhaven.com/a/island_tree_01
+https://polyhaven.com/license
+
+Coastal palm mesh: Wolfgang Wozniak (Ouren), Palm Tree, 2015.
+Creative Commons Attribution 3.0 Unported.
+https://opengameart.org/content/palm-tree-0
+https://creativecommons.org/licenses/by/3.0/
+Modified with a generated photorealistic texture atlas, native materials,
+and scene-scale adjustments. The original texture is replaced.
+
+Downtown City MegaKit Standard — Quaternius, 2026.
+CC0 1.0 Universal. Building and street-prop derivatives converted to bundled GLB.
+https://quaternius.com/packs/downtowncitymegakit.html
+https://quaternius.itch.io/downtown-city-megakit
+
+Rosewood Veneer 1 and Pine Sapling Small — Poly Haven, CC0.
+https://polyhaven.com/a/rosewood_veneer1
+https://polyhaven.com/a/pine_sapling_small

@@ -6,14 +6,15 @@ A native offline arcade racing adventure for iPhone and iPad. The original 2024 
 
 Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join the Afterlight Festival. Race from Palm Coast through Neon Harbor and Ember Canyon to Cloudline. Earn five campaign stars in each region to open the next.
 
-- Four original 3D circuits with distinct scenery, skies, and regional rivals.
+- Four original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
 - Twelve campaign events: two-lap races with three rivals, time attack, and drift runs.
-- Six fictional cars with individual paint, proportions, performance, and earned engine tuning.
+- Six fictional performance variants of a licensed contemporary concept platform, including authored Sprint, Hyper and Roadster body geometry, paint and track aero. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
 - Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions.
 - Twelve memory sparks per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages in the story journal.
 - Daily rotating drift challenge; the first starred run awards 350 extra credits.
 - Persistent garage, best times, drift records, stars, statistics, and milestones.
-- Original generated cover/icon art and a reproducible synth score. No ads, purchases, accounts, analytics, or external game services.
+- Landscape racing and landscape menus, with an industrial car showroom with cyan telemetry and yellow actions, side navigation and thumb controls at the lower corners.
+- Original generated cover/icon/asphalt art and a reproducible synth score. Bundled CC0 HDR lighting. No ads, purchases, accounts, analytics, or external game services.
 
 ## Build
 
@@ -37,12 +38,14 @@ Unit tests cover purchases, upgrade caps, persistence, campaign progression, dai
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, build 5.
+Bundle ID: `com.oanarinaldi.Turbo-Racer` (the existing app). Team: `HBD3XXQK45`. App Store Connect app ID: `6478083613`. Version 2.0.0, development build 9. App Store submission is held while the visual/product redesign is reviewed.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
 
 ## Ownership and data
 
-All car names and track geometry are original fictional designs. Geometry, environments, and score are produced by project code. Cover and icon were generated with OpenAI ImageGen for this project; there are no downloaded car models, licensed vehicle badges, or third-party music samples. The score can be regenerated with `python3 Afterlight/Tools/compose_soundtrack.py`.
+Car names and circuits are fictional. The concept vehicle is by Eric Chadwick / Darmstadt Graphics Group, licensed CC BY 4.0. Coastal palm geometry is by Wolfgang Wozniak, CC BY 3.0, with a generated replacement atlas. Scanned cliffs, trees and HDR environments are CC0 Poly Haven assets. Detailed city architecture is from Quaternius’ CC0 Downtown City MegaKit Standard. See the bundled `Afterlight/Resources/AssetCredits.txt` and in-game Settings for full attribution. All runtime assets are bundled for offline play.
+
+The score can be regenerated with `python3 Afterlight/Tools/compose_soundtrack.py`. Material maps use `Afterlight/Tools/compose_materials.py` (Python, NumPy, Pillow). Car derivatives use Blender with `Afterlight/Tools/design_fleet.py`. Environment and city conversion scripts are in `Afterlight/Tools/`. Source model attribution and derivative changes are recorded in the bundled credits.
 
 The app uses UserDefaults for on-device saves with required reason CA92.1 declared in its privacy manifest. Players can reset progress from Settings. Website privacy policy: https://oanarinaldi.com/turboracerprivacy.html.
