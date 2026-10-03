@@ -330,4 +330,11 @@ final class ProgressTests: XCTestCase {
         }
     }
 
+    func testTiltSteeringFollowsBothLandscapeOrientations() {
+        XCTAssertEqual(TiltSteering.steering(gravityY:0.01,orientation:.landscapeRight),0)
+        XCTAssertGreaterThan(TiltSteering.steering(gravityY:-0.2,orientation:.landscapeRight),0.5)
+        XCTAssertLessThan(TiltSteering.steering(gravityY:-0.2,orientation:.landscapeLeft),-0.5)
+        XCTAssertEqual(TiltSteering.steering(gravityY:0.9,orientation:.landscapeLeft),1)
+    }
+
 }

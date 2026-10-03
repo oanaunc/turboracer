@@ -61,6 +61,7 @@
 		821C46D0ED30D784BBAC841F /* GLBAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE31FE44126182C1F19BFBE /* GLBAsset.swift */; };
 		84E5F7676F2E668251BB92C0 /* JourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73568E18F43E4526F3C45272 /* JourneyTests.swift */; };
 		85167BE6186C8F0E849A41F9 /* terrain-grass.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FBBE067CC85EBD1CF2D2A383 /* terrain-grass.jpg */; };
+		891DD5C4DF6B0198D5E340AE /* TiltSteering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94520E338EC2CC2ABA7FE701 /* TiltSteering.swift */; };
 		89E38DC33BA35824115F1510 /* ridge-rock-roughness.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 74057869D084E925139E97E5 /* ridge-rock-roughness.jpg */; };
 		8A29ED4538BF2C3B0BF16CA2 /* EnvironmentArtTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1835E9BE33F36C10E8D216FC /* EnvironmentArtTests.swift */; };
 		8A514C4CDCAAA2E4DBC72954 /* circuit-19.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D6A77A0D2933876F3E5C1F4 /* circuit-19.jpg */; };
@@ -212,6 +213,7 @@
 		8B76445C974F31B48C52AEC5 /* AfterlightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterlightApp.swift; sourceTree = "<group>"; };
 		8DA1DB25AD0882A37A848769 /* circuit-18.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-18.jpg"; sourceTree = "<group>"; };
 		94114450FF0A668FC3B6E4FA /* circuit-9.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-9.jpg"; sourceTree = "<group>"; };
+		94520E338EC2CC2ABA7FE701 /* TiltSteering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiltSteering.swift; sourceTree = "<group>"; };
 		996E86D64E49740C335420B2 /* circuit-15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-15.jpg"; sourceTree = "<group>"; };
 		9A17541CAEB462C4CA8EBAA5 /* ArchitectureArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureArt.swift; sourceTree = "<group>"; };
 		9AB75B24BB4D58F22CFBBDE3 /* sky-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sky-night.png"; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 				BD9BA3DC7C335AFA1888155F /* SceneAtmosphere.swift */,
 				1C282CFAD583F91E9D38B485 /* SceneDressing.swift */,
 				A8A67240EAC7159778A89AD2 /* SurfaceLibrary.swift */,
+				94520E338EC2CC2ABA7FE701 /* TiltSteering.swift */,
 				16566062093462B0A1581F20 /* TracksideArt.swift */,
 				FAEB57C333909B963E638AF1 /* VehicleCollider.swift */,
 				CDB001ACA6F4D187C44BB425 /* World.swift */,
@@ -735,6 +738,7 @@
 				CD19C47F7F5744FDCC2083B0 /* SceneAtmosphere.swift in Sources */,
 				8FD4A90851D74AE0023418A5 /* SceneDressing.swift in Sources */,
 				DFA551F0594F88F76196BD2E /* SurfaceLibrary.swift in Sources */,
+				891DD5C4DF6B0198D5E340AE /* TiltSteering.swift in Sources */,
 				01C895AC11F8AFC54FEC2108 /* TracksideArt.swift in Sources */,
 				9DC0E4D718379A99C69A3DAF /* VehicleCollider.swift in Sources */,
 				546C900917C51B60C519E185 /* World.swift in Sources */,

@@ -120,6 +120,7 @@ struct SaveData: Codable {
     var bestTimes: [Int: Double] = [:]; var bestDrifts: [Int: Int] = [:]
     var races = 0; var wins = 0; var distance = 0.0
     var sounds: Bool? = nil
+    var tiltSteering: Bool? = nil
     var music = true; var haptics = true; var steeringSensitivity = 1.0
     var dailyStamp = ""; var dailyBest = 0
     var memorySparks: [Int: Int]? = nil

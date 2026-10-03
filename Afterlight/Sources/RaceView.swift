@@ -9,6 +9,8 @@ struct RaceView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var recorded = false
     @State private var tutorial = false
+    @State private var tilt = TiltSteering()
+    private var tiltOn: Bool { garage.save.tiltSteering ?? false }
     init(request:RaceRequest,garage:Garage,openCalendar:@escaping () -> Void = {}) {
         self.request=request; self.garage=garage; self.openCalendar=openCalendar
         _engine=StateObject(wrappedValue:RaceEngine(circuit:request.circuit,mode:request.mode,car:garage.car,upgrade:garage.save.upgrades[garage.car.id] ?? 0,sensitivity:garage.save.steeringSensitivity,haptics:garage.save.haptics,sounds:garage.save.sounds ?? true))
@@ -37,8 +39,10 @@ struct RaceView: View {
                 if engine.shockwave {Text("SHOCKWAVE NITRO").font(RacingType.data(10)).foregroundStyle(Color(hex:0xE3A8FF))}
                 if engine.combo>1 {Text("DRIFT CHAIN ×\(engine.combo)").font(RacingType.title(18)).foregroundStyle(mint)}
                 HStack(alignment:.bottom,spacing:12) {
-                    HoldControl(symbol:"chevron.left",title:"LEFT",color:.white) {held in engine.steering=held ? -1:(engine.steering<0 ? 0:engine.steering)}
-                    HoldControl(symbol:"chevron.right",title:"RIGHT",color:.white) {held in engine.steering=held ? 1:(engine.steering>0 ? 0:engine.steering)}
+                    if !tiltOn {
+                        HoldControl(symbol:"chevron.left",title:"LEFT",color:.white) {held in engine.steering=held ? -1:(engine.steering<0 ? 0:engine.steering)}
+                        HoldControl(symbol:"chevron.right",title:"RIGHT",color:.white) {held in engine.steering=held ? 1:(engine.steering>0 ? 0:engine.steering)}
+                    }
                     HoldControl(symbol:"minus",title:"BRAKE",color:Color(hex:0xFF9A82),compact:true) {engine.braking=$0}
                     Spacer()
                     VStack(spacing:2) {HStack(alignment:.firstTextBaseline,spacing:5) {Text(Int(engine.speed*3.6).formatted()).font(RacingType.title(42)).monospacedDigit();Text("KM/H").font(RacingType.data(8)).foregroundStyle(muted)};TelemetryBar(value:engine.nitro,color:Color(hex:0x78D8DB)).frame(width:115,height:4);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}
@@ -82,7 +86,8 @@ struct RaceView: View {
                 }
             }
         }.frame(width:geometry.size.width,height:geometry.size.height) }.ignoresSafeArea().onAppear { if garage.save.races==0 { tutorial=true; engine.setPaused(true) } else { engine.start() } }
-        .onDisappear { engine.stop() }
+        .onAppear { if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
+        .onDisappear { engine.stop(); tilt.stop() }
         .onChange(of:engine.result != nil) { _,finished in if finished && !recorded,let result=engine.result { recorded=true; garage.record(result,circuit:request.circuit,mode:request.mode,daily:request.daily) } }
         .onChange(of:scenePhase) { _,phase in if phase != .active { engine.setPaused(true) } }
         .statusBarHidden()
