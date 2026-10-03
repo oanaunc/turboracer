@@ -22,3 +22,7 @@ Review page: https://appstoreconnect.apple.com/apps/6818519420/distribution/revi
 The listing includes six actual iPhone and five actual iPad screenshots, English description, Games / Racing / Action categories, age rating 4+, licensed content declaration and the published Data Not Collected privacy label. Price is free; public distribution is configured in all 175 regions, subject to Apple eligibility/review. Automatic release after approval is selected. Apple silicon Mac and Apple Vision Pro availability are disabled because those control experiences have not been validated.
 
 All twenty physical route-opening render checks passed before submission; detailed limits and evidence are in Validation.md. The app has not yet been approved or released. The owner must continue to keep privacy declarations accurate if the app's data practices change.
+
+## Resubmitted: build 21 (3–4 October 2026)
+
+Build 20 was removed from review and version 1.0.0 was resubmitted with build 21 (the overhaul: stunts, takedowns, 80 events, twelve cars, new hero GT, licensed buildings, scanned nature, Suno soundtrack, new HUD and menus). Listing updated with the new description, review notes, a 77-second reviewer video (`release/Afterlight-build21-review.mp4`) and twelve new screenshots (`release/screenshots-build21/`). App Store Connect shows the new submission as **Waiting for Review**; the build 20 submission shows as Removed.
