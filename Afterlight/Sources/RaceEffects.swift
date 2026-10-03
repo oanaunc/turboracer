@@ -95,7 +95,7 @@ import UIKit
 
         pickupBurst=SCNParticleSystem()
         pickupBurst.particleImage=Self.softDot;pickupBurst.blendMode = .additive;pickupBurst.birthRate=0;pickupBurst.loops=true
-        pickupBurst.particleLifeSpan=0.6;pickupBurst.particleLifeSpanVariation=0.2;pickupBurst.particleSize=0.12;pickupBurst.particleSizeVariation=0.06
+        pickupBurst.particleLifeSpan=0.6;pickupBurst.particleLifeSpanVariation=0.2;pickupBurst.particleSize=0.035;pickupBurst.particleSizeVariation=0.015;pickupBurst.stretchFactor=0.05
         pickupBurst.particleVelocity=7;pickupBurst.particleVelocityVariation=3;pickupBurst.spreadingAngle=180;pickupBurst.isLightingEnabled=false
         pickupBurst.particleColor=UIColor(red:0.45,green:0.97,blue:1,alpha:1);pickupBurst.dampingFactor=2.5
         pickupEmitter.addParticleSystem(pickupBurst);parent.addChildNode(pickupEmitter)
@@ -164,7 +164,7 @@ import UIKit
     /// Cyan burst where a memory chip is collected.
     func collect(at point:SCNVector3) {
         pickupEmitter.position=point
-        pickupBurst.reset();pickupBurst.birthRate=900
+        pickupBurst.reset();pickupBurst.birthRate=600
         DispatchQueue.main.asyncAfter(deadline:.now()+0.06) { [pickupBurst] in pickupBurst.birthRate=0 }
     }
     func stop() {

@@ -335,13 +335,22 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let daylight=(circuit.environment==0 && circuit.route != 4) || (circuit.environment==3 && circuit.route<3)
         if circuit.environment != 1, let sky=Bundle.main.url(forResource:daylight ? "daylight-sky":"coast-sky",withExtension:"hdr") { scene.background.contents=sky }
         scene.lightingEnvironment.contents = circuit.environment==1 ? Self.skyImage(circuit) : Bundle.main.url(forResource:"coast-light",withExtension:"hdr"); scene.lightingEnvironment.intensity = circuit.environment == 1 ? 0.8 : 0.65
-        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = circuit.environment==1 ? 200:240; scene.fogEndDistance = circuit.environment==1 ? 850:950
+        scene.fogColor = UIColor(hex:circuit.look.fog); scene.fogStartDistance = circuit.environment==1 ? 140:160; scene.fogEndDistance = circuit.environment==1 ? 820:900; scene.fogDensityExponent = 1.6
         let ambient=SCNNode(); ambient.light=SCNLight(); ambient.light?.type = .ambient; ambient.light?.color=UIColor(hex:0xCDDCEA); ambient.light?.intensity=160; scene.rootNode.addChildNode(ambient)
         let sun=SCNNode(); sun.light=SCNLight(); sun.light?.type = .directional; sun.light?.color=UIColor(hex:circuit.look.sun); sun.light?.intensity=circuit.environment == 1 ? 700 : 1400; sun.light?.castsShadow=true; sun.light?.shadowMapSize=CGSize(width:2048,height:2048); sun.light?.shadowMode = .forward; sun.light?.shadowBias=0.03; sun.light?.shadowCascadeCount=3; sun.light?.shadowSampleCount=8; sun.light?.shadowRadius=3; sun.light?.maximumShadowDistance=180; sun.light?.orthographicScale=75; sun.light?.shadowColor=UIColor(white:0,alpha:0.55); sun.eulerAngles=SCNVector3(-0.4-Float(circuit.route)*0.12,-0.5+Float(circuit.route)*0.65,0); scene.rootNode.addChildNode(sun)
         let distantFloor=SCNFloor();distantFloor.materials=[RouteScenery.ground(circuit)];let distantLand=SCNNode(geometry:distantFloor);distantLand.position.y = -4;world.addChildNode(distantLand)
         world.addChildNode(RouteScenery.landmarks(circuit)); world.addChildNode(SceneDressing.terrain(circuit)); world.addChildNode(SceneDressing.promenade(circuit));world.addChildNode(SceneDressing.undergrowth(circuit));world.addChildNode(TracksideArt.dress(circuit))
         let roadMat=SurfaceLibrary.surface("asphalt"), stripe=material(0xDDDCD1), aqua=material(0x47CFFF,glow:true)
         if circuit.environment==1 {roadMat.roughness.contents=0.28;roadMat.normal.intensity=0.35}
+        roadMat.multiply.contents=GroundCover.wear;roadMat.multiply.wrapS = .repeat;roadMat.multiply.wrapT = .repeat
+        roadMat.multiply.contentsTransform=SCNMatrix4MakeScale(1/3.6,0.125,1);roadMat.multiply.mipFilter = .linear
+        let road=(0..<240).map {circuit.point(Double($0)/240)}
+        world.addChildNode(GroundCover.tufts(circuit) { p in
+            guard self.circuit.environment>=2 else {return -0.03}
+            let nearest=road.reduce(Float.greatestFiniteMagnitude) {min($0,hypot($1.x-p.x,$1.z-p.z))}
+            let relief=max(0,min(1,(nearest-19)/65))*RouteScenery.terrainRelief(p.x,p.z,circuit:self.circuit)
+            return -0.04+relief*(1.8+sin(p.x*0.03)*cos(p.z*0.025)*1.7)
+        })
         buildRoadSurface(roadMat)
         for i in 0..<12 {
             let n=SceneAtmosphere.memoryChip();n.eulerAngles.z = -0.12
@@ -394,10 +403,10 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             material.isDoubleSided=true;g.materials=[material];world.addChildNode(SCNNode(geometry:g))
         }
         let pavement=SurfaceLibrary.surface("stucco",tint:UIColor(hex:0x9C9B93));pavement.roughness.contents=0.9
-        let curb=material(0xB9BBB5),edgePaint=material(0xE8E4D7)
+        let edgePaint=material(0xE8E4D7)
         for side in [-1.0,1.0] {
             ribbon(side*8.72,side*8.85,0.122,edgePaint)
-            ribbon(side*9.05,side*9.65,0.17,curb)
+            ribbon(side*9.05,side*9.65,0.17,GroundCover.kerb)
             ribbon(side*9.65,side*(circuit.environment==1 ? 14:11.7),0.15,pavement)
         }
         // Roadside safety barriers are metal rather than luminous boundary walls.
@@ -459,7 +468,9 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
                 }
             } else {
                 if circuit.environment==3 && (index/6)%circuit.look.density==0 && RouteScenery.allowsScenery(p,radius:4,circuit:circuit),let pine=SceneDressing.asset("AlpineFir",height:12+Float(index%4)*2,maxWidth:8) ?? SceneDressing.asset("pine_sapling_small",height:8+Float(index%4)) {pine.position=SCNVector3(p.x,0,p.z);world.addChildNode(pine)}
-                let h=CGFloat(8+index%(circuit.route==1 ? 7:23)); let rock=SceneDressing.asset("coastal_cliff_01",height:Float(h),maxWidth:18) ?? SurfaceLibrary.hill(radius:12,height:Float(h),seed:index,vegetated:false,desert:circuit.environment==2,snow:circuit.environment==3); let rockPoint=circuit.point(t,lane:side*38)
+                let h=Float(4+index%(circuit.route==1 ? 4:8))
+                // Sculpted ridge outcrops: the cliff scan flattened into slabs at this footprint.
+                let rock=SurfaceLibrary.hill(radius:11+Float(index%3)*2,height:h,seed:index+circuit.id*31,vegetated:circuit.environment==3 && index%2==0,desert:circuit.environment==2,snow:circuit.look.ground=="snow"); let rockPoint=circuit.point(t,lane:side*38)
                 rock.position=SCNVector3(rockPoint.x,0,rockPoint.z);rock.eulerAngles.y=Float(index)
                 let radius:Float=18 * sqrt(2)/2
                 let clear=(0..<480).allSatisfy {step in let road=circuit.point(Double(step)/480);return hypot(road.x-rockPoint.x,road.z-rockPoint.z)>11+radius+3}

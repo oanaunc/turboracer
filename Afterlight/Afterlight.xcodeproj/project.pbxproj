@@ -50,6 +50,7 @@
 		60BE60BF90FF984D7E183B85 /* island_tree_01.glb in Resources */ = {isa = PBXBuildFile; fileRef = 7ED75DD507C3A274EE4E5831 /* island_tree_01.glb */; };
 		625449705078678DE3529013 /* sand-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = D632F37D209BBA789CD0DBD0 /* sand-roughness.png */; };
 		65BC43D6DC7A48EE9E714631 /* LuxurySedan.asset in Resources */ = {isa = PBXBuildFile; fileRef = 806F76B47BFF96265044120E /* LuxurySedan.asset */; };
+		671D7D15550D03CA814982E2 /* GroundCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D285ADA0426F5D9B9503763 /* GroundCover.swift */; };
 		6DDF1483411E88887B6DCEAF /* CityOffice.asset in Resources */ = {isa = PBXBuildFile; fileRef = FA1D857417466CAE822B169A /* CityOffice.asset */; };
 		6EFD04F992366702E9ECDC04 /* terracotta-normal.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 59BF7683425EF8FB4EB86832 /* terracotta-normal.jpg */; };
 		6F4A61CF9585CC74AF1DA589 /* spark.wav in Resources */ = {isa = PBXBuildFile; fileRef = E98698068EA00776741B1478 /* spark.wav */; };
@@ -217,6 +218,7 @@
 		996E86D64E49740C335420B2 /* circuit-15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-15.jpg"; sourceTree = "<group>"; };
 		9A17541CAEB462C4CA8EBAA5 /* ArchitectureArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureArt.swift; sourceTree = "<group>"; };
 		9AB75B24BB4D58F22CFBBDE3 /* sky-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sky-night.png"; sourceTree = "<group>"; };
+		9D285ADA0426F5D9B9503763 /* GroundCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroundCover.swift; sourceTree = "<group>"; };
 		9D6A77A0D2933876F3E5C1F4 /* circuit-19.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-19.jpg"; sourceTree = "<group>"; };
 		9E0692DA14D77AC64F23D098 /* afterlight.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = afterlight.wav; sourceTree = "<group>"; };
 		9FD8FD6E5C7A63458742F4DC /* palm-atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "palm-atlas.png"; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				ED575DCAE51380271A0948F8 /* CarAudio.swift */,
 				51931C7D5814E734881A334E /* GeneratedArtKeys.swift */,
 				1DE31FE44126182C1F19BFBE /* GLBAsset.swift */,
+				9D285ADA0426F5D9B9503763 /* GroundCover.swift */,
 				A0C5FD31C125EABD68559788 /* LandscapeArt.swift */,
 				86C5F443EB5B559DFF6CE961 /* RaceEffects.swift */,
 				E92DC563E52B4CFCC22A4C00 /* RaceStunts.swift */,
@@ -728,6 +731,7 @@
 				C810A6A082CCFCE1E45F16F4 /* CarAudio.swift in Sources */,
 				821C46D0ED30D784BBAC841F /* GLBAsset.swift in Sources */,
 				FF5206995B44FCF7FB293BC5 /* GeneratedArtKeys.swift in Sources */,
+				671D7D15550D03CA814982E2 /* GroundCover.swift in Sources */,
 				C4B62C3D639C551264AF3051 /* LandscapeArt.swift in Sources */,
 				E0FC05F3084526CE953A09BE /* RaceEffects.swift in Sources */,
 				9E75B2CD70409355AB27F273 /* RaceStunts.swift in Sources */,

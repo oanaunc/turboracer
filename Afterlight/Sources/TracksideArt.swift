@@ -30,7 +30,7 @@ import UIKit
                 guard clear(p,5.5) else{continue}
                 let cluster=SCNNode()
                 box(cluster,SCNVector3(3.6,0.38,7.5),SCNVector3(0,0.1,0),stone)
-                box(cluster,SCNVector3(3.3,0.12,7.1),SCNVector3(0,0.32,0),material(0x393D26))
+                box(cluster,SCNVector3(3.3,0.12,7.1),SCNVector3(0,0.32,0),SurfaceLibrary.surface("grass",tint:UIColor(hex:0x9DB46E)))
                 for z:Float in [-2.2,0,2.2] {
                     if let shrub=SceneDressing.asset("CoastalShrub",height:1.3,maxWidth:3) {shrub.position=SCNVector3(0,0.35,z);cluster.addChildNode(shrub)}
                 }

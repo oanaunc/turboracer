@@ -51,7 +51,7 @@ import UIKit
         }
         // Layer low rocks along the shore instead of a single flat terrain edge.
         for i in 0..<36 {
-            let rock=asset("coastal_cliff_01",height:3+Float(i%3),maxWidth:12) ?? SurfaceLibrary.rock(radius:2.5+Float(i%3),height:3,seed:i,desert:false)
+            let rock=SurfaceLibrary.rock(radius:2.2+Float(i%3)*0.7,height:2.2+Float(i%4)*0.6,seed:i,desert:false);rock.eulerAngles.y=Float(i)*1.7
             rock.position=SCNVector3(-174+Float(i%3),0,Float(i)*24-430);root.addChildNode(rock)
         }
         return root
