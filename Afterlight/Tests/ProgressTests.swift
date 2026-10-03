@@ -146,7 +146,7 @@ final class ProgressTests: XCTestCase {
             XCTAssertGreaterThan(bounds.max.y-bounds.min.y,0)
             XCTAssertTrue(node.scale.y.isFinite)
         }
-        let tourer=SurfaceLibrary.grandTourer(Car.all[0])!.boundingBox
+        let tourer=SurfaceLibrary.grandTourer(Car.all[7])!.boundingBox // the luxury sedan body
         let compact=SurfaceLibrary.grandTourer(Car.all[1])!.boundingBox
         let hyper=SurfaceLibrary.grandTourer(Car.all[2])!.boundingBox
         XCTAssertLessThan(compact.max.z-compact.min.z,tourer.max.z-tourer.min.z)

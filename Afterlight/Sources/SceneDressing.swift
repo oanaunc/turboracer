@@ -46,7 +46,10 @@ import UIKit
             for offset in stride(from:Double(extent)+23,through:Double(extent)+90,by:4) {
                 let q=circuit.point(t,lane:-offset)
                 if q.x-extent > -154 && RouteScenery.allowsScenery(q,radius:extent,circuit:circuit) && (0..<480).allSatisfy({step in let road=circuit.point(Double(step)/480);return hypot(road.x-q.x,road.z-q.z)>14+extent}) {
-                    building.position=SCNVector3(q.x,0,q.z);building.name="roadside-building";root.addChildNode(building);break
+                    building.position=SCNVector3(q.x,0,q.z);building.name="roadside-building";root.addChildNode(building)
+                    // Imported houses get the same sealed plinth as the authored villas.
+                    if building.childNodes.first?.name != "villa" && building.childNode(withName:"building-foundation",recursively:true)==nil {foundation(for:building,in:root);building.position.y = -0.05}
+                    break
                 }
             }
         }

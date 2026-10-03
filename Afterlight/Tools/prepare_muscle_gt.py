@@ -43,8 +43,7 @@ for obj in objects:
         mod = obj.modifiers.new('Mobile budget', 'DECIMATE'); mod.ratio = budget/len(obj.data.polygons); bpy.ops.object.modifier_apply(modifier=mod.name)
 for obj in objects: obj.data.transform(obj.matrix_world); obj.matrix_world = Matrix.Identity(4)
 # The source faces +Y; the game expects the nose at glTF +Z, which is Blender -Y.
-# Authored at 1.2x real size; 0.84 brings it to a 4.6 m grand tourer.
-turn = Matrix.Rotation(math.pi, 4, 'Z') @ Matrix.Scale(0.84, 4)
+turn = Matrix.Rotation(math.pi, 4, 'Z')
 for obj in objects: obj.data.transform(turn)
 points = [o.matrix_world @ Vector(c) for o in objects for c in o.bound_box]
 lo = Vector([min(p[i] for p in points) for i in range(3)]); hi = Vector([max(p[i] for p in points) for i in range(3)])
