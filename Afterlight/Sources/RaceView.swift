@@ -86,8 +86,8 @@ struct RaceView: View {
                 }
             }
         }.frame(width:geometry.size.width,height:geometry.size.height) }.ignoresSafeArea().onAppear { if garage.save.races==0 { tutorial=true; engine.setPaused(true) } else { engine.start() } }
-        .onAppear { if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
-        .onDisappear { engine.stop(); tilt.stop() }
+        .onAppear { Soundtrack.shared.switchTo(Soundtrack.track(for:request.circuit.environment),volume:0.24); if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
+        .onDisappear { engine.stop(); tilt.stop(); Soundtrack.shared.switchTo("menu") }
         .onChange(of:engine.result != nil) { _,finished in if finished && !recorded,let result=engine.result { recorded=true; garage.record(result,circuit:request.circuit,mode:request.mode,daily:request.daily) } }
         .onChange(of:scenePhase) { _,phase in if phase != .active { engine.setPaused(true) } }
         .statusBarHidden()

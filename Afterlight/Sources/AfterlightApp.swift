@@ -10,15 +10,26 @@ let racingBlue = Color(hex:0x47CFFF)
     @StateObject private var garage = Garage()
     var body: some Scene { WindowGroup { HomeView().environmentObject(garage).preferredColorScheme(.dark) } }
 }
+/// Licensed Suno soundtrack: a menu theme and one track per district.
+/// Switching tracks fades the old one out and the new one in.
 final class Soundtrack {
     static let shared = Soundtrack()
     private var player: AVAudioPlayer?
-    func play(enabled: Bool) {
-        guard enabled else { player?.pause(); return }
-        if player == nil, let url=Bundle.main.url(forResource:"afterlight",withExtension:"wav") {
-            try? AVAudioSession.sharedInstance().setCategory(.ambient,mode:.default)
-            player = try? AVAudioPlayer(contentsOf:url); player?.numberOfLoops = -1; player?.volume = 0.3
-        }; player?.play()
+    private var current = ""
+    private var enabled = true
+    static func track(for environment: Int) -> String { ["coast","city","badlands","summit"][max(0,min(3,environment))] }
+    func play(enabled: Bool) { self.enabled = enabled; enabled ? switchTo(current.isEmpty ? "menu" : current) : player?.pause() }
+    func switchTo(_ name: String, volume: Float = 0.32) {
+        guard enabled else { current = name; return }
+        try? AVAudioSession.sharedInstance().setCategory(.ambient,mode:.default)
+        if name == current, let player { player.setVolume(volume,fadeDuration:0.8); if !player.isPlaying { player.play() }; return }
+        current = name
+        let old = player
+        old?.setVolume(0,fadeDuration:0.8)
+        DispatchQueue.main.asyncAfter(deadline:.now()+0.85) { old?.stop() }
+        guard let url = Bundle.main.url(forResource:"music-"+name,withExtension:"mp3") ?? Bundle.main.url(forResource:"afterlight",withExtension:"wav") else { return }
+        let next = try? AVAudioPlayer(contentsOf:url); next?.numberOfLoops = -1; next?.volume = 0
+        next?.play(); next?.setVolume(volume,fadeDuration:1.2); player = next
     }
 }
 struct ActionButton: View {
@@ -247,7 +258,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @State private var reset = false
     var body: some View { NavigationStack { Form {
-        Section("The driving experience") { Toggle("Original synth soundtrack",isOn:$garage.save.music); Toggle("Engine and collectible sounds",isOn:Binding(get:{ garage.save.sounds ?? true },set:{ garage.save.sounds=$0 })); Toggle("Haptic feedback",isOn:$garage.save.haptics); Toggle("Tilt to steer",isOn:Binding(get:{ garage.save.tiltSteering ?? false },set:{ garage.save.tiltSteering=$0 })); VStack(alignment:.leading) { Text("Steering sensitivity"); Slider(value:$garage.save.steeringSensitivity,in:0.65...1.5) } }
+        Section("The driving experience") { Toggle("Music",isOn:$garage.save.music); Toggle("Engine and collectible sounds",isOn:Binding(get:{ garage.save.sounds ?? true },set:{ garage.save.sounds=$0 })); Toggle("Haptic feedback",isOn:$garage.save.haptics); Toggle("Tilt to steer",isOn:Binding(get:{ garage.save.tiltSteering ?? false },set:{ garage.save.tiltSteering=$0 })); VStack(alignment:.leading) { Text("Steering sensitivity"); Slider(value:$garage.save.steeringSensitivity,in:0.65...1.5) } }
         Section("How to drive") { Text("Your car accelerates automatically. Hold the left and right arrows, or turn on Tilt to steer and turn your device like a wheel. Hold BRAKE to slow down; hold DRIFT while steering to build a combo. NITRO gives a burst of speed and recharges as you drive. Stay inside the road markings and safety barriers.").font(.subheadline) }
         Section("Your data") { Text("Your garage, race records, and settings stay on this device. No account, advertising, analytics, or tracking."); Link("Privacy policy",destination:URL(string:"https://oanarinaldi.com/afterlightprivacy.html")!); Button("Reset all progress",role:.destructive) { reset=true } }
         Section("Art credits") {if let url=Bundle.main.url(forResource:"AssetCredits",withExtension:"txt"),let credits=try? String(contentsOf:url) {Text(credits).font(.caption).textSelection(.enabled)}}

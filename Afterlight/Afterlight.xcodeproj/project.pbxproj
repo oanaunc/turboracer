@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		0060DAEDE050E38B3C41D4F2 /* stucco.png in Resources */ = {isa = PBXBuildFile; fileRef = A4BAE6B0B49198BDDB0531B9 /* stucco.png */; };
 		01C895AC11F8AFC54FEC2108 /* TracksideArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16566062093462B0A1581F20 /* TracksideArt.swift */; };
-		030C4AB8E544065136A82F74 /* afterlight.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9E0692DA14D77AC64F23D098 /* afterlight.wav */; };
 		0385190F4F1AFB68AE834764 /* Hyper.glb in Resources */ = {isa = PBXBuildFile; fileRef = 3C47F0240A252D56A7B6F506 /* Hyper.glb */; };
 		03C094CD4FE428E678504566 /* CityCorner.glb in Resources */ = {isa = PBXBuildFile; fileRef = EFFAB0263EB173BF39452CA8 /* CityCorner.glb */; };
+		04E34F24BCF0AD2882EE3139 /* music-city.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0FDA87A28850448F0A438590 /* music-city.mp3 */; };
 		090EF5A3E203D8F397A9DDAF /* CoastalShrub.glb in Resources */ = {isa = PBXBuildFile; fileRef = 8B4CBA6C3AA8AA0381CBB3F6 /* CoastalShrub.glb */; };
 		096E3078BD4DE8FE1CA58B95 /* sky-coast.png in Resources */ = {isa = PBXBuildFile; fileRef = F108D15024F286CD1DBC84E0 /* sky-coast.png */; };
 		11DA486258E3D54323A7621D /* grass-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A3B2761108A5275011D94F3 /* grass-roughness.png */; };
@@ -52,6 +52,7 @@
 		5F3B83835DFB8BEDC670305F /* CityBank.asset in Resources */ = {isa = PBXBuildFile; fileRef = 1EEAC4C78B5BDCF84A3BAB15 /* CityBank.asset */; };
 		60BE60BF90FF984D7E183B85 /* island_tree_01.glb in Resources */ = {isa = PBXBuildFile; fileRef = 7ED75DD507C3A274EE4E5831 /* island_tree_01.glb */; };
 		625449705078678DE3529013 /* sand-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = D632F37D209BBA789CD0DBD0 /* sand-roughness.png */; };
+		63A8226E04276688AA21CE1F /* music-coast.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3B3719A73683743C41E66A25 /* music-coast.mp3 */; };
 		65BC43D6DC7A48EE9E714631 /* LuxurySedan.asset in Resources */ = {isa = PBXBuildFile; fileRef = 806F76B47BFF96265044120E /* LuxurySedan.asset */; };
 		671D7D15550D03CA814982E2 /* GroundCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D285ADA0426F5D9B9503763 /* GroundCover.swift */; };
 		6DDF1483411E88887B6DCEAF /* CityOffice.asset in Resources */ = {isa = PBXBuildFile; fileRef = FA1D857417466CAE822B169A /* CityOffice.asset */; };
@@ -62,6 +63,7 @@
 		7A910D451A0F732A5B15D8E7 /* circuit-7.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 470C0DDD9F43FBDBE07E7BBB /* circuit-7.jpg */; };
 		7AA5504A1BD8C6E0D6114757 /* sand.png in Resources */ = {isa = PBXBuildFile; fileRef = 231AC8F2433F29A32E4A1543 /* sand.png */; };
 		80988CCA3AA8991448125184 /* RacingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE27317ED73D88347CBF2DA /* RacingScene.swift */; };
+		811529A69BA169B8ACE5C3FF /* music-menu.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4D1B37DB460221B55C9E1055 /* music-menu.mp3 */; };
 		821C46D0ED30D784BBAC841F /* GLBAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE31FE44126182C1F19BFBE /* GLBAsset.swift */; };
 		84E5F7676F2E668251BB92C0 /* JourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73568E18F43E4526F3C45272 /* JourneyTests.swift */; };
 		85167BE6186C8F0E849A41F9 /* terrain-grass.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FBBE067CC85EBD1CF2D2A383 /* terrain-grass.jpg */; };
@@ -109,6 +111,7 @@
 		CA999A6F5343731CFD6C1C07 /* facade-night.png in Resources */ = {isa = PBXBuildFile; fileRef = 72090579563CA4922B9B29C8 /* facade-night.png */; };
 		CD19C47F7F5744FDCC2083B0 /* SceneAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BA3DC7C335AFA1888155F /* SceneAtmosphere.swift */; };
 		CE5FB4F93F7B4D929C135A62 /* CityMidrise.glb in Resources */ = {isa = PBXBuildFile; fileRef = 2713A6D5559A32E4ACD110CC /* CityMidrise.glb */; };
+		D207B91D6369C7950E53CD92 /* music-summit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 47AAE49F76842AC677FA74EC /* music-summit.mp3 */; };
 		D28180C037B1FB40396F6FDE /* palm-atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = 9FD8FD6E5C7A63458742F4DC /* palm-atlas.png */; };
 		D2C63925DC8CE59A4FAD4AC6 /* Roadster.glb in Resources */ = {isa = PBXBuildFile; fileRef = 79D0973030002E0E4287FA0A /* Roadster.glb */; };
 		D4C90DEE1172D60D81CC5932 /* ProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */; };
@@ -124,6 +127,7 @@
 		E97718FA70183082A653A40E /* circuit-16.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1667F262291B78CE81FBE2EE /* circuit-16.jpg */; };
 		EA3463AD26B58C20918A96C8 /* sand-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = D4AFA5FBA0BC81CE27149F30 /* sand-normal.png */; };
 		EB501B5D388B3B13AB23172D /* RacingTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C185D2AE64E7A9F8D5FBB7 /* RacingTheme.swift */; };
+		F05E8AFFFF23997FBA1903FC /* music-badlands.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1B887C850BC680F6623B143D /* music-badlands.mp3 */; };
 		F0C68A25A800C2188FE8313E /* carbon.png in Resources */ = {isa = PBXBuildFile; fileRef = 876C37B033309B2F7D72F8AA /* carbon.png */; };
 		F0FB99C6981992AAD3C33B3D /* circuit-1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E47D79F5B91EE41EED22878C /* circuit-1.jpg */; };
 		F3AABDB654D4A02EABF1D905 /* circuit-13.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FDB162CF508A92F6124953AB /* circuit-13.jpg */; };
@@ -159,11 +163,13 @@
 		06D3AACD1507B6DD9A746EFB /* facade-emission.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facade-emission.png"; sourceTree = "<group>"; };
 		06D9519C60E04B3BD0DDE621 /* ArtVault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtVault.swift; sourceTree = "<group>"; };
 		0B19FE3BDCFF666F2C926E37 /* rock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rock.png; sourceTree = "<group>"; };
+		0FDA87A28850448F0A438590 /* music-city.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "music-city.mp3"; sourceTree = "<group>"; };
 		14110DD6F53F1A2303834B59 /* daylight-sky.hdr */ = {isa = PBXFileReference; path = "daylight-sky.hdr"; sourceTree = "<group>"; };
 		16566062093462B0A1581F20 /* TracksideArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TracksideArt.swift; sourceTree = "<group>"; };
 		1667F262291B78CE81FBE2EE /* circuit-16.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-16.jpg"; sourceTree = "<group>"; };
 		1835E9BE33F36C10E8D216FC /* EnvironmentArtTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentArtTests.swift; sourceTree = "<group>"; };
 		19DF2380DE676FFC1E79E580 /* CityLandmark.glb */ = {isa = PBXFileReference; path = CityLandmark.glb; sourceTree = "<group>"; };
+		1B887C850BC680F6623B143D /* music-badlands.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "music-badlands.mp3"; sourceTree = "<group>"; };
 		1C282CFAD583F91E9D38B485 /* SceneDressing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDressing.swift; sourceTree = "<group>"; };
 		1C29DA17BAF2FB9FF4971A3F /* Sprint.glb */ = {isa = PBXFileReference; path = Sprint.glb; sourceTree = "<group>"; };
 		1DE31FE44126182C1F19BFBE /* GLBAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLBAsset.swift; sourceTree = "<group>"; };
@@ -186,13 +192,16 @@
 		38FFAE1BA3DFA0168024208C /* takedown.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = takedown.wav; sourceTree = "<group>"; };
 		390DEAE3296BDA7EA83743C0 /* coastal_cliff_01.glb */ = {isa = PBXFileReference; path = coastal_cliff_01.glb; sourceTree = "<group>"; };
 		3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceView.swift; sourceTree = "<group>"; };
+		3B3719A73683743C41E66A25 /* music-coast.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "music-coast.mp3"; sourceTree = "<group>"; };
 		3C47F0240A252D56A7B6F506 /* Hyper.glb */ = {isa = PBXFileReference; path = Hyper.glb; sourceTree = "<group>"; };
 		3F4E22BE749137D6E4A437FF /* RouteScenery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScenery.swift; sourceTree = "<group>"; };
 		40C185D2AE64E7A9F8D5FBB7 /* RacingTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RacingTheme.swift; sourceTree = "<group>"; };
 		4385F91CB40AFA07787A27EE /* pine_sapling_small.glb */ = {isa = PBXFileReference; path = pine_sapling_small.glb; sourceTree = "<group>"; };
 		470C0DDD9F43FBDBE07E7BBB /* circuit-7.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-7.jpg"; sourceTree = "<group>"; };
+		47AAE49F76842AC677FA74EC /* music-summit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "music-summit.mp3"; sourceTree = "<group>"; };
 		4C9E4EF5DDA56AC155345F3D /* CityAC.glb */ = {isa = PBXFileReference; path = CityAC.glb; sourceTree = "<group>"; };
 		4CA1BF0CCD2FF6A2C3361199 /* ridge-rock.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "ridge-rock.jpg"; sourceTree = "<group>"; };
+		4D1B37DB460221B55C9E1055 /* music-menu.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "music-menu.mp3"; sourceTree = "<group>"; };
 		4DDC022A08C5048AC7DC0728 /* land.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = land.wav; sourceTree = "<group>"; };
 		4E095B7584A2F8F8A29F1DD5 /* showroom-wood-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "showroom-wood-normal.png"; sourceTree = "<group>"; };
 		4E77DCF9E617163501C069FD /* showroom-wood-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "showroom-wood-roughness.png"; sourceTree = "<group>"; };
@@ -227,7 +236,6 @@
 		9AB75B24BB4D58F22CFBBDE3 /* sky-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sky-night.png"; sourceTree = "<group>"; };
 		9D285ADA0426F5D9B9503763 /* GroundCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroundCover.swift; sourceTree = "<group>"; };
 		9D6A77A0D2933876F3E5C1F4 /* circuit-19.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-19.jpg"; sourceTree = "<group>"; };
-		9E0692DA14D77AC64F23D098 /* afterlight.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = afterlight.wav; sourceTree = "<group>"; };
 		9FD8FD6E5C7A63458742F4DC /* palm-atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "palm-atlas.png"; sourceTree = "<group>"; };
 		A0C5FD31C125EABD68559788 /* LandscapeArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandscapeArt.swift; sourceTree = "<group>"; };
 		A4BAE6B0B49198BDDB0531B9 /* stucco.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stucco.png; sourceTree = "<group>"; };
@@ -288,7 +296,6 @@
 		02750770D4EB60A5FD5BF287 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9E0692DA14D77AC64F23D098 /* afterlight.wav */,
 				D5A6D8331CC0635079F0FCA4 /* AssetCredits.txt */,
 				FC133CBA11C587F6DFF0E307 /* Assets.xcassets */,
 				99A7E66230A764F90B0593BD /* impact.wav */,
@@ -300,6 +307,7 @@
 				E3E6B466A553283E45A573C9 /* whoosh.wav */,
 				126C76C5425E3340EE4054C9 /* Circuits */,
 				B76B5A0EBB9762A717EE4F29 /* Models */,
+				EA74A912F0CD0E42EC744DA6 /* Music */,
 				32F553F9D6E4CEA68DAA94BB /* Protected */,
 				9AB86B155016A7249B19D995 /* Story */,
 				34082A4B6E1B583301B888EA /* Textures */,
@@ -500,6 +508,18 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
+		EA74A912F0CD0E42EC744DA6 /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				1B887C850BC680F6623B143D /* music-badlands.mp3 */,
+				0FDA87A28850448F0A438590 /* music-city.mp3 */,
+				3B3719A73683743C41E66A25 /* music-coast.mp3 */,
+				4D1B37DB460221B55C9E1055 /* music-menu.mp3 */,
+				47AAE49F76842AC677FA74EC /* music-summit.mp3 */,
+			);
+			path = Music;
+			sourceTree = "<group>";
+		};
 		FB217A8748DCA7AC26B192FC /* UITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -638,7 +658,6 @@
 				C10DD2E36855A8761E6981E1 /* RoyalPalm.asset in Resources */,
 				B18DD57D9DC5B076B2E22299 /* SportsCoupe.asset in Resources */,
 				2F084E663DB7313EC56EA7FD /* Sprint.glb in Resources */,
-				030C4AB8E544065136A82F74 /* afterlight.wav in Resources */,
 				FF90CDFC89D4F2122DB500C9 /* alloy-normal.png in Resources */,
 				32DBB573931F32115AF36FBB /* asphalt-art.png in Resources */,
 				8C783B81FEFD70ED109AC7D4 /* asphalt-normal.png in Resources */,
@@ -682,6 +701,11 @@
 				3FA49414A1C2A147DB5E37AE /* impact.wav in Resources */,
 				60BE60BF90FF984D7E183B85 /* island_tree_01.glb in Resources */,
 				B1C4BF6E7F0C975ACAEA8858 /* land.wav in Resources */,
+				F05E8AFFFF23997FBA1903FC /* music-badlands.mp3 in Resources */,
+				04E34F24BCF0AD2882EE3139 /* music-city.mp3 in Resources */,
+				63A8226E04276688AA21CE1F /* music-coast.mp3 in Resources */,
+				811529A69BA169B8ACE5C3FF /* music-menu.mp3 in Resources */,
+				D207B91D6369C7950E53CD92 /* music-summit.mp3 in Resources */,
 				5CDE78BEBB8DC48D19E61652 /* nitro.wav in Resources */,
 				D28180C037B1FB40396F6FDE /* palm-atlas.png in Resources */,
 				1A8E727456D5F28FDC084731 /* pine_sapling_small.glb in Resources */,

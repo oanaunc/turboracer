@@ -1,7 +1,11 @@
 TurboRacer: Afterlight — asset provenance
 
 Original road geometry, architecture and track layouts: Afterlight project. Licensed concept vehicle and environment assets are credited below.
-Original terrain, story, interface, procedural material maps and synthesized music: Afterlight project.
+Original terrain, story, interface, procedural material maps, real-time engine sound and sound effects: Afterlight project.
+
+Soundtrack: "Festival Garage", "Palm Coast", "Neon Harbor", "Ember Canyon" and "Cloudline",
+created for Afterlight by Oana Rinaldi with Suno (Premier subscription, October 2026).
+Songs generated on a paid Suno plan are owned by the subscriber, including commercial use.
 Cover, icon and asphalt base color: generated with OpenAI ImageGen for this project.
 
 HDR environment lighting, CC0 1.0 public domain:
