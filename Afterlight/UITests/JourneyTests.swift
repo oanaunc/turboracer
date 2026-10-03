@@ -181,4 +181,21 @@ final class JourneyTests: XCTestCase {
         }
     }
 
+    /// Writes App Store screenshots in landscape to the folder named by the
+    /// AFTERLIGHT_SHOTS environment variable (simulator only).
+    func testStoreScreenshots() throws {
+        guard let folder=ProcessInfo.processInfo.environment["SIMULATOR_HOST_HOME"].map({ $0+"/Desktop/turboracer/release/screenshots-build21" }) else { throw XCTSkip("Simulator only") }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let prefix=UIDevice.current.userInterfaceIdiom == .pad ? "ipad":"iphone"
+        let shots:[(String,[String],Double)]=[("01-home",["--visual-review"],8),("02-race",["--visual-review","--preview-region","1","--preview-grid","--effects-review","--hide-hud"],14),
+            ("03-garage",["--visual-review","--preview-garage","--preview-car","11"],8),("04-city",["--visual-review","--preview-region","10","--preview-grid","--effects-review"],13),
+            ("05-world",["--visual-review","--preview-calendar"],6),("06-result",["--visual-review","--preview-region","6","--preview-grid","--preview-result"],14)]
+        for (name,arguments,wait) in shots {
+            let app=XCUIApplication();app.launchArguments=arguments;app.launch()
+            Thread.sleep(forTimeInterval:wait)
+            try XCUIScreen.main.screenshot().pngRepresentation.write(to:URL(fileURLWithPath:"\(folder)/\(prefix)-\(name).png"))
+            app.terminate()
+        }
+    }
+
 }

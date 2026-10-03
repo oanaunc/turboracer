@@ -8,7 +8,7 @@ let racingBlue = Color(hex:0x47CFFF)
 
 @main struct AfterlightApp: App {
     @StateObject private var garage = Garage()
-    var body: some Scene { WindowGroup { HomeView().environmentObject(garage).preferredColorScheme(.dark) } }
+    var body: some Scene { WindowGroup { HomeView().tabletCanvas().environmentObject(garage).preferredColorScheme(.dark) } }
 }
 /// Licensed Suno soundtrack: a menu theme and one track per district.
 /// Switching tracks fades the old one out and the new one in.
@@ -79,7 +79,7 @@ struct HomeView: View {
                 }.padding(.bottom,8)
             }
         }.sheet(isPresented:$settings) { SettingsView() }
-        .fullScreenCover(item:$activeRace) { request in RaceView(request:request,garage:garage,openCalendar:{tab=1}) }
+        .fullScreenCover(item:$activeRace) { request in RaceView(request:request,garage:garage,openCalendar:{tab=1}).tabletCanvas() }
         .onAppear { Soundtrack.shared.play(enabled:garage.save.music)
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--preview-garage") {tab=2;inspectedCar=garage.save.selectedCar}

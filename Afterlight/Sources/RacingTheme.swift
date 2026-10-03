@@ -39,3 +39,16 @@ struct CircuitArtwork: View {
         }}.accessibilityHidden(true)
     }
 }
+
+/// Lays out the landscape interface at phone proportions and scales it up on
+/// larger screens, so iPad shows the same composition instead of tiny panels.
+struct TabletCanvas: ViewModifier {
+    func body(content: Content) -> some View {
+        GeometryReader { proxy in
+            let scale = max(1, proxy.size.width/956)
+            content.frame(width: proxy.size.width/scale, height: proxy.size.height/scale)
+                .scaleEffect(scale).frame(width: proxy.size.width, height: proxy.size.height)
+        }.ignoresSafeArea()
+    }
+}
+extension View { func tabletCanvas() -> some View { modifier(TabletCanvas()) } }

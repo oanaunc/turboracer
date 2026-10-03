@@ -70,7 +70,7 @@ struct RaceView: View {
         }.frame(width:geometry.size.width,height:geometry.size.height) }.ignoresSafeArea().onAppear { if garage.save.races==0 { tutorial=true; engine.setPaused(true) } else { engine.start() } }
         .onAppear {
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--preview-result") { DispatchQueue.main.asyncAfter(deadline:.now()+1) { engine.debugFinish() } }
+            if ProcessInfo.processInfo.arguments.contains("--preview-result") { DispatchQueue.main.asyncAfter(deadline:.now()+4.5) { engine.debugFinish() } }
             #endif
             Soundtrack.shared.switchTo(Soundtrack.track(for:request.circuit.environment),volume:0.24); if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
         .onDisappear { engine.stop(); tilt.stop(); Soundtrack.shared.switchTo("menu") }
