@@ -32,14 +32,14 @@ struct Car: Identifiable {
         return pool.min {abs($0.speed-player.speed-4) < abs($1.speed-player.speed-4)} ?? all.filter {$0.bodyFamily != player.bodyFamily}[route%3]
     }
     static let all = [
-        Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C, design: "LuxurySedan", carClass: "D"),
+        Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C, design: "MuscleGT", carClass: "D"),
         Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4, design: "SportsCoupe", carClass: "D", finish: .pearl),
         Car(id: 2, name: "VANTA", subtitle: "Born for the midnight run", price: 3600, speed: 61, handling: 0.95, color: 0xA68CFF, design: "ConceptGT", carClass: "C"),
         Car(id: 3, name: "AURORA", subtitle: "A beautiful kind of chaos", price: 6000, speed: 65, handling: 1.1, color: 0xFFD76E, design: "Roadster", carClass: "C"),
         Car(id: 4, name: "SPECTRE", subtitle: "Leave nothing but light", price: 9000, speed: 70, handling: 1.05, color: 0xF576C5, design: "Hyper", carClass: "B", finish: .pearl),
         Car(id: 5, name: "AFTERLIGHT", subtitle: "Tomorrow belongs to you", price: 13000, speed: 74, handling: 1.25, color: 0xD9F8F5, design: "Hyper", carClass: "A", finish: .pearl),
         Car(id: 6, name: "RAVINE", subtitle: "A badlands brawler", price: 2600, speed: 58, handling: 0.9, color: 0x6F7D45, design: "RivalPickup", kit: 1, carClass: "D", finish: .matte),
-        Car(id: 7, name: "SOLSTICE GT-S", subtitle: "The tourer, sharpened", price: 4800, speed: 63, handling: 1.08, color: 0x1F4FC9, design: "LuxurySedan", kit: 1, carClass: "C"),
+        Car(id: 7, name: "MERIDIAN GT-S", subtitle: "The grand tourer, sharpened", price: 4800, speed: 63, handling: 1.08, color: 0x1F4FC9, design: "LuxurySedan", kit: 1, carClass: "C"),
         Car(id: 8, name: "KOMET R", subtitle: "Stripped, winged, furious", price: 7500, speed: 67, handling: 1.3, color: 0xF1F1EC, design: "SportsCoupe", kit: 2, carClass: "B"),
         Car(id: 9, name: "VANTA NOCTIS", subtitle: "Midnight carbon grand tourer", price: 11000, speed: 72, handling: 1.05, color: 0x15191F, design: "ConceptGT", kit: 1, carClass: "A", finish: .matte),
         Car(id: 10, name: "AURORA SPEEDSTER", subtitle: "Roofless, relentless", price: 15500, speed: 76, handling: 1.2, color: 0xE5262E, design: "Roadster", kit: 2, carClass: "A"),

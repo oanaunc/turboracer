@@ -88,6 +88,7 @@
 		A51B4D40F90DF2E63284549B /* AlpineFir.glb in Resources */ = {isa = PBXBuildFile; fileRef = 342894B7A03E00755BF0EA8C /* AlpineFir.glb */; };
 		A783BA0F061C841B3997EB17 /* grass.png in Resources */ = {isa = PBXBuildFile; fileRef = D677A262542FC3290728387D /* grass.png */; };
 		AA31D116AE715B144527B13C /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = E3E6B466A553283E45A573C9 /* whoosh.wav */; };
+		AA8080824D732C16501DE0A7 /* MuscleGT.asset in Resources */ = {isa = PBXBuildFile; fileRef = D283848FFF6DE9FBE0CE8F12 /* MuscleGT.asset */; };
 		AAD2F00DADC266FCC325CF82 /* coastal_cliff_01.glb in Resources */ = {isa = PBXBuildFile; fileRef = 390DEAE3296BDA7EA83743C0 /* coastal_cliff_01.glb */; };
 		AEDB634FD7DDBDB946E61E4C /* terrain-grass-roughness.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F93BF94374718AE81A5308B1 /* terrain-grass-roughness.jpg */; };
 		B18DD57D9DC5B076B2E22299 /* SportsCoupe.asset in Resources */ = {isa = PBXBuildFile; fileRef = 6001A2527D703E8704A0292F /* SportsCoupe.asset */; };
@@ -257,6 +258,7 @@
 		CE14A7AE3CEC693678A3AC10 /* circuit-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-3.jpg"; sourceTree = "<group>"; };
 		CE600EB00A45A58E183B557E /* circuit-6.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-6.jpg"; sourceTree = "<group>"; };
 		D1293D347166E28BC73DD4B5 /* circuit-17.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-17.jpg"; sourceTree = "<group>"; };
+		D283848FFF6DE9FBE0CE8F12 /* MuscleGT.asset */ = {isa = PBXFileReference; path = MuscleGT.asset; sourceTree = "<group>"; };
 		D465C622426ADF812551A0C0 /* nitro.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = nitro.wav; sourceTree = "<group>"; };
 		D4AFA5FBA0BC81CE27149F30 /* sand-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sand-normal.png"; sourceTree = "<group>"; };
 		D538088F69B2DD1B59D50229 /* circuit-12.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-12.jpg"; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 				C82295147F73832C5D8A86A7 /* ConceptGT.asset */,
 				2E4963673709A35011C0CA63 /* FestivalGarage.asset */,
 				806F76B47BFF96265044120E /* LuxurySedan.asset */,
+				D283848FFF6DE9FBE0CE8F12 /* MuscleGT.asset */,
 				F582ECB1DD80906278872207 /* RivalPickup.asset */,
 				25950F3A9B68E55E040E8C77 /* RoyalPalm.asset */,
 				6001A2527D703E8704A0292F /* SportsCoupe.asset */,
@@ -655,6 +658,7 @@
 				394A16D1E6511B349AA78EC1 /* FestivalGarage.asset in Resources */,
 				0385190F4F1AFB68AE834764 /* Hyper.glb in Resources */,
 				65BC43D6DC7A48EE9E714631 /* LuxurySedan.asset in Resources */,
+				AA8080824D732C16501DE0A7 /* MuscleGT.asset in Resources */,
 				9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */,
 				44DA5FCD65C5B27089E8F47E /* RivalPickup.asset in Resources */,
 				D2C63925DC8CE59A4FAD4AC6 /* Roadster.glb in Resources */,
