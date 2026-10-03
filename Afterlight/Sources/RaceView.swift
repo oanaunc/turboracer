@@ -19,6 +19,7 @@ struct RaceView: View {
         GeometryReader { geometry in ZStack {
             SceneSurface(engine:engine).frame(width:geometry.size.width,height:geometry.size.height).ignoresSafeArea()
             LinearGradient(colors:[ink.opacity(0.28),.clear,.clear,ink.opacity(0.45)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
+            if !ProcessInfo.processInfo.arguments.contains("--hide-hud") {
             VStack(spacing:8) {
                 HStack(alignment:.top,spacing:18) {
                     if request.mode.hasRivals { PositionBadge(position:engine.position,field:engine.rivalCars.count+1-engine.eliminated) }
@@ -53,7 +54,8 @@ struct RaceView: View {
                     GlassControl(symbol:"bolt.fill",title:"NITRO",color:engine.nitro >= 0.5 ? Color(hex:0xC48BFF) : Color(hex:0x46E5FF),size:92,fill:engine.nitro) {engine.nitroHeld=$0}
                 }
             }.padding(.horizontal,22).padding(.vertical,12)
-            if engine.countdown>0 && !tutorial { Text(String(engine.countdown)).font(RacingType.title(110)).foregroundStyle(.white).shadow(color:mint.opacity(0.7),radius:25).allowsHitTesting(false) }
+            }
+            if engine.countdown>0 && !tutorial && !ProcessInfo.processInfo.arguments.contains("--hide-hud") { Text(String(engine.countdown)).font(RacingType.title(110)).foregroundStyle(.white).shadow(color:mint.opacity(0.7),radius:25).allowsHitTesting(false) }
             if engine.paused && !tutorial && engine.result==nil { overlay {
                 Eyebrow(text:"SESSION CONTROL"); Text("RACE PAUSED").font(RacingType.title(34)); ActionButton(title:"RESUME",icon:"play.fill") { engine.setPaused(false) }; Button("Leave race") { dismiss() }.foregroundStyle(muted).padding()
             } }

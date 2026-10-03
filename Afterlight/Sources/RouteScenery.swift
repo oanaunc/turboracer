@@ -51,6 +51,8 @@ extension Circuit { var look: RouteLook { RouteLook.all[id] } }
             let m=material(0xA3B4C3);m.normal.contents=SurfaceLibrary.image("sand-normal");m.normal.intensity=0.2;m.roughness.contents=0.94
             m.normal.wrapS = .repeat;m.normal.wrapT = .repeat;return m
         }
+        // Badlands ground takes a warm red-ochre cast so canyon routes read as desert.
+        if circuit.environment==2 {return SurfaceLibrary.surface(circuit.look.ground,tint:UIColor(hex:circuit.look.ground=="rock" ? 0xD49066 : 0xEBB98A))}
         return SurfaceLibrary.surface(circuit.look.ground)
     }
     static func landmarks(_ circuit:Circuit) -> SCNNode {
