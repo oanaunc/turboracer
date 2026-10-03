@@ -53,7 +53,7 @@ import UIKit
         let snow = circuit.look.ground == "snow"
         let material = cardMaterial(circuit.environment, snow: snow)
         let road = (0..<480).map { circuit.point(Double($0)/480) }
-        let chunks = 16, perChunk = circuit.environment == 2 ? 80 : 200
+        let chunks = 16, perChunk = circuit.environment == 2 ? 60 : 130
         var seed: UInt32 = UInt32(circuit.id*977+13)
         func r() -> Float { seed = seed &* 1664525 &+ 1013904223; return Float(seed >> 8) / Float(1 << 24) }
         for chunk in 0..<chunks {

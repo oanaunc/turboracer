@@ -29,12 +29,13 @@ struct TelemetryBar: View {
 
 struct CircuitArtwork: View {
     let circuit:Circuit
+    var showsSetting=true
     var body:some View {
         GeometryReader { size in ZStack(alignment:.bottomLeading) {
             if let image=SurfaceLibrary.image("circuit-\(circuit.id)") {Image(uiImage:image).resizable().scaledToFill().frame(width:size.size.width,height:size.size.height).clipped()}
             else {Color(hex:circuit.sky);TrackMap(circuit:circuit).padding(20)}
             LinearGradient(colors:[.clear,.black.opacity(0.55)],startPoint:.center,endPoint:.bottom)
-            Text(circuit.look.setting).font(RacingType.data(8)).tracking(1).padding(9).foregroundStyle(.white)
+            if showsSetting {Text(circuit.look.setting).font(RacingType.data(8)).tracking(1).padding(9).foregroundStyle(.white)}
         }}.accessibilityHidden(true)
     }
 }

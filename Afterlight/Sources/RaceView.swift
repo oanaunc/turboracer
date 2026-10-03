@@ -20,14 +20,17 @@ struct RaceView: View {
             SceneSurface(engine:engine).frame(width:geometry.size.width,height:geometry.size.height).ignoresSafeArea()
             LinearGradient(colors:[ink.opacity(0.28),.clear,.clear,ink.opacity(0.45)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
             VStack(spacing:8) {
-                HStack(alignment:.top,spacing:24) {
+                HStack(alignment:.top,spacing:18) {
+                    if request.mode.hasRivals { PositionBadge(position:engine.position,field:engine.rivalCars.count+1-engine.eliminated) }
                     VStack(alignment:.leading,spacing:3) {Eyebrow(text:request.circuit.name);Text(request.mode.rawValue.uppercased()).font(RacingType.data(8)).foregroundStyle(muted)}
                     hud("LAP","\(engine.lap)/\(engine.totalLaps)")
-                    hud(request.mode == .circuit ? "POSITION":"DRIFT",request.mode == .circuit ? "\(engine.position)/4":engine.driftScore.formatted())
+                    if !request.mode.hasRivals { hud("DRIFT",engine.driftScore.formatted()) }
+                    if request.mode == .elimination { hud("OUT IN",String(format:"%.0f",max(0,engine.eliminationClock))) }
+                    if request.mode == .knockdown { hud("TAKEDOWNS","\(engine.takedowns)/\(RaceEngine.knockdownTarget)") }
                     hud("TIME",String(format:"%.1f",engine.elapsed))
                     Spacer()
-                    TrackMap(circuit:request.circuit,progress:engine.routeProgress).frame(width:72,height:60).accessibilityLabel("Live circuit map")
-                    Button {engine.setPaused(true)} label: {Image(systemName:"pause.fill").foregroundStyle(.white).frame(width:40,height:40).background(ink.opacity(0.7),in:RacingPanel(cut:7))}.accessibilityLabel("Pause race")
+                    TrackMap(circuit:request.circuit,progress:engine.routeProgress).frame(width:72,height:60).padding(4).background(.ultraThinMaterial.opacity(0.5),in:RoundedRectangle(cornerRadius:12)).environment(\.colorScheme,.dark).accessibilityLabel("Live circuit map")
+                    Button {engine.setPaused(true)} label: {Image(systemName:"pause.fill").foregroundStyle(.white).frame(width:40,height:40).background(.ultraThinMaterial,in:Circle()).environment(\.colorScheme,.dark)}.accessibilityLabel("Pause race")
                 }
                 Spacer(minLength:0)
                 if engine.offRoad {Text("OFF ROAD • RETURN TO THE CIRCUIT").font(RacingType.data(9)).padding(8).background(Color(hex:0xFF704D),in:Capsule())}
@@ -40,15 +43,15 @@ struct RaceView: View {
                 if engine.combo>1 {Text("DRIFT CHAIN ×\(engine.combo)").font(RacingType.title(18)).foregroundStyle(mint)}
                 HStack(alignment:.bottom,spacing:12) {
                     if !tiltOn {
-                        HoldControl(symbol:"chevron.left",title:"LEFT",color:.white) {held in engine.steering=held ? -1:(engine.steering<0 ? 0:engine.steering)}
-                        HoldControl(symbol:"chevron.right",title:"RIGHT",color:.white) {held in engine.steering=held ? 1:(engine.steering>0 ? 0:engine.steering)}
+                        GlassControl(symbol:"chevron.left",title:"LEFT",color:.white,size:84) {held in engine.steering=held ? -1:(engine.steering<0 ? 0:engine.steering)}
+                        GlassControl(symbol:"chevron.right",title:"RIGHT",color:.white,size:84) {held in engine.steering=held ? 1:(engine.steering>0 ? 0:engine.steering)}
                     }
-                    HoldControl(symbol:"minus",title:"BRAKE",color:Color(hex:0xFF9A82),compact:true) {engine.braking=$0}
+                    GlassControl(symbol:"pause.rectangle.fill",title:"BRAKE",color:Color(hex:0xFF7A66),size:52) {engine.braking=$0}
                     Spacer()
-                    VStack(spacing:2) {HStack(alignment:.firstTextBaseline,spacing:5) {Text(Int(engine.speed*3.6).formatted()).font(RacingType.title(42)).monospacedDigit();Text("KM/H").font(RacingType.data(8)).foregroundStyle(muted)};TelemetryBar(value:engine.nitro,color:Color(hex:0x78D8DB)).frame(width:115,height:4);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}
+                    VStack(spacing:2) {Tachometer(speed:engine.speed,rpm:engine.rpm,gear:engine.gear,nitro:engine.nitro,boosting:engine.boosting);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}
                     Spacer()
-                    HoldControl(symbol:"wind",title:"DRIFT",color:Color(hex:0xFFD76E)) {engine.drifting=$0}
-                    HoldControl(symbol:"bolt.fill",title:"NITRO",color:Color(hex:0x78D8DB)) {engine.nitroHeld=$0}
+                    GlassControl(symbol:"wind",title:"DRIFT",color:Color(hex:0xFFB347),size:70,badge:engine.combo>1 ? "×\(engine.combo)" : nil) {engine.drifting=$0}
+                    GlassControl(symbol:"bolt.fill",title:"NITRO",color:engine.nitro >= 0.5 ? Color(hex:0xC48BFF) : Color(hex:0x46E5FF),size:92,fill:engine.nitro) {engine.nitroHeld=$0}
                 }
             }.padding(.horizontal,22).padding(.vertical,12)
             if engine.countdown>0 && !tutorial { Text(String(engine.countdown)).font(RacingType.title(110)).foregroundStyle(.white).shadow(color:mint.opacity(0.7),radius:25).allowsHitTesting(false) }
@@ -69,7 +72,7 @@ struct RaceView: View {
                                 Eyebrow(text:"OFFICIAL SESSION RESULT")
                                 Text(result.stars==3 ? "PODIUM FINISH" : "SESSION COMPLETE").font(RacingType.title(30))
                                 HStack(spacing:12) { ForEach(0..<3) { i in Image(systemName:i<result.stars ? "star.fill" : "star").font(.system(size:26)).foregroundStyle(i<result.stars ? mint : muted.opacity(0.4)) } }
-                                Text(request.mode == .circuit ? "Finished \(result.position) of 4 • \(String(format:"%.1f",result.time)) seconds" : "\(String(format:"%.1f",result.time)) seconds • \(result.drift) drift points").font(.system(size:13)).foregroundStyle(muted)
+                                Text(request.mode == .knockdown ? "\(result.takedowns) of \(RaceEngine.knockdownTarget) takedowns • \(String(format:"%.1f",result.time)) seconds" : request.mode.hasRivals ? "Finished \(result.position) of \(engine.rivalCars.count+1) • \(String(format:"%.1f",result.time)) seconds" : "\(String(format:"%.1f",result.time)) seconds • \(result.drift) drift points").font(.system(size:13)).foregroundStyle(muted)
                             }.frame(maxWidth:.infinity,alignment:.leading)
                             VStack(alignment:.leading,spacing:12) {
                                 Eyebrow(text:"RACE REWARD",color:racingBlue)

@@ -337,4 +337,21 @@ final class ProgressTests: XCTestCase {
         XCTAssertEqual(TiltSteering.steering(gravityY:0.9,orientation:.landscapeLeft),1)
     }
 
+    @MainActor func testSpecialEventsUseSeparateSaveKeysAndFinish() {
+        for circuit in Circuit.all {
+            let keys=RaceMode.events(for:circuit).map {RaceMode.key(circuit,$0)}
+            XCTAssertEqual(Set(keys).count,4)
+            XCTAssertEqual(Array(keys.prefix(3)),[circuit.id*3,circuit.id*3+1,circuit.id*3+2],"Classic events keep their original save keys")
+        }
+        XCTAssertEqual(Set(Circuit.all.map {RaceMode.special(for:$0)}),[.elimination,.knockdown,.duel])
+        let elimination=RaceEngine(circuit:Circuit.all[0],mode:.elimination,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+        for _ in 0..<(60*200) { elimination.advance(dt:1.0/60); if elimination.result != nil {break} }
+        XCTAssertNotNil(elimination.result,"Elimination must end once the clock has removed every car")
+        XCTAssertGreaterThan(elimination.eliminated+((elimination.result?.stars ?? 0)==0 ? 1:0),0)
+        let duel=RaceEngine(circuit:Circuit.all[2],mode:.duel,car:Car.all[0],upgrade:0,sensitivity:1,haptics:false)
+        XCTAssertEqual(duel.rivalCars.count,1)
+        XCTAssertNotEqual(duel.rivalCars[0].bodyFamily,Car.all[0].bodyFamily)
+        XCTAssertGreaterThanOrEqual(duel.rivalCars[0].speed,Car.all[0].speed)
+    }
+
 }

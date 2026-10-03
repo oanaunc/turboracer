@@ -25,6 +25,12 @@ struct Car: Identifiable {
         return grid
     }
     static let classes = ["D","C","B","A","S"]
+    /// The district champion for a duel: the next car up the ladder from a
+    /// different body family, so the duel always looks like a rival.
+    static func champion(for player:Car,route:Int) -> Car {
+        let pool=all.filter {$0.bodyFamily != player.bodyFamily && $0.speed >= player.speed}
+        return pool.min {abs($0.speed-player.speed-4) < abs($1.speed-player.speed-4)} ?? all.filter {$0.bodyFamily != player.bodyFamily}[route%3]
+    }
     static let all = [
         Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C, design: "LuxurySedan", carClass: "D"),
         Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4, design: "SportsCoupe", carClass: "D", finish: .pearl),
@@ -119,8 +125,23 @@ struct Circuit: Identifiable {
         Circuit(19,"LAST LIGHT","Your final invitation. Make it count.",3,4,[(0,165),(135,105),(75,20),(150,-70),(40,-170),(-110,-130),(-160,-30),(-75,40),(-115,135)])
     ]
 }
-enum RaceMode: String, CaseIterable { case circuit = "Circuit", sprint = "Time attack", drift = "Drift run"
-    var detail: String { switch self { case .circuit: return "2 laps • 3 rivals"; case .sprint: return "1 lap • chase the clock"; case .drift: return "1 lap • build your drift score" } }
+enum RaceMode: String, CaseIterable { case circuit = "Circuit", sprint = "Time attack", drift = "Drift run", elimination = "Elimination", knockdown = "Knockdown", duel = "Duel"
+    var detail: String {
+        switch self {
+        case .circuit: return "2 laps • 3 rivals"; case .sprint: return "1 lap • chase the clock"; case .drift: return "1 lap • build your drift score"
+        case .elimination: return "last place is out every 20 seconds"; case .knockdown: return "take down 3 rivals in 2 laps"; case .duel: return "2 laps • beat the district champion"
+        }
+    }
+    var icon: String { switch self { case .circuit: return "flag.checkered"; case .sprint: return "stopwatch"; case .drift: return "wind"; case .elimination: return "person.3.sequence.fill"; case .knockdown: return "burst.fill"; case .duel: return "figure.fencing" } }
+    var hasRivals: Bool { [.circuit,.elimination,.knockdown,.duel].contains(self) }
+    var laps: Int { switch self { case .circuit,.knockdown,.duel: return 2; case .elimination: return 3; default: return 1 } }
+    /// The three classic events every route offers.
+    static let classic: [RaceMode] = [.circuit,.sprint,.drift]
+    /// Each route adds one special event, rotating through the new formats.
+    static func special(for circuit: Circuit) -> RaceMode { [.elimination,.knockdown,.duel][circuit.id%3] }
+    static func events(for circuit: Circuit) -> [RaceMode] { classic+[special(for:circuit)] }
+    /// Save key: classic events keep their original ids; specials use 1000+route.
+    static func key(_ circuit: Circuit, _ mode: RaceMode) -> Int { classic.firstIndex(of:mode).map { circuit.id*3+$0 } ?? 1000+circuit.id }
 }
 struct RaceResult {
     let position: Int; let time: Double; let drift: Int; let credits: Int; let stars: Int
@@ -140,7 +161,7 @@ struct SaveData: Codable {
     var memorySparks: [Int: Int]? = nil
     var dailyRewardStamp: String? = nil
     func stars(in environment: Int) -> Int {
-        Circuit.all.filter {$0.environment == environment}.reduce(0) {sum,c in sum+(0..<3).reduce(0) {$0+(medals[c.id*3+$1] ?? 0)}}
+        Circuit.all.filter {$0.environment == environment}.reduce(0) {sum,c in sum+(0..<3).reduce(0) {$0+(medals[c.id*3+$1] ?? 0)}+(medals[1000+c.id] ?? 0)}
     }
     func memories(in environment: Int) -> Int {
         min(12,Circuit.all.filter {$0.environment==environment}.reduce(0) {$0+(memorySparks?[$1.id] ?? 0)})
@@ -175,9 +196,9 @@ struct SaveData: Codable {
     func buy(_ car: Car) { guard !save.owned.contains(car.id), save.credits >= car.price else { return }; save.credits -= car.price; save.owned.append(car.id); save.selectedCar = car.id }
     func upgrade() { let level = save.upgrades[car.id] ?? 0; let cost = (level+1)*600; guard level < 4, save.credits >= cost else { return }; save.credits -= cost; save.upgrades[car.id] = level+1 }
     func record(_ result: RaceResult, circuit: Circuit, mode: RaceMode, daily: Bool) {
-        let key = circuit.id*3 + (RaceMode.allCases.firstIndex(of: mode) ?? 0)
+        let key = RaceMode.key(circuit, mode)
         save.credits += result.credits; save.races += 1; save.wins += result.position == 1 ? 1 : 0
-        save.distance += circuit.length * (mode == .circuit ? 2 : 1) / 1000
+        save.distance += circuit.length * Double(mode.laps) / 1000
         if !daily { save.medals[key] = max(save.medals[key] ?? 0, result.stars) }
         var memories = save.memorySparks ?? [:]; memories[circuit.id] = min(12,(memories[circuit.id] ?? 0)+result.collected); save.memorySparks = memories
         save.bestTimes[key] = min(save.bestTimes[key] ?? .infinity, result.time)
