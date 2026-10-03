@@ -17,8 +17,23 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     @Published var countdown = 3; @Published var paused = false; @Published var result: RaceResult?
     @Published var collected = 0; @Published var sparkMessage = ""
     @Published var offRoad = false; @Published var boosting = false; @Published var combo = 1
+    /// Large centre call-out: takedowns, jumps, near misses, overtakes.
+    @Published var stunt = ""; @Published var takedowns = 0; @Published var shockwave = false
+    private(set) var stuntCount = 0; private var stuntTimer = 0.0; private var stuntCredits = 0
+    let ramps: [Ramp]; private(set) var air = AirState(); private var rivalAir: [AirState] = []
+    private var rivalLanes: [Double] = [-4,0,4]; private var rivalTargets: [Double] = [-4,0,4]
+    private(set) var rivalWreck: [Double] = [0,0,0]; private var nearMissReady: [Bool] = [true,true,true]
+    private var lastPosition = 4; private var announcedFinalLap = false
+    private var lastNitroRelease = -10.0; private var shockwaveArmed = false
     private(set) var collisionCount = 0
-    var steering = 0.0; var braking = false; var drifting = false; var nitroHeld = false
+    var steering = 0.0; var braking = false; var drifting = false
+    /// Double-tapping nitro with at least half a tank fires a shockwave boost.
+    var nitroHeld = false {
+        didSet {
+            guard nitroHeld != oldValue else { return }
+            if nitroHeld { shockwaveArmed = elapsed-lastNitroRelease < 0.35 && nitro >= 0.5 } else { lastNitroRelease = elapsed; shockwaveArmed = false }
+        }
+    }
     let circuit: Circuit; let mode: RaceMode; let car: Car; let upgrade: Int
     let rivalCars:[Car]
     let sensitivity: Double; let haptics: Bool; private let audio: CarAudio
@@ -50,6 +65,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
     var totalLaps: Int { mode == .circuit ? 2 : 1 }
     init(circuit: Circuit, mode: RaceMode, car: Car, upgrade: Int, sensitivity: Double, haptics: Bool, sounds: Bool = false) {
         rivalCars=mode == .circuit ? Car.rivals(for:car,route:circuit.id):[]
+        ramps=Ramp.layout(for:circuit)
         self.circuit = circuit; self.trackLength = circuit.length; self.mode = mode; self.car = car; self.upgrade = upgrade
         self.sensitivity = sensitivity; self.haptics = haptics; audio = CarAudio(enabled:sounds); player = Self.makeCar(car);playerCollider=VehicleCollider(node:player)
         buildWorld(); scene.rootNode.addChildNode(player); camera.camera = SCNCamera()
@@ -58,6 +74,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         camera.camera?.exposureOffset = circuit.look.exposure; camera.camera?.wantsExposureAdaptation = false
         camera.camera?.screenSpaceAmbientOcclusionIntensity = 0.65; camera.camera?.screenSpaceAmbientOcclusionRadius = 2.2
         scene.rootNode.addChildNode(camera)
+        rivalAir=Array(repeating:AirState(),count:rivalCars.count)
         for rivalCar in rivalCars {let n=Self.makeCar(rivalCar);rivals.append(n);rivalColliders.append(VehicleCollider(node:n));scene.rootNode.addChildNode(n)}
         for vehicle in [player]+rivals {let shadow=SceneAtmosphere.contactShadow(for:vehicle);scene.rootNode.addChildNode(shadow);vehicleShadows.append(shadow)}
         effects=RaceEffects(car:player,camera:camera,parent:scene.rootNode,environment:circuit.environment)
@@ -91,7 +108,11 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         if countdown > 0 { countdownTime += dt; let next = max(0,3-Int(countdownTime)); if next != countdown { countdown = next; feedback() }; return }
         barrierCooldown=max(0,barrierCooldown-dt)
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--effects-review") {
+        if ProcessInfo.processInfo.arguments.contains("--stunt-review") {
+            // Line up on the next ramp under nitro so captures show a jump.
+            let ahead=ramps.min { ($0.progress-routeProgress+1).truncatingRemainder(dividingBy:1) < ($1.progress-routeProgress+1).truncatingRemainder(dividingBy:1) }
+            steering=max(-0.8,min(0.8,(lane-(ahead?.lane ?? 0))*0.3));nitroHeld=nitro>0.2
+        } else if ProcessInfo.processInfo.arguments.contains("--effects-review") {
             // Alternate nitro and a held drift so captures show every effect.
             let phase=Int(elapsed/3)%2;nitroHeld=phase==0;drifting=phase==1;steering=phase==1 ? (lane > 4 ? 0.6 : lane < -4 ? -0.6 : (sin(elapsed*1.4) >= 0 ? 0.55 : -0.55)) : max(-0.6,min(0.6,lane*0.08))
         }
@@ -101,8 +122,10 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         if !nitroHeld {nitroExhausted=false}
         if nitroHeld && nitro<=0.015 {nitroExhausted=true}
         boosting = nitroHeld && !nitroExhausted && !braking && !offRoad
-        nitro = max(0,min(1,nitro + dt*(boosting ? -0.27 : drifting ? 0.10 : 0.035)))
-        let desired = braking ? maxSpeed*0.30 : (offRoad ? maxSpeed*0.52 : maxSpeed*(boosting ? 1.38 : 1))
+        shockwave = boosting && shockwaveArmed
+        stuntTimer=max(0,stuntTimer-dt); if stuntTimer==0 { stunt="" }
+        nitro = max(0,min(1,nitro + dt*(boosting ? (shockwave ? -0.42 : -0.27) : drifting ? 0.10 : 0.035)))
+        let desired = braking ? maxSpeed*0.30 : (offRoad && !air.airborne ? maxSpeed*0.52 : maxSpeed*(shockwave ? 1.6 : boosting ? 1.38 : 1))
         speed += (desired-speed)*min(1,dt*(braking ? 3 : 0.65))
         audio.update(speed:speed,boost:boosting)
         // The car travels along local +Z; the rear camera looks toward +Z,
@@ -111,7 +134,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let bend = Double(atan2(sin(circuit.heading(progress+0.002)-circuit.heading(progress)),cos(circuit.heading(progress+0.002)-circuit.heading(progress))))
         let outward = -min(2,max(-2,bend*65))*pow(speed/maxSpeed,2)
         lane = max(-12,min(12,lane+(lateral+outward)*dt))
-        offRoad = abs(lane)>8.1
+        offRoad = abs(lane)>8.1 && !air.airborne
         let turnA = circuit.heading(progress), turnB = circuit.heading(progress+0.001)
         let curve = abs(Double(atan2(sin(turnB-turnA),cos(turnB-turnA))))
         if drifting && speed > 23 && abs(steering)>0.18 && !offRoad {
@@ -122,23 +145,50 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         progress += speed*dt/trackLength
         lap = min(totalLaps,Int(progress)+1)
         for i in rivals.indices {
-            let rivalSpeed = maxSpeed * (0.88 + Double(i)*0.023 + 0.025*sin(elapsed*0.6+Double(i)))
+            let gap=VehicleCollider.trackSeparation(rivalProgress[i],progress,length:trackLength)
+            // Mild rubber banding keeps the pack in sight without stealing wins.
+            let band=gap < -60 ? 1.06 : gap > 80 ? 0.96 : 1.0
+            var rivalSpeed = maxSpeed * (0.88 + Double(i)*0.023 + 0.025*sin(elapsed*0.6+Double(i)))*band
+            if rivalWreck[i]>0 { rivalWreck[i]=max(0,rivalWreck[i]-dt); rivalSpeed *= rivalWreck[i]>0 ? 0.25 : 0.6 }
             let previousRival=rivalProgress[i]
             rivalProgress[i] += rivalSpeed*dt/trackLength
-            let rivalLane = Double(i-1)*4
+            // Rivals pick new racing lines every few seconds.
+            if Int(elapsed*10)%Int(30+i*7)==0 { rivalTargets[i]=max(-6,min(6,4.5*sin(elapsed*0.37+Double(i)*2.1))) }
+            rivalLanes[i] += max(-2.2*dt,min(2.2*dt,rivalTargets[i]-rivalLanes[i]))
+            _=rivalAir[i].update(dt:dt,progress:rivalProgress[i],lane:rivalLanes[i],speed:rivalSpeed,ramps:ramps,trackLength:trackLength)
+            let rivalLane = rivalLanes[i]
             let separation=VehicleCollider.trackSeparation(progress,rivalProgress[i],length:trackLength)
             // Keep the sweep continuous at half a lap; independent wrapping
             // of both endpoints would create a false crossing through the grid.
             let previous=separation-((progress-rivalProgress[i])-(previousProgress-previousRival))*trackLength
             let body=playerCollider.projected(yaw:lateral*0.022*(drifting ? 2:1)),other=rivalColliders[i]
-            if body.sweptContact(other,previous:previous,current:separation,lateral:lane-rivalLane) {
-                // Push clear of the complete body every frame; the cooldown only
-                // limits impact feedback and speed loss, never contact detection.
-                let side=lane >= rivalLane ? 1.0 : -1.0
-                lane=max(-12,min(12,rivalLane+side*(body.halfWidth+other.halfWidth+0.12)))
-                lateral=side*max(1,abs(lateral)*0.4)
-                if collisionCooldown == 0 {collisionCount += 1;effects?.impact(at:SCNVector3((player.position.x+rivals[i].position.x)/2,0.6,(player.position.z+rivals[i].position.z)/2),strength:0.8);speed=min(speed*0.76,rivalSpeed*0.92);collisionCooldown=0.5;feedback()}
-            }
+            let verticalGap=abs(air.height-rivalAir[i].height)
+            if rivalWreck[i]==0 && verticalGap<1.2 && body.sweptContact(other,previous:previous,current:separation,lateral:lane-rivalLane) {
+                let contact=SCNVector3((player.position.x+rivals[i].position.x)/2,0.6,(player.position.z+rivals[i].position.z)/2)
+                if boosting || speed > rivalSpeed*1.12 {
+                    // Takedown: a fast hit wrecks the rival instead of slowing you.
+                    rivalWreck[i]=2.6; takedowns += 1; nitro=min(1,nitro+0.3); stuntCredits += 60
+                    call("TAKEDOWN!"); effects?.impact(at:contact,strength:1); speed *= 0.95; feedback()
+                } else {
+                    // Push clear of the complete body every frame; the cooldown only
+                    // limits impact feedback and speed loss, never contact detection.
+                    let side=lane >= rivalLane ? 1.0 : -1.0
+                    lane=max(-12,min(12,rivalLane+side*(body.halfWidth+other.halfWidth+0.12)))
+                    lateral=side*max(1,abs(lateral)*0.4)
+                    if collisionCooldown == 0 {collisionCount += 1;effects?.impact(at:contact,strength:0.8);speed=min(speed*0.76,rivalSpeed*0.92);collisionCooldown=0.5;feedback()}
+                }
+                nearMissReady[i]=false
+            } else if previous<0 && separation>=0 && rivalWreck[i]==0 {
+                // Passing a rival closely without contact earns nitro.
+                if nearMissReady[i] && abs(lane-rivalLane) < body.halfWidth+other.halfWidth+1.3 { nitro=min(1,nitro+0.08); stuntCredits += 15; call("NEAR MISS") }
+                nearMissReady[i]=true
+            } else if abs(separation)>20 { nearMissReady[i]=true }
+        }
+        let landing=air.update(dt:dt,progress:progress,lane:lane,speed:speed,ramps:ramps,trackLength:trackLength)
+        if case .jump(let time,let barrel)=landing {
+            if barrel { nitro=min(1,nitro+0.3); stuntCredits += 80; call("BARREL ROLL") }
+            else if time>0.45 { nitro=min(1,nitro+0.2); stuntCredits += 40; call(time>0.9 ? "BIG AIR" : "JUMP") }
+            effects?.impact(at:SCNVector3(player.position.x,0.2,player.position.z),strength:0.45); feedback()
         }
         // Lane coordinates are road-normal metres on every authored route.
         let width=playerCollider.projected(yaw:lateral*0.022*(drifting ? 2:1)).halfWidth
@@ -148,6 +198,9 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             if barrierCooldown==0 {let edge=circuit.point(progress,lane:lane<0 ? -10.6:10.6);effects?.impact(at:SCNVector3(edge.x,0.7,edge.z),strength:0.55);speed=max(min(speed,maxSpeed*0.45),speed*0.85);barrierCooldown=0.4;feedback()}
         }
         position = 1+rivalProgress.filter { $0>progress }.count
+        if mode == .circuit && position < lastPosition && elapsed > 2 { call(position==1 ? "TAKING THE LEAD" : "OVERTAKE · P\(position)") }
+        lastPosition=position
+        if totalLaps>1 && lap==totalLaps && !announcedFinalLap { announcedFinalLap=true; call("FINAL LAP") }
         for i in sparks.indices where !sparkCollected.contains(i) {
             let location = Double(i+1)/13
             let distance = abs((progress-floor(progress))-location)*trackLength
@@ -162,7 +215,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             vehicle.enumerateChildNodes { node,_ in if node.name=="rolling-wheel" {node.eulerAngles.x += Float(speed*dt/0.465)} }
         }
         placeCars(); updateCamera(dt: dt)
-        effects?.update(dt:dt,car:player,camera:camera,speed:speed,maxSpeed:maxSpeed,boosting:boosting,drifting:drifting,steering:steering,offRoad:offRoad)
+        effects?.update(dt:dt,car:player,camera:camera,speed:speed,maxSpeed:maxSpeed,boosting:boosting,shockwave:shockwave,drifting:drifting,steering:steering,offRoad:offRoad)
         if progress >= Double(totalLaps) { finish() }
     }
     private func finish() {
@@ -172,15 +225,26 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         case .sprint: let target = trackLength / (car.speed*0.83); stars = elapsed < target ? 3 : elapsed < target*1.16 ? 2 : elapsed < target*1.4 ? 1 : 0
         case .drift: stars = driftScore >= 1600 ? 3 : driftScore >= 850 ? 2 : driftScore >= 300 ? 1 : 0
         }
-        let reward = 150 + stars*180 + min(400,driftScore/8) + collected*35
-        result = RaceResult(position: mode == .circuit ? position : stars == 3 ? 1 : 2, time: elapsed, drift: driftScore, credits: reward, stars: stars, collected: collected)
+        let reward = 150 + stars*180 + min(400,driftScore/8) + collected*35 + stuntCredits
+        result = RaceResult(position: mode == .circuit ? position : stars == 3 ? 1 : 2, time: elapsed, drift: driftScore, credits: reward, stars: stars, collected: collected, takedowns: takedowns, stunts: stuntCount)
         feedback(); stop()
     }
+    private func call(_ text:String) { stunt=text; stuntTimer=1.4; stuntCount += 1 }
     private func feedback() { if haptics { UIImpactFeedbackGenerator(style: .light).impactOccurred() } }
     private func placeCars() {
         defer {placeShadows()}
-        player.position = vector(circuit.point(progress,lane: lane)); player.eulerAngles.y = circuit.heading(progress)+Float(lateral*0.022*(drifting ? 2 : 1))
-        for i in rivals.indices { rivals[i].position = vector(circuit.point(rivalProgress[i],lane: Double(i-1)*4)); rivals[i].eulerAngles.y = circuit.heading(rivalProgress[i]) }
+        player.position = vector(circuit.point(progress,lane: lane)); player.position.y += Float(air.height)
+        player.eulerAngles = SCNVector3(air.airborne ? Float(-air.velocity*0.012) : air.ramp != nil ? -0.13 : 0, circuit.heading(progress)+Float(lateral*0.022*(drifting ? 2 : 1)), Float(air.roll))
+        for i in rivals.indices {
+            rivals[i].position = vector(circuit.point(rivalProgress[i],lane: rivalLanes[i])); rivals[i].position.y += Float(rivalAir[i].height)
+            let heading=circuit.heading(rivalProgress[i])
+            if rivalWreck[i]>0 {
+                // Wrecked rivals tumble and spin out, then recover.
+                let t=Float(2.6-rivalWreck[i])
+                rivals[i].position.y += max(0,2.2*sin(min(Float.pi,t*2.2)))
+                rivals[i].eulerAngles = SCNVector3(t*3.1, heading+t*4.5, t*5.2)
+            } else { rivals[i].eulerAngles = SCNVector3(rivalAir[i].ramp != nil ? -0.13 : 0, heading, Float(rivalAir[i].roll)) }
+        }
     }
     private func placeShadows() {
         for (vehicle,shadow) in zip([player]+rivals,vehicleShadows) {shadow.position=SCNVector3(vehicle.position.x,0.13,vehicle.position.z);shadow.eulerAngles=SCNVector3(-.pi/2,0,-vehicle.eulerAngles.y)}
@@ -192,10 +256,11 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let difference=atan2(sin(heading-smooth),cos(heading-smooth));smooth += difference*Float(min(1,dt*8));chaseHeading=smooth
         boostCameraBlend += ((boosting ? 1.0:0.0)-boostCameraBlend)*(1-exp(-dt*7))
         let distance=Float(8.3+1.2*boostCameraBlend)
-        let target = SCNVector3(p.x-sin(smooth)*distance, 2.8, p.z-cos(smooth)*distance)
+        let lift=Float(air.height)
+        let target = SCNVector3(p.x-sin(smooth)*distance, 2.8+lift*0.75, p.z-cos(smooth)*distance)
         camera.position = target
         let ahead = SIMD3<Float>(p.x+sin(heading)*5,1.0,p.z+cos(heading)*5)
-        camera.look(at: SCNVector3(ahead.x,0.6,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = 68+8*boostCameraBlend
+        camera.look(at: SCNVector3(ahead.x,0.6+lift*0.85,ahead.z), up: SCNVector3(0,1,0), localFront: SCNVector3(0,0,-1)); camera.camera?.fieldOfView = 68+8*boostCameraBlend
     }
     static func makeCar(_ car: Car,model:String?=nil) -> SCNNode {
         if let model=SurfaceLibrary.grandTourer(car,model:model) { VehicleCollider.attach(to:model);return model }
@@ -301,6 +366,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         for x: Float in [-10,10] { let n=SCNNode(geometry:SCNBox(width:0.6,height:8,length:0.6,chamferRadius:0.1)); n.geometry?.materials=[aqua]; n.position=SCNVector3(x,4,0); gate.addChildNode(n) }
         let banner=SCNNode(geometry:SCNBox(width:21,height:1.5,length:0.4,chamferRadius:0.1)); banner.geometry?.materials=[material(0x171A30)]; banner.position=SCNVector3(0,8,0); gate.addChildNode(banner)
         let text=SCNText(string:"AFTERLIGHT",extrusionDepth:0.015); text.font=UIFont.boldSystemFont(ofSize:1); text.flatness=0.2; text.materials=[aqua]; let label=SCNNode(geometry:text); label.scale=SCNVector3(1.15,1.15,1.15); label.position=SCNVector3(-4,7.5,-0.25); label.eulerAngles.y = .pi; gate.addChildNode(label); world.addChildNode(gate)
+        for ramp in ramps { world.addChildNode(RampArt.node(ramp,circuit:circuit)) }
         world.addChildNode(roadFurniture.flattenedClone())
         scene.rootNode.addChildNode(world)
     }

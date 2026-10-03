@@ -75,6 +75,7 @@
 		9CB4BB21BC49D6903B5A72A2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F886C469DEF9E0C911709E6 /* PrivacyInfo.xcprivacy */; };
 		9DC0E4D718379A99C69A3DAF /* VehicleCollider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEB57C333909B963E638AF1 /* VehicleCollider.swift */; };
 		9E555E967CDA81953272A683 /* CityPlanter.glb in Resources */ = {isa = PBXBuildFile; fileRef = D737A156BBF4F4C3B64B1774 /* CityPlanter.glb */; };
+		9E75B2CD70409355AB27F273 /* RaceStunts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92DC563E52B4CFCC22A4C00 /* RaceStunts.swift */; };
 		A1CC76DF4576BD23E0902DE3 /* bark.png in Resources */ = {isa = PBXBuildFile; fileRef = DAE0C4392E564B8E9A2DF2A2 /* bark.png */; };
 		A4EBBD340F91779914A07906 /* circuit-4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F1E3B19D58F82E05FE537880 /* circuit-4.jpg */; };
 		A51B4D40F90DF2E63284549B /* AlpineFir.glb in Resources */ = {isa = PBXBuildFile; fileRef = 342894B7A03E00755BF0EA8C /* AlpineFir.glb */; };
@@ -246,6 +247,7 @@
 		DBA6D09DEDCB21B1E1ED5327 /* grass-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grass-normal.png"; sourceTree = "<group>"; };
 		DED05F1AC7F62E04053397F0 /* bark-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bark-normal.png"; sourceTree = "<group>"; };
 		E47D79F5B91EE41EED22878C /* circuit-1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-1.jpg"; sourceTree = "<group>"; };
+		E92DC563E52B4CFCC22A4C00 /* RaceStunts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceStunts.swift; sourceTree = "<group>"; };
 		E95116C9BFC922A2ED25DC20 /* circuit-14.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "circuit-14.jpg"; sourceTree = "<group>"; };
 		E98698068EA00776741B1478 /* spark.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = spark.wav; sourceTree = "<group>"; };
 		EA6F9E396FF2DAD6BB0C16D6 /* showroom-wood.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "showroom-wood.png"; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 				1DE31FE44126182C1F19BFBE /* GLBAsset.swift */,
 				A0C5FD31C125EABD68559788 /* LandscapeArt.swift */,
 				86C5F443EB5B559DFF6CE961 /* RaceEffects.swift */,
+				E92DC563E52B4CFCC22A4C00 /* RaceStunts.swift */,
 				3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */,
 				2AE27317ED73D88347CBF2DA /* RacingScene.swift */,
 				40C185D2AE64E7A9F8D5FBB7 /* RacingTheme.swift */,
@@ -724,6 +727,7 @@
 				FF5206995B44FCF7FB293BC5 /* GeneratedArtKeys.swift in Sources */,
 				C4B62C3D639C551264AF3051 /* LandscapeArt.swift in Sources */,
 				E0FC05F3084526CE953A09BE /* RaceEffects.swift in Sources */,
+				9E75B2CD70409355AB27F273 /* RaceStunts.swift in Sources */,
 				5A8B9A971079A25A9E7B9506 /* RaceView.swift in Sources */,
 				80988CCA3AA8991448125184 /* RacingScene.swift in Sources */,
 				EB501B5D388B3B13AB23172D /* RacingTheme.swift in Sources */,

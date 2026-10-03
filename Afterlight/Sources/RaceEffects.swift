@@ -111,9 +111,9 @@ import UIKit
     }
 
     /// Called once per simulation frame after the car is placed.
-    func update(dt:Double,car:SCNNode,camera:SCNNode,speed:Double,maxSpeed:Double,boosting:Bool,drifting:Bool,steering:Double,offRoad:Bool) {
+    func update(dt:Double,car:SCNNode,camera:SCNNode,speed:Double,maxSpeed:Double,boosting:Bool,shockwave:Bool=false,drifting:Bool,steering:Double,offRoad:Bool) {
         let pace=max(0,min(1.4,speed/max(1,maxSpeed)))
-        for f in flames {f.birthRate=boosting ? 140:0}
+        for f in flames {f.birthRate=boosting ? (shockwave ? 220:140):0;f.particleSize=shockwave ? 0.45:0.32;f.particleColor=shockwave ? UIColor(red:0.85,green:0.5,blue:1,alpha:1):UIColor(red:0.45,green:0.8,blue:1,alpha:1)}
         let sliding=drifting && abs(steering)>0.15 && speed>20
         let smokeRate:CGFloat=sliding ? 60 : offRoad && speed>15 ? 30 : 0
         for s in smoke {s.birthRate=smokeRate;s.particleColor=offRoad && !sliding ? UIColor(red:0.66,green:0.56,blue:0.42,alpha:0.6) : UIColor(white:0.92,alpha:0.6)}

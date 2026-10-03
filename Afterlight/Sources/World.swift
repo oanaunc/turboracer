@@ -111,6 +111,8 @@ enum RaceMode: String, CaseIterable { case circuit = "Circuit", sprint = "Time a
 struct RaceResult {
     let position: Int; let time: Double; let drift: Int; let credits: Int; let stars: Int
     var collected: Int = 0
+    var takedowns: Int = 0
+    var stunts: Int = 0
 }
 struct SaveData: Codable {
     var credits = 0; var selectedCar = 0; var owned = [0]

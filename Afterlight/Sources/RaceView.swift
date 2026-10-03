@@ -30,6 +30,11 @@ struct RaceView: View {
                 Spacer(minLength:0)
                 if engine.offRoad {Text("OFF ROAD • RETURN TO THE CIRCUIT").font(RacingType.data(9)).padding(8).background(Color(hex:0xFF704D),in:Capsule())}
                 if !engine.sparkMessage.isEmpty {Text(engine.sparkMessage).font(RacingType.data(9)).foregroundStyle(mint).padding(6).background(ink.opacity(0.7),in:Capsule())}
+                if !engine.stunt.isEmpty {
+                    Text(engine.stunt).font(RacingType.title(30)).foregroundStyle(engine.stunt.hasPrefix("TAKEDOWN") ? Color(hex:0xFF5F6D) : engine.stunt.hasPrefix("BARREL") ? Color(hex:0xFF5FD2) : mint)
+                        .shadow(color:.black.opacity(0.6),radius:6).id(engine.stunt).transition(.scale(scale:1.6).combined(with:.opacity)).accessibilityIdentifier("stunt-callout")
+                }
+                if engine.shockwave {Text("SHOCKWAVE NITRO").font(RacingType.data(10)).foregroundStyle(Color(hex:0xE3A8FF))}
                 if engine.combo>1 {Text("DRIFT CHAIN ×\(engine.combo)").font(RacingType.title(18)).foregroundStyle(mint)}
                 HStack(alignment:.bottom,spacing:12) {
                     HoldControl(symbol:"chevron.left",title:"LEFT",color:.white) {held in engine.steering=held ? -1:(engine.steering<0 ? 0:engine.steering)}
@@ -48,7 +53,7 @@ struct RaceView: View {
             } }
             if tutorial { overlay {
                 Eyebrow(text:"PIT RADIO / MIKA"); Text("GRID BRIEFING").font(RacingType.title(34)); Text("Your car accelerates for you. Hold the arrows to steer across the road. Corners push you outward, so keep your line inside the white markings.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
-                Text("Collect cyan memory chips to recover your father's notebook and recharge nitro. DRIFT + steering builds a combo. NITRO gives you a burst of speed. BRAKE helps you settle into a tight turn.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
+                Text("Collect cyan memory chips to recover your father's notebook and recharge nitro. DRIFT + steering builds a combo. NITRO gives you a burst of speed; double-tap it with half a tank for a shockwave. Hit rivals under nitro to take them down, and launch off ramps for jumps and barrel rolls. BRAKE helps you settle into a tight turn.").foregroundStyle(muted).font(.system(size:14)).lineSpacing(5)
                 ActionButton(title:"LET'S RACE",icon:"flag.checkered") { tutorial=false; engine.setPaused(false); engine.start() }
             } }
             if let result=engine.result {
@@ -65,7 +70,7 @@ struct RaceView: View {
                             VStack(alignment:.leading,spacing:12) {
                                 Eyebrow(text:"RACE REWARD",color:racingBlue)
                                 Text("+\(result.credits) CREDITS").font(RacingType.title(27)).foregroundStyle(mint)
-                                Text("\(result.collected) memory chips recovered").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
+                                Text("\(result.collected) memory chips • \(result.takedowns) takedowns • \(result.stunts) stunts").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
                                 Text("Choose another event in the calendar. Earn five stars across this region to open the next destination.").font(.system(size:12)).foregroundStyle(muted).fixedSize(horizontal:false,vertical:true)
                             }.frame(maxWidth:.infinity,alignment:.leading)
                         }

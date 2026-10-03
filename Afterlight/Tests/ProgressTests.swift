@@ -303,4 +303,31 @@ final class ProgressTests: XCTestCase {
         XCTAssertEqual(garage.save.credits,1750); XCTAssertEqual(garage.save.memorySparks?[3],8)
     }
 
+    func testRampLaunchesTheCarAndLandsWithAStunt() {
+        let circuit=Circuit.all[0], ramps=Ramp.layout(for:circuit), length=circuit.length
+        var air=AirState(), progress=ramps[1].progress-0.002, landed: AirState.Landing = .none, peak=0.0
+        for _ in 0..<600 {
+            progress += 50.0/60/length
+            let outcome=air.update(dt:1.0/60,progress:progress,lane:ramps[1].lane,speed:50,ramps:ramps,trackLength:length)
+            peak=max(peak,air.height)
+            if case .jump=outcome { landed=outcome; break }
+        }
+        guard case .jump(let time,let barrel)=landed else { return XCTFail("The car never landed after the ramp") }
+        XCTAssertTrue(barrel,"The second ramp is the barrel-roll ramp")
+        XCTAssertGreaterThan(time,0.45); XCTAssertGreaterThan(peak,2.0)
+        XCTAssertEqual(air.height,0); XCTAssertEqual(air.roll,0)
+    }
+
+    func testRampsStayOnTheRoadAndClearOfChips() {
+        for circuit in Circuit.all {
+            for ramp in Ramp.layout(for:circuit) {
+                XCTAssertLessThan(abs(ramp.lane)+ramp.halfWidth,8.1,"Ramps must sit on the road surface")
+                for chip in 0..<12 {
+                    let distance=abs(ramp.progress+ramp.length/2/circuit.length-Double(chip+1)/13)*circuit.length
+                    XCTAssertGreaterThan(distance,ramp.length/2+5,"Ramp overlaps memory chip \(chip) on \(circuit.name)")
+                }
+            }
+        }
+    }
+
 }
