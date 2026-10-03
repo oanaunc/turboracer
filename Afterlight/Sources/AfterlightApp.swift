@@ -50,7 +50,11 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         ZStack {
-            if tab==2 {
+            if tab==0 {
+                CarShowroom(car:garage.car,isActive:activeRace==nil && scenePhase == .active,focus:2.2).ignoresSafeArea()
+                LinearGradient(colors:[ink.opacity(0.75),.clear,.clear,ink.opacity(0.8)],startPoint:.leading,endPoint:.trailing).ignoresSafeArea().allowsHitTesting(false)
+                LinearGradient(colors:[ink.opacity(0.6),.clear,ink.opacity(0.55)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
+            } else if tab==2 {
                 CarShowroom(car:Car.all[inspectedCar],isActive:activeRace==nil && scenePhase == .active).ignoresSafeArea()
                 LinearGradient(colors:[ink.opacity(0.85),.clear,.clear],startPoint:.leading,endPoint:.trailing).ignoresSafeArea().allowsHitTesting(false)
                 LinearGradient(colors:[ink.opacity(0.65),.clear,ink.opacity(0.25)],startPoint:.top,endPoint:.bottom).ignoresSafeArea().allowsHitTesting(false)
@@ -60,6 +64,10 @@ struct HomeView: View {
                     Image(systemName:"flag.checkered").foregroundStyle(mint).font(.system(size:20))
                     VStack(alignment:.leading,spacing:1) { Text("AFTERLIGHT").font(RacingType.title(21)).tracking(1); Text("MOTORSPORT / RACING FESTIVAL").font(RacingType.data(7)).tracking(1).foregroundStyle(muted) }
                     Spacer()
+                    HStack(spacing:8) {
+                        ZStack {Circle().stroke(.white.opacity(0.15),lineWidth:3);Circle().trim(from:0,to:garage.save.levelProgress).stroke(Color(hex:0xFFD23F),style:StrokeStyle(lineWidth:3,lineCap:.round)).rotationEffect(.degrees(-90));Text("\(garage.save.driverLevel)").font(RacingType.title(15))}.frame(width:34,height:34)
+                        VStack(alignment:.leading,spacing:1) {Text("DRIVER LEVEL").font(RacingType.data(7)).foregroundStyle(muted);Text("\((garage.save.xp ?? 0)%1200)/1200 XP").font(RacingType.data(8))}
+                    }.padding(.trailing,10).accessibilityElement(children:.combine)
                     VStack(alignment:.trailing,spacing:2) {Text(garage.save.credits.formatted()).font(RacingType.data(15));Text("RACE CREDITS").font(RacingType.data(7)).foregroundStyle(mint)}
                     Button { settings=true } label: { Image(systemName:"gearshape").foregroundStyle(muted).padding(10).background(.white.opacity(0.04),in:RacingPanel(cut:6)) }.accessibilityLabel("Settings")
                 }.padding(.horizontal,20).padding(.top,10).padding(.bottom,15)
@@ -88,25 +96,45 @@ struct HomeView: View {
     }
     var landscapeHome: some View {
         let next=Circuit.all[garage.save.unlockedRegion]
-        return HStack(spacing:16) {
-            ZStack(alignment:.bottomLeading) {
-                CarShowroom(car:garage.car,isActive:activeRace==nil && scenePhase == .active)
-                LinearGradient(colors:[.clear,ink.opacity(0.9)],startPoint:.center,endPoint:.bottom).allowsHitTesting(false)
-                VStack(alignment:.leading,spacing:5) {Eyebrow(text:"SEASON 01 / YOUR CURRENT DRIVE");Text(garage.car.name).font(RacingType.title(36));Text("\(Int(garage.car.speed*3.6)) KM/H  /  STAGE \(garage.save.upgrades[garage.car.id] ?? 0)").font(RacingType.data(9)).foregroundStyle(muted)}.padding(20)
-            }.clipShape(RacingPanel(cut:18)).frame(maxWidth:.infinity,maxHeight:.infinity)
-            VStack(alignment:.leading,spacing:10) {
-                Eyebrow(text:"NEXT SESSION / \(next.region)")
-                HStack {Text(next.name).font(RacingType.title(25));Spacer();TrackMap(circuit:next).frame(width:55,height:50)}
-                Text("CIRCUIT / 2 LAPS / 4 DRIVERS").font(RacingType.data(8)).foregroundStyle(muted)
-                ActionButton(title:garage.save.races==0 ? "START YOUR FIRST RACE":"ENTER THE GRID",icon:"flag.checkered") {activeRace=RaceRequest(circuit:next,mode:.circuit,daily:false)}
-                Button {tab=1} label: {Text("RACE CALENDAR →").font(RacingType.data(9)).foregroundStyle(muted)}
-                Rectangle().fill(.white.opacity(0.1)).frame(height:1).padding(.vertical,4)
-                Eyebrow(text:"DAILY CHALLENGE / +350")
-                Button {activeRace=RaceRequest(circuit:Garage.dailyCircuit,mode:.drift,daily:true)} label: {HStack {Image(systemName:"wind");Text("AFTER HOURS").font(RacingType.title(18));Spacer();Image(systemName:"arrow.up.right")}.foregroundStyle(mint)}
-                Text("\(Garage.dailyCircuit.name) / DRIFT TRIAL").font(RacingType.data(8)).foregroundStyle(muted)
-                Spacer(minLength:0)
-            }.padding(18).frame(width:280).background(Color(hex:0x11212D),in:RacingPanel(cut:14))
-        }.padding(.trailing,20)
+        let special=Garage.dailyCircuit
+        let specialMode=RaceMode.special(for:special)
+        return HStack(alignment:.bottom,spacing:16) {
+            // The hero car fills the screen behind; its name sits low on the left.
+            VStack(alignment:.leading,spacing:6) {
+                Spacer()
+                HStack(spacing:8) {Text("CLASS \(garage.car.carClass)").font(RacingType.title(13)).foregroundStyle(ink).padding(.horizontal,8).padding(.vertical,3).background(mint,in:RacingPanel(cut:4));Eyebrow(text:"YOUR CURRENT DRIVE")}
+                Text(garage.car.name).font(RacingType.title(44)).shadow(color:.black.opacity(0.6),radius:8)
+                HStack(spacing:14) {
+                    miniStat("TOP SPEED","\(Int(garage.car.speed*3.6)) KM/H");miniStat("STAGE","\(garage.save.upgrades[garage.car.id] ?? 0)/4");miniStat("WINS",garage.save.wins.formatted())
+                }
+            }.frame(maxWidth:.infinity,alignment:.leading)
+            VStack(spacing:10) {
+                Button {activeRace=RaceRequest(circuit:next,mode:.circuit,daily:false)} label: {
+                    modeTile(art:next,eyebrow:"CAREER / \(next.region)",title:next.name,detail:garage.save.races==0 ? "START YOUR FIRST RACE":"ENTER THE GRID",icon:"flag.checkered",accent:Color(hex:0xFFD23F),height:132)
+                }.buttonStyle(.plain).accessibilityLabel(garage.save.races==0 ? "Start your first race" : "Enter the grid")
+                HStack(spacing:10) {
+                    Button {activeRace=RaceRequest(circuit:special,mode:specialMode,daily:false)} label: {
+                        modeTile(art:special,eyebrow:"SPECIAL EVENT",title:specialMode.rawValue.uppercased(),detail:special.name,icon:specialMode.icon,accent:Color(hex:0xFF5F6D),height:96)
+                    }.buttonStyle(.plain).disabled(!garage.save.isUnlocked(special))
+                    Button {activeRace=RaceRequest(circuit:Garage.dailyCircuit,mode:.drift,daily:true)} label: {
+                        modeTile(art:Garage.dailyCircuit,eyebrow:"DAILY / +350",title:"AFTER HOURS",detail:"DRIFT TRIAL",icon:"wind",accent:mint,height:96)
+                    }.buttonStyle(.plain)
+                }
+                Button {tab=1} label: {HStack {Image(systemName:"map.fill");Text("WORLD TOUR / 80 EVENTS").font(RacingType.data(9));Spacer();Image(systemName:"arrow.right")}.foregroundStyle(.white).padding(12).background(.ultraThinMaterial,in:RacingPanel(cut:8)).environment(\.colorScheme,.dark)}
+            }.frame(width:330)
+        }.padding(.trailing,20).padding(.bottom,6)
+    }
+    func miniStat(_ title:String,_ value:String) -> some View {VStack(alignment:.leading,spacing:2) {Text(value).font(RacingType.data(13));Text(title).font(RacingType.data(7)).foregroundStyle(muted)}}
+    func modeTile(art:Circuit,eyebrow:String,title:String,detail:String,icon:String,accent:Color,height:CGFloat) -> some View {
+        ZStack(alignment:.bottomLeading) {
+            CircuitArtwork(circuit:art,showsSetting:false)
+            LinearGradient(colors:[.clear,ink.opacity(0.92)],startPoint:.top,endPoint:.bottom)
+            VStack(alignment:.leading,spacing:3) {
+                Text(eyebrow).font(RacingType.data(7)).tracking(1.5).foregroundStyle(accent)
+                Text(title).font(RacingType.title(height>110 ? 26:17)).lineLimit(1).minimumScaleFactor(0.6)
+                HStack {Text(detail).font(RacingType.data(8)).foregroundStyle(.white.opacity(0.75)).lineLimit(1);Spacer();Image(systemName:icon).foregroundStyle(accent)}
+            }.padding(10)
+        }.frame(height:height).clipShape(RacingPanel(cut:12)).overlay(RacingPanel(cut:12).stroke(accent.opacity(0.55),lineWidth:1)).foregroundStyle(.white)
     }
     var home: some View {
         let next=Circuit.all[garage.save.unlockedRegion]

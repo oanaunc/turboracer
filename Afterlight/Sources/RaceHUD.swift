@@ -85,3 +85,67 @@ struct PositionBadge: View {
         .accessibilityElement(children: .ignore).accessibilityLabel("Position \(position) of \(field)")
     }
 }
+
+/// Podium-style results: big finishing place, stars that pop in one by one,
+/// a counting credit total with its breakdown, and experience gained.
+struct RaceResultView: View {
+    let result: RaceResult; let mode: RaceMode; let field: Int; let circuit: Circuit
+    let back: () -> Void; let next: () -> Void
+    @State private var revealed = 0
+    @State private var credits = 0
+    @State private var appear = false
+    private var place: String { ["1ST","2ND","3RD","4TH","5TH"][max(0,min(4,result.position-1))] }
+    private var headline: String {
+        switch mode {
+        case .knockdown: return "\(result.takedowns) TAKEDOWNS"
+        case .sprint: return String(format:"%.1f S", result.time)
+        case .drift: return "\(result.drift) PTS"
+        default: return place
+        }
+    }
+    var body: some View {
+        ZStack {
+            LinearGradient(colors:[ink.opacity(0.55),ink.opacity(0.96)],startPoint:.top,endPoint:.bottom).ignoresSafeArea()
+            HStack(alignment:.center,spacing:30) {
+                VStack(alignment:.leading,spacing:10) {
+                    Eyebrow(text:"\(circuit.name) / \(mode.rawValue.uppercased())",color:Color(hex:circuit.color))
+                    Text(headline).font(RacingType.title(86)).foregroundStyle(result.position==1 || result.stars==3 ? Color(hex:0xFFD23F) : .white)
+                        .shadow(color:Color(hex:0xFFD23F).opacity(result.stars==3 ? 0.5:0),radius:20)
+                        .scaleEffect(appear ? 1:1.6).opacity(appear ? 1:0)
+                    Text(result.stars==3 ? "PODIUM FINISH" : result.stars>0 ? "SESSION COMPLETE" : "TRY AGAIN").font(RacingType.title(22))
+                    HStack(spacing:14) {
+                        ForEach(0..<3) { i in
+                            Image(systemName:i<result.stars ? "star.fill":"star").font(.system(size:34,weight:.bold))
+                                .foregroundStyle(i<result.stars ? Color(hex:0xFFD23F):.white.opacity(0.25))
+                                .scaleEffect(i<revealed ? 1:0.2).opacity(i<revealed ? 1:0.3)
+                                .shadow(color:Color(hex:0xFFD23F).opacity(i<revealed && i<result.stars ? 0.8:0),radius:10)
+                        }
+                    }
+                    if mode.hasRivals && mode != .knockdown {Text("Finished \(result.position) of \(field) • \(String(format:"%.1f",result.time)) s").font(.system(size:13)).foregroundStyle(muted)}
+                }.frame(maxWidth:.infinity,alignment:.leading)
+                VStack(alignment:.leading,spacing:9) {
+                    Eyebrow(text:"RACE REWARD",color:racingBlue)
+                    Text("+\(credits.formatted()) CR").font(RacingType.title(34)).foregroundStyle(mint).monospacedDigit()
+                    row("Memory chips","\(result.collected)/12")
+                    row("Stunts",result.stunts.formatted())
+                    row("Takedowns",result.takedowns.formatted())
+                    row("Experience","+\(Garage.experience(for:result)) XP")
+                    HStack(spacing:12) {
+                        ActionButton(title:"FESTIVAL",icon:"arrow.left",accent:racingBlue,action:back)
+                        ActionButton(title:"NEXT EVENT",icon:"flag.checkered",action:next)
+                    }.padding(.top,6)
+                }.padding(20).frame(width:380).background(.ultraThinMaterial,in:RacingPanel(cut:16)).environment(\.colorScheme,.dark)
+            }.padding(.horizontal,40)
+        }
+        .onAppear {
+            withAnimation(.spring(response:0.5,dampingFraction:0.6)) {appear=true}
+            for i in 0..<3 { DispatchQueue.main.asyncAfter(deadline:.now()+0.45+Double(i)*0.28) { withAnimation(.spring(response:0.35,dampingFraction:0.5)) {revealed=i+1} } }
+            let steps=30
+            for step in 1...steps { DispatchQueue.main.asyncAfter(deadline:.now()+0.3+Double(step)*0.035) { credits=result.credits*step/steps } }
+        }
+    }
+    func row(_ title:String,_ value:String) -> some View {
+        HStack {Text(title.uppercased()).font(RacingType.data(9)).foregroundStyle(muted);Spacer();Text(value).font(RacingType.data(11))}
+            .padding(.vertical,4).overlay(alignment:.bottom) {Rectangle().fill(.white.opacity(0.08)).frame(height:1)}
+    }
+}

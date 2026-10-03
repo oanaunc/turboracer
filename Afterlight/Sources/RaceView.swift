@@ -63,32 +63,14 @@ struct RaceView: View {
                 ActionButton(title:"LET'S RACE",icon:"flag.checkered") { tutorial=false; engine.setPaused(false); engine.start() }
             } }
             if let result=engine.result {
-                ZStack {
-                    ink.opacity(0.92).ignoresSafeArea()
-                    VStack(alignment:.leading,spacing:16) {
-                        HStack(alignment:.top,spacing:28) {
-                            VStack(alignment:.leading,spacing:12) {
-                                Eyebrow(text:"OFFICIAL SESSION RESULT")
-                                Text(result.stars==3 ? "PODIUM FINISH" : "SESSION COMPLETE").font(RacingType.title(30))
-                                HStack(spacing:12) { ForEach(0..<3) { i in Image(systemName:i<result.stars ? "star.fill" : "star").font(.system(size:26)).foregroundStyle(i<result.stars ? mint : muted.opacity(0.4)) } }
-                                Text(request.mode == .knockdown ? "\(result.takedowns) of \(RaceEngine.knockdownTarget) takedowns • \(String(format:"%.1f",result.time)) seconds" : request.mode.hasRivals ? "Finished \(result.position) of \(engine.rivalCars.count+1) • \(String(format:"%.1f",result.time)) seconds" : "\(String(format:"%.1f",result.time)) seconds • \(result.drift) drift points").font(.system(size:13)).foregroundStyle(muted)
-                            }.frame(maxWidth:.infinity,alignment:.leading)
-                            VStack(alignment:.leading,spacing:12) {
-                                Eyebrow(text:"RACE REWARD",color:racingBlue)
-                                Text("+\(result.credits) CREDITS").font(RacingType.title(27)).foregroundStyle(mint)
-                                Text("\(result.collected) memory chips • \(result.takedowns) takedowns • \(result.stunts) stunts").font(.system(size:12,weight:.bold)).foregroundStyle(muted)
-                                Text("Choose another event in the calendar. Earn five stars across this region to open the next destination.").font(.system(size:12)).foregroundStyle(muted).fixedSize(horizontal:false,vertical:true)
-                            }.frame(maxWidth:.infinity,alignment:.leading)
-                        }
-                        HStack(spacing:14) {
-                            ActionButton(title:"BACK TO THE FESTIVAL",icon:"arrow.left",accent:racingBlue) { dismiss() }
-                            ActionButton(title:"CHOOSE NEXT EVENT",icon:"flag.checkered") { openCalendar(); dismiss() }
-                        }
-                    }.padding(24).frame(maxWidth:850).background(Color(hex:0x1A2228),in:RacingPanel(cut:18)).padding(.horizontal,32)
-                }
+                RaceResultView(result:result,mode:request.mode,field:engine.rivalCars.count+1,circuit:request.circuit,back:{dismiss()},next:{openCalendar();dismiss()})
             }
         }.frame(width:geometry.size.width,height:geometry.size.height) }.ignoresSafeArea().onAppear { if garage.save.races==0 { tutorial=true; engine.setPaused(true) } else { engine.start() } }
-        .onAppear { Soundtrack.shared.switchTo(Soundtrack.track(for:request.circuit.environment),volume:0.24); if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
+        .onAppear {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--preview-result") { DispatchQueue.main.asyncAfter(deadline:.now()+1) { engine.debugFinish() } }
+            #endif
+            Soundtrack.shared.switchTo(Soundtrack.track(for:request.circuit.environment),volume:0.24); if tiltOn { tilt.start { [weak engine] value in engine?.steering=value } } }
         .onDisappear { engine.stop(); tilt.stop(); Soundtrack.shared.switchTo("menu") }
         .onChange(of:engine.result != nil) { _,finished in if finished && !recorded,let result=engine.result { recorded=true; garage.record(result,circuit:request.circuit,mode:request.mode,daily:request.daily) } }
         .onChange(of:scenePhase) { _,phase in if phase != .active { engine.setPaused(true) } }

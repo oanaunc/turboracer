@@ -156,6 +156,10 @@ struct SaveData: Codable {
     var races = 0; var wins = 0; var distance = 0.0
     var sounds: Bool? = nil
     var tiltSteering: Bool? = nil
+    /// Driver experience; nil in saves from earlier versions.
+    var xp: Int? = nil
+    var driverLevel: Int { 1+(xp ?? 0)/1200 }
+    var levelProgress: Double { Double((xp ?? 0)%1200)/1200 }
     var music = true; var haptics = true; var steeringSensitivity = 1.0
     var dailyStamp = ""; var dailyBest = 0
     var memorySparks: [Int: Int]? = nil
@@ -197,7 +201,7 @@ struct SaveData: Codable {
     func upgrade() { let level = save.upgrades[car.id] ?? 0; let cost = (level+1)*600; guard level < 4, save.credits >= cost else { return }; save.credits -= cost; save.upgrades[car.id] = level+1 }
     func record(_ result: RaceResult, circuit: Circuit, mode: RaceMode, daily: Bool) {
         let key = RaceMode.key(circuit, mode)
-        save.credits += result.credits; save.races += 1; save.wins += result.position == 1 ? 1 : 0
+        save.xp = (save.xp ?? 0)+Garage.experience(for:result); save.credits += result.credits; save.races += 1; save.wins += result.position == 1 ? 1 : 0
         save.distance += circuit.length * Double(mode.laps) / 1000
         if !daily { save.medals[key] = max(save.medals[key] ?? 0, result.stars) }
         var memories = save.memorySparks ?? [:]; memories[circuit.id] = min(12,(memories[circuit.id] ?? 0)+result.collected); save.memorySparks = memories
@@ -205,6 +209,8 @@ struct SaveData: Codable {
         save.bestDrifts[key] = max(save.bestDrifts[key] ?? 0, result.drift)
         if daily { let day = Self.dayStamp(); if save.dailyRewardStamp != day && result.stars > 0 { save.credits += 350; save.dailyRewardStamp = day }; if save.dailyStamp != day { save.dailyBest = 0 }; save.dailyStamp = day; save.dailyBest = max(save.dailyBest, result.drift) }
     }
+    /// Experience for a finished event: participation, stars, stunts and takedowns.
+    static func experience(for result:RaceResult) -> Int { 120+result.stars*90+result.stunts*12+result.takedowns*40+result.collected*8 }
     static func dayStamp(date: Date = Date()) -> String { let f = DateFormatter(); f.calendar = Calendar(identifier: .gregorian); f.locale = Locale(identifier: "en_US_POSIX"); f.timeZone = TimeZone(secondsFromGMT: 0); f.dateFormat = "yyyy-MM-dd"; return f.string(from: date) }
     static var dailyCircuit: Circuit { let days = Int(Date().timeIntervalSince1970/86400); return Circuit.all[days % Circuit.all.count] }
     func reset() { save = SaveData() }

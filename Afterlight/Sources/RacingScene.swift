@@ -263,6 +263,10 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             playerOut = true; call("ELIMINATED"); finish()
         }
     }
+    #if DEBUG
+    /// Review hook: end the event immediately with sample statistics.
+    func debugFinish() { elapsed=84.2; collected=9; takedowns=2; stuntCount=6; stuntCredits=180; position=1; finish() }
+    #endif
     private func call(_ text:String) { stunt=text; stuntTimer=1.4; stuntCount += 1 }
     private func feedback() { if haptics { UIImpactFeedbackGenerator(style: .light).impactOccurred() } }
     private func placeCars() {
@@ -586,6 +590,8 @@ struct SceneSurface: UIViewRepresentable {
 struct CarShowroom: UIViewRepresentable {
     let car: Car
     var isActive=true
+    /// Horizontal aim of the camera: positive values move the car left on screen.
+    var focus:Float = -0.8
     final class Coordinator: NSObject, SCNSceneRendererDelegate {
         weak var view:SCNView?; var name="";var ready=false
         func renderer(_ renderer:SCNSceneRenderer,didRenderScene scene:SCNScene,atTime time:TimeInterval) {
@@ -604,6 +610,6 @@ struct CarShowroom: UIViewRepresentable {
         v.isPlaying=isActive
         guard context.coordinator.name != car.name else {return};context.coordinator.name=car.name;context.coordinator.ready=false;v.accessibilityIdentifier="showroom-loading"
         let s=SceneDressing.studio();let n=RaceEngine.makeCar(car);s.rootNode.addChildNode(n);let contact=SceneAtmosphere.contactShadow(for:n);contact.position.y=0.03;s.rootNode.addChildNode(contact);n.runAction(.repeatForever(.rotateBy(x:0,y:2 * .pi,z:0,duration:28)))
-        let camera=SCNNode();camera.camera=SCNCamera();camera.camera?.fieldOfView=36;camera.camera?.wantsHDR=true;camera.camera?.wantsExposureAdaptation=false;camera.camera?.screenSpaceAmbientOcclusionIntensity=0.65;camera.camera?.exposureOffset = -0.4;camera.position=SCNVector3(3.7,2.15,6.7);camera.look(at:SCNVector3(-0.8,0.65,0.6));s.rootNode.addChildNode(camera);v.scene=s;v.pointOfView=camera
+        let camera=SCNNode();camera.camera=SCNCamera();camera.camera?.fieldOfView=36;camera.camera?.wantsHDR=true;camera.camera?.wantsExposureAdaptation=false;camera.camera?.screenSpaceAmbientOcclusionIntensity=0.65;camera.camera?.exposureOffset = -0.4;camera.position=SCNVector3(3.7,2.15,6.7);camera.look(at:SCNVector3(focus,0.65,0.6));s.rootNode.addChildNode(camera);v.scene=s;v.pointOfView=camera
     }
 }

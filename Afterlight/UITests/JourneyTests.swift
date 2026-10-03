@@ -17,8 +17,8 @@ final class JourneyTests: XCTestCase {
         capture("05-racing",app)
         app.buttons["Pause race"].tap(); XCTAssertTrue(app.buttons.matching(NSPredicate(format:"label CONTAINS 'RESUME'")).firstMatch.waitForExistence(timeout:5)); capture("06-pause",app)
         app.buttons.matching(NSPredicate(format:"label CONTAINS 'RESUME'")).firstMatch.tap()
-        let finish=app.buttons.matching(NSPredicate(format:"label CONTAINS 'BACK TO THE FESTIVAL'")).firstMatch
-        XCTAssertTrue(finish.waitForExistence(timeout:60)); capture("07-result",app); XCTAssertTrue(finish.isHittable,"Finish navigation must be visible without scrolling"); app.buttons.matching(NSPredicate(format:"label CONTAINS 'CHOOSE NEXT EVENT'")).firstMatch.tap()
+        let finish=app.buttons.matching(NSPredicate(format:"label CONTAINS 'FESTIVAL'")).firstMatch
+        XCTAssertTrue(finish.waitForExistence(timeout:60)); capture("07-result",app); XCTAssertTrue(finish.isHittable,"Finish navigation must be visible without scrolling"); app.buttons.matching(NSPredicate(format:"label CONTAINS 'NEXT EVENT'")).firstMatch.tap()
         XCTAssertTrue(app.scrollViews["race-calendar"].waitForExistence(timeout:5))
         app.buttons.matching(NSPredicate(format:"label CONTAINS 'Drift run'")).firstMatch.tap()
         XCTAssertTrue(app.buttons["Pause race"].waitForExistence(timeout:5),"A second event must start after the first result")
