@@ -4,6 +4,20 @@
 
 Asphalt 8 is the product of a large studio with licensed manufacturers. Afterlight cannot use real car brands and remains a native SceneKit game, so the goal is the same *feel*: speed, light, spectacle, a desirable garage and punchy sound. Each phase ships as its own build, is tested on Oana's iPhone 17 Pro Max, and is committed and pushed in small steps.
 
+## Game structure redesign (Asphalt 8 benchmark)
+
+Asphalt 8's depth comes from its structure as much as its graphics. Afterlight keeps its story and offline, no-purchase promise, and adopts:
+
+- **Career seasons.** Each district becomes a season of 12–15 events unlocked by stars, ending in a district cup. Twenty routes plus mirrored and reversed variants give 40+ layouts.
+- **Event types.** Classic race, Elimination (last place out every lap or 30 seconds), Knockdown (take down N rivals), Infected (endless nitro, takedowns spread it), Drift, Gate drift, Time attack, Head-to-head duel against a district rival, and Beat the clock.
+- **Car classes and ranks.** D, C, B, A and S classes with a performance rating. Events set a class and minimum rating, so every car has a purpose.
+- **Upgrades.** Separate top speed, acceleration, handling and nitro stages instead of one tuning bar.
+- **A bigger fleet.** 12 or more cars across the classes, with paint, rims and decals.
+- **Larger grids.** Seven rivals with named drivers and different driving styles (aggressive, blocker, clean).
+- **Stunts.** Ramps, barrel rolls, takedowns, near misses, shockwave nitro (done in this pass).
+- **Progression.** Driver level and XP, daily challenges, a weekly cup, achievements and a career stats page.
+- **Presentation.** Event-intro flyovers, finish replay camera, podium screen and season map.
+
 ## Phase 1 — Speed and light (code only, no new licenses)
 
 Biggest visible gain per hour of work.
@@ -47,8 +61,12 @@ Biggest visible gain per hour of work.
 
 ## Needs Oana
 
-1. Paid/signed-in tools. Suno songs made on the free plan cannot be used commercially, and Midjourney requires a paid plan; ChatGPT images and Higgsfield credits use the account owner's balance. These are only used with explicit approval.
+1. Paid tools: approved on 3 October 2026 (ChatGPT, Midjourney, Suno, Higgsfield). The Higgsfield account showed 0 credits, so image-to-3D cars need a top-up.
 2. App Store submission at the end.
+
+## Progress
+
+- Done: nitro flames, drift smoke, skid marks, sparks, speed streaks, grading; ramps, barrel rolls, takedowns, near misses, shockwave nitro, smarter rivals; tilt steering.
 
 ## Asset rules
 
