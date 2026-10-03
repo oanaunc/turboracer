@@ -207,7 +207,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             let sparkLane = Double((i%3)-1)*5
             sparks[i].eulerAngles.y += Float(dt*1.6)
             if distance < 4.5 && abs(lane-sparkLane) < 2.3 {
-                audio.collect(); sparkCollected.insert(i); sparks[i].isHidden=true; collected += 1; nitro=min(1,nitro+0.12)
+                audio.collect(); effects?.collect(at:sparks[i].position); sparkCollected.insert(i); sparks[i].isHidden=true; collected += 1; nitro=min(1,nitro+0.12)
                 sparkMessage = "MEMORY CHIP +35 • NITRO RESTORED"; messageTimer=2; feedback()
             }
         }

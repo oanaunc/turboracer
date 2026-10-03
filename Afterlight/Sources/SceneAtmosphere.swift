@@ -2,29 +2,105 @@ import SceneKit
 import UIKit
 
 @MainActor enum SceneAtmosphere {
+    /// Circuit-board face for the memory chip: navy substrate, glowing cyan
+    /// traces with via pads and a bright central die. Drawn once and cached.
+    private static let chipFace:(color:UIImage,glow:UIImage) = {
+        let size=CGSize(width:256,height:256)
+        func draw(glowOnly:Bool) -> UIImage {
+            UIGraphicsImageRenderer(size:size).image { ctx in
+                let c=ctx.cgContext
+                (glowOnly ? UIColor.black : UIColor(hex:0x0B1F33)).setFill();c.fill(CGRect(origin:.zero,size:size))
+                if !glowOnly {
+                    UIColor(hex:0x143552).setStroke();c.setLineWidth(1)
+                    for i in stride(from:8,to:256,by:16) {c.move(to:CGPoint(x:i,y:0));c.addLine(to:CGPoint(x:i,y:256));c.move(to:CGPoint(x:0,y:i));c.addLine(to:CGPoint(x:256,y:i))};c.strokePath()
+                }
+                let trace=glowOnly ? UIColor(hex:0x5FF4FF) : UIColor(hex:0x3FD8F2)
+                trace.setStroke();trace.setFill();c.setLineWidth(5);c.setLineCap(.round);c.setLineJoin(.round)
+                // Traces fan out from the die to the edge pins, with 45° jogs.
+                var seed:UInt32=7
+                func rnd(_ n:Int) -> Int {seed=seed &* 1103515245 &+ 12345;return Int((seed>>16)%UInt32(n))}
+                for side in 0..<4 { for k in 0..<5 {
+                    let o=CGFloat(70+k*29)
+                    let (start,mid,end):(CGPoint,CGPoint,CGPoint)
+                    switch side {
+                    case 0: start=CGPoint(x:o,y:96);mid=CGPoint(x:o+CGFloat(rnd(3)-1)*14,y:52);end=CGPoint(x:mid.x,y:10)
+                    case 1: start=CGPoint(x:o,y:160);mid=CGPoint(x:o+CGFloat(rnd(3)-1)*14,y:204);end=CGPoint(x:mid.x,y:246)
+                    case 2: start=CGPoint(x:96,y:o);mid=CGPoint(x:52,y:o+CGFloat(rnd(3)-1)*14);end=CGPoint(x:10,y:mid.y)
+                    default: start=CGPoint(x:160,y:o);mid=CGPoint(x:204,y:o+CGFloat(rnd(3)-1)*14);end=CGPoint(x:246,y:mid.y)
+                    }
+                    c.move(to:start);c.addLine(to:mid);c.addLine(to:end);c.strokePath()
+                    c.fillEllipse(in:CGRect(x:end.x-6,y:end.y-6,width:12,height:12))
+                }}
+                // Central die with a bright frame.
+                (glowOnly ? UIColor(hex:0xBFFBFF) : UIColor(hex:0x10283F)).setFill();c.fill(CGRect(x:92,y:92,width:72,height:72))
+                trace.setStroke();c.setLineWidth(6);c.stroke(CGRect(x:92,y:92,width:72,height:72))
+                if !glowOnly {
+                    UIColor(hex:0xFFC35A).setFill()
+                    for i in 0..<4 { c.fill(CGRect(x:104+i*13,y:104,width:8,height:48)) }
+                }
+            }
+        }
+        return (draw(glowOnly:false),draw(glowOnly:true))
+    }()
+    private static let beamImage:UIImage = UIGraphicsImageRenderer(size:CGSize(width:16,height:128)).image { ctx in
+        let colors=[UIColor(red:0.35,green:0.95,blue:1,alpha:0).cgColor,UIColor(red:0.35,green:0.95,blue:1,alpha:0.55).cgColor]
+        let g=CGGradient(colorsSpace:CGColorSpaceCreateDeviceRGB(),colors:colors as CFArray,locations:[0,1])!
+        ctx.cgContext.drawLinearGradient(g,start:.zero,end:CGPoint(x:0,y:128),options:[])
+    }
+    private static let haloImage:UIImage = UIGraphicsImageRenderer(size:CGSize(width:128,height:128)).image { ctx in
+        let colors=[UIColor(red:0.4,green:0.95,blue:1,alpha:0.8).cgColor,UIColor(red:0.2,green:0.7,blue:1,alpha:0.25).cgColor,UIColor.clear.cgColor]
+        let g=CGGradient(colorsSpace:CGColorSpaceCreateDeviceRGB(),colors:colors as CFArray,locations:[0,0.35,1])!
+        ctx.cgContext.drawRadialGradient(g,startCenter:CGPoint(x:64,y:64),startRadius:0,endCenter:CGPoint(x:64,y:64),endRadius:64,options:[])
+    }
+    /// The collectible: a glowing circuit chip in a faceted glass case with
+    /// gold pins, two counter-rotating halo rings, a light beam and a ground glow.
     static func memoryChip() -> SCNNode {
         let root=SCNNode();root.name="memory-chip"
-        let graphite=material(0x152C3A);graphite.metalness.contents=0.8;graphite.roughness.contents=0.28
-        let edge=material(0x9CB1BB);edge.metalness.contents=0.9;edge.roughness.contents=0.22
-        let gold=material(0xFFB84B);gold.metalness.contents=0.7
-        let cyan=material(0x46E5FF,glow:true)
-        let outline=UIBezierPath();outline.move(to:CGPoint(x:-0.58,y:-0.7))
-        for p in [CGPoint(x:0.58,y:-0.7),CGPoint(x:0.58,y:0.38),CGPoint(x:0.26,y:0.7),CGPoint(x:-0.58,y:0.7)] {outline.addLine(to:p)}
-        outline.close()
-        let shell=SCNShape(path:outline,extrusionDepth:0.2);shell.chamferRadius=0.04;shell.materials=[graphite,graphite,edge,edge,edge]
-        root.addChildNode(SCNNode(geometry:shell))
-        func detail(_ w:CGFloat,_ h:CGFloat,_ d:CGFloat,_ x:Float,_ y:Float,_ z:Float,_ m:SCNMaterial) {
-            let box=SCNBox(width:w,height:h,length:d,chamferRadius:0.012);box.materials=[m]
-            let node=SCNNode(geometry:box);node.position=SCNVector3(x,y,z);root.addChildNode(node)
+        let additive:(UIImage) -> SCNMaterial = { image in
+            let m=SCNMaterial();m.lightingModel = .constant;m.diffuse.contents=image;m.blendMode = .add
+            m.writesToDepthBuffer=false;m.isDoubleSided=true;return m
         }
-        // Both faces stay readable as the cartridge turns above the road.
-        for face:Float in [-1,1] {
-            detail(0.74,0.77,0.035,0,0.02,face*0.12,edge)
-            detail(0.66,0.69,0.045,0,0.02,face*0.145,graphite)
-            for i in 0..<3 {detail(0.075,0.43-Double(i)*0.09,0.025,Float(i-1)*0.17,0.05,face*0.178,cyan)}
-            for i in 0..<5 {detail(0.115,0.21,0.025,Float(i-2)*0.19,-0.57,face*0.12,gold)}
+        // Chip body: face texture on both large sides, brushed metal edges.
+        let face=SCNMaterial();face.lightingModel = .physicallyBased;face.diffuse.contents=chipFace.color
+        face.emission.contents=chipFace.glow;face.emission.intensity=1.4;face.metalness.contents=0.4;face.roughness.contents=0.3
+        let edge=material(0xC9D6DD);edge.metalness.contents=1;edge.roughness.contents=0.18
+        let body=SCNBox(width:0.95,height:0.95,length:0.12,chamferRadius:0.05)
+        body.materials=[face,edge,face,edge,edge,edge]
+        let chip=SCNNode(geometry:body);root.addChildNode(chip)
+        let gold=material(0xFFC35A);gold.metalness.contents=1;gold.roughness.contents=0.25
+        let pins=SCNNode()
+        for side in 0..<4 { for k in 0..<5 {
+            let pin=SCNNode(geometry:SCNBox(width:0.07,height:0.16,length:0.05,chamferRadius:0.01));pin.geometry?.materials=[gold]
+            let o=Float(k-2)*0.16
+            switch side {
+            case 0: pin.position=SCNVector3(o,0.53,0)
+            case 1: pin.position=SCNVector3(o,-0.53,0)
+            case 2: pin.position=SCNVector3(-0.53,o,0);pin.eulerAngles.z = .pi/2
+            default: pin.position=SCNVector3(0.53,o,0);pin.eulerAngles.z = .pi/2
+            }
+            pins.addChildNode(pin)
+        }}
+        root.addChildNode(pins.flattenedClone())
+        // Faceted glass case: an octagonal capsule of clear, reflective glass.
+        let glass=SCNMaterial();glass.lightingModel = .physicallyBased;glass.diffuse.contents=UIColor(red:0.55,green:0.9,blue:1,alpha:1)
+        glass.metalness.contents=1;glass.roughness.contents=0.04;glass.transparency=0.22;glass.blendMode = .add;glass.writesToDepthBuffer=false
+        glass.transparencyMode = .dualLayer;glass.isDoubleSided=true
+        let caseShape=SCNCylinder(radius:0.86,height:0.34);caseShape.radialSegmentCount=8;caseShape.materials=[glass]
+        let shell=SCNNode(geometry:caseShape);shell.eulerAngles.x = .pi/2;shell.eulerAngles.y = .pi/8;root.addChildNode(shell)
+        // Counter-rotating halo rings.
+        let ringMaterial=material(0x5FF4FF,glow:true);ringMaterial.emission.intensity=2
+        for (index,tilt) in [Float(1.2),-0.75].enumerated() {
+            let ring=SCNNode(geometry:SCNTorus(ringRadius:1.08+CGFloat(index)*0.14,pipeRadius:0.022));ring.geometry?.materials=[ringMaterial]
+            ring.eulerAngles=SCNVector3(tilt,0,0.4)
+            ring.runAction(.repeatForever(.rotateBy(x:0,y:index==0 ? 2 * .pi : -2 * .pi,z:0,duration:index==0 ? 2.4 : 3.6)))
+            root.addChildNode(ring)
         }
-        let chip=root.flattenedClone();chip.name="memory-chip";return chip
+        let beam=SCNCylinder(radius:0.32,height:7);beam.materials=[additive(beamImage)]
+        let beamNode=SCNNode(geometry:beam);beamNode.position.y = -1.55+3.5;beamNode.castsShadow=false;root.addChildNode(beamNode)
+        let halo=SCNPlane(width:2.6,height:2.6);halo.materials=[additive(haloImage)]
+        let haloNode=SCNNode(geometry:halo);haloNode.eulerAngles.x = -.pi/2;haloNode.position.y = -1.5;haloNode.castsShadow=false;root.addChildNode(haloNode)
+        root.enumerateHierarchy { node,_ in node.castsShadow=false }
+        return root
     }
     private static let contact:UIImage = UIGraphicsImageRenderer(size:CGSize(width:128,height:128)).image { context in
         let colors=[UIColor(white:0,alpha:0.65).cgColor,UIColor(white:0,alpha:0.42).cgColor,UIColor.clear.cgColor]

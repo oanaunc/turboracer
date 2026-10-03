@@ -10,6 +10,8 @@ import UIKit
     private let streaks:SCNParticleSystem
     private let sparkBurst:SCNParticleSystem
     private let sparkEmitter=SCNNode()
+    private let pickupBurst:SCNParticleSystem
+    private let pickupEmitter=SCNNode()
     private var marks:[SCNNode]=[]
     private var nextMark=0
     private var markTimer=0.0
@@ -91,6 +93,13 @@ import UIKit
         sparkBurst.particleColor=UIColor(red:1,green:0.75,blue:0.3,alpha:1)
         sparkEmitter.addParticleSystem(sparkBurst);parent.addChildNode(sparkEmitter)
 
+        pickupBurst=SCNParticleSystem()
+        pickupBurst.particleImage=Self.softDot;pickupBurst.blendMode = .additive;pickupBurst.birthRate=0;pickupBurst.loops=true
+        pickupBurst.particleLifeSpan=0.6;pickupBurst.particleLifeSpanVariation=0.2;pickupBurst.particleSize=0.12;pickupBurst.particleSizeVariation=0.06
+        pickupBurst.particleVelocity=7;pickupBurst.particleVelocityVariation=3;pickupBurst.spreadingAngle=180;pickupBurst.isLightingEnabled=false
+        pickupBurst.particleColor=UIColor(red:0.45,green:0.97,blue:1,alpha:1);pickupBurst.dampingFactor=2.5
+        pickupEmitter.addParticleSystem(pickupBurst);parent.addChildNode(pickupEmitter)
+
         let markMaterial=SCNMaterial();markMaterial.lightingModel = .constant;markMaterial.diffuse.contents=Self.skid
         markMaterial.writesToDepthBuffer=false;markMaterial.blendMode = .alpha;markMaterial.isDoubleSided=true
         let plane=SCNPlane(width:0.3,height:1.8);plane.materials=[markMaterial]
@@ -151,6 +160,12 @@ import UIKit
         sparkBurst.birthRate=400
         DispatchQueue.main.asyncAfter(deadline:.now()+0.08) { [sparkBurst] in sparkBurst.birthRate=0 }
         shake=max(shake,min(1,strength))
+    }
+    /// Cyan burst where a memory chip is collected.
+    func collect(at point:SCNVector3) {
+        pickupEmitter.position=point
+        pickupBurst.reset();pickupBurst.birthRate=900
+        DispatchQueue.main.asyncAfter(deadline:.now()+0.06) { [pickupBurst] in pickupBurst.birthRate=0 }
     }
     func stop() {
         for f in flames {f.birthRate=0};for s in smoke {s.birthRate=0};streaks.birthRate=0;sparkBurst.birthRate=0
