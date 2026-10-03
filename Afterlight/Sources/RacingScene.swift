@@ -127,7 +127,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         nitro = max(0,min(1,nitro + dt*(boosting ? (shockwave ? -0.42 : -0.27) : drifting ? 0.10 : 0.035)))
         let desired = braking ? maxSpeed*0.30 : (offRoad && !air.airborne ? maxSpeed*0.52 : maxSpeed*(shockwave ? 1.6 : boosting ? 1.38 : 1))
         speed += (desired-speed)*min(1,dt*(braking ? 3 : 0.65))
-        audio.update(speed:speed,boost:boosting)
+        audio.update(speed:speed,boost:boosting,drifting:drifting,steering:steering,offRoad:offRoad,braking:braking)
         // The car travels along local +Z; the rear camera looks toward +Z,
         // making its screen-right axis local -X. Authored lane normals use +X.
         lateral += (-steering*sensitivity*car.handling*(drifting ? 10 : 7)-lateral)*min(1,dt*5)
@@ -168,19 +168,19 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
                 if boosting || speed > rivalSpeed*1.12 {
                     // Takedown: a fast hit wrecks the rival instead of slowing you.
                     rivalWreck[i]=2.6; takedowns += 1; nitro=min(1,nitro+0.3); stuntCredits += 60
-                    call("TAKEDOWN!"); effects?.impact(at:contact,strength:1); speed *= 0.95; feedback()
+                    call("TAKEDOWN!"); audio.play("takedown",volume:0.9); effects?.impact(at:contact,strength:1); speed *= 0.95; feedback()
                 } else {
                     // Push clear of the complete body every frame; the cooldown only
                     // limits impact feedback and speed loss, never contact detection.
                     let side=lane >= rivalLane ? 1.0 : -1.0
                     lane=max(-12,min(12,rivalLane+side*(body.halfWidth+other.halfWidth+0.12)))
                     lateral=side*max(1,abs(lateral)*0.4)
-                    if collisionCooldown == 0 {collisionCount += 1;effects?.impact(at:contact,strength:0.8);speed=min(speed*0.76,rivalSpeed*0.92);collisionCooldown=0.5;feedback()}
+                    if collisionCooldown == 0 {collisionCount += 1;audio.play("impact",volume:0.7);effects?.impact(at:contact,strength:0.8);speed=min(speed*0.76,rivalSpeed*0.92);collisionCooldown=0.5;feedback()}
                 }
                 nearMissReady[i]=false
             } else if previous<0 && separation>=0 && rivalWreck[i]==0 {
                 // Passing a rival closely without contact earns nitro.
-                if nearMissReady[i] && abs(lane-rivalLane) < body.halfWidth+other.halfWidth+1.3 { nitro=min(1,nitro+0.08); stuntCredits += 15; call("NEAR MISS") }
+                if nearMissReady[i] && abs(lane-rivalLane) < body.halfWidth+other.halfWidth+1.3 { nitro=min(1,nitro+0.08); stuntCredits += 15; call("NEAR MISS"); audio.play("whoosh",volume:0.6) }
                 nearMissReady[i]=true
             } else if abs(separation)>20 { nearMissReady[i]=true }
         }
@@ -188,14 +188,14 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         if case .jump(let time,let barrel)=landing {
             if barrel { nitro=min(1,nitro+0.3); stuntCredits += 80; call("BARREL ROLL") }
             else if time>0.45 { nitro=min(1,nitro+0.2); stuntCredits += 40; call(time>0.9 ? "BIG AIR" : "JUMP") }
-            effects?.impact(at:SCNVector3(player.position.x,0.2,player.position.z),strength:0.45); feedback()
+            effects?.impact(at:SCNVector3(player.position.x,0.2,player.position.z),strength:0.45); audio.play("land",volume:0.8); feedback()
         }
         // Lane coordinates are road-normal metres on every authored route.
         let width=playerCollider.projected(yaw:lateral*0.022*(drifting ? 2:1)).halfWidth
         let barrierLimit=max(6,10.8-width-0.35)
         if abs(lane)>barrierLimit {
             lane=lane<0 ? -barrierLimit:barrierLimit;lateral=0
-            if barrierCooldown==0 {let edge=circuit.point(progress,lane:lane<0 ? -10.6:10.6);effects?.impact(at:SCNVector3(edge.x,0.7,edge.z),strength:0.55);speed=max(min(speed,maxSpeed*0.45),speed*0.85);barrierCooldown=0.4;feedback()}
+            if barrierCooldown==0 {audio.play("impact",volume:0.5);let edge=circuit.point(progress,lane:lane<0 ? -10.6:10.6);effects?.impact(at:SCNVector3(edge.x,0.7,edge.z),strength:0.55);speed=max(min(speed,maxSpeed*0.45),speed*0.85);barrierCooldown=0.4;feedback()}
         }
         position = 1+rivalProgress.filter { $0>progress }.count
         if mode == .circuit && position < lastPosition && elapsed > 2 { call(position==1 ? "TAKING THE LEAD" : "OVERTAKE · P\(position)") }
