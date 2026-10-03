@@ -110,6 +110,7 @@
 		DC170E1E36A1D156C36E7354 /* rock-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = FA17B7086BEE99EEDB6C3C75 /* rock-normal.png */; };
 		DE54C799EF4933EAAA414E4D /* ridge-rock-normal.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 02F4666A4888FD8DF148D6D4 /* ridge-rock-normal.jpg */; };
 		DFA551F0594F88F76196BD2E /* SurfaceLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A67240EAC7159778A89AD2 /* SurfaceLibrary.swift */; };
+		E0FC05F3084526CE953A09BE /* RaceEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C5F443EB5B559DFF6CE961 /* RaceEffects.swift */; };
 		E7E45986E893C076FB607510 /* rubber.png in Resources */ = {isa = PBXBuildFile; fileRef = 6407763D7CFD3A0B2D7CB7B7 /* rubber.png */; };
 		E85E790C01BEC55BAFD69425 /* CityBrick.asset in Resources */ = {isa = PBXBuildFile; fileRef = 4F26A815CE05755707824E79 /* CityBrick.asset */; };
 		E883CEBBCCA684056AE96E21 /* circuit-15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 996E86D64E49740C335420B2 /* circuit-15.jpg */; };
@@ -204,6 +205,7 @@
 		79D0973030002E0E4287FA0A /* Roadster.glb */ = {isa = PBXFileReference; path = Roadster.glb; sourceTree = "<group>"; };
 		7ED75DD507C3A274EE4E5831 /* island_tree_01.glb */ = {isa = PBXFileReference; path = island_tree_01.glb; sourceTree = "<group>"; };
 		806F76B47BFF96265044120E /* LuxurySedan.asset */ = {isa = PBXFileReference; path = LuxurySedan.asset; sourceTree = "<group>"; };
+		86C5F443EB5B559DFF6CE961 /* RaceEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaceEffects.swift; sourceTree = "<group>"; };
 		876C37B033309B2F7D72F8AA /* carbon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = carbon.png; sourceTree = "<group>"; };
 		8B4CBA6C3AA8AA0381CBB3F6 /* CoastalShrub.glb */ = {isa = PBXFileReference; path = CoastalShrub.glb; sourceTree = "<group>"; };
 		8B76445C974F31B48C52AEC5 /* AfterlightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterlightApp.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				51931C7D5814E734881A334E /* GeneratedArtKeys.swift */,
 				1DE31FE44126182C1F19BFBE /* GLBAsset.swift */,
 				A0C5FD31C125EABD68559788 /* LandscapeArt.swift */,
+				86C5F443EB5B559DFF6CE961 /* RaceEffects.swift */,
 				3ADEE60BFAD604876F7E6BC9 /* RaceView.swift */,
 				2AE27317ED73D88347CBF2DA /* RacingScene.swift */,
 				40C185D2AE64E7A9F8D5FBB7 /* RacingTheme.swift */,
@@ -720,6 +723,7 @@
 				821C46D0ED30D784BBAC841F /* GLBAsset.swift in Sources */,
 				FF5206995B44FCF7FB293BC5 /* GeneratedArtKeys.swift in Sources */,
 				C4B62C3D639C551264AF3051 /* LandscapeArt.swift in Sources */,
+				E0FC05F3084526CE953A09BE /* RaceEffects.swift in Sources */,
 				5A8B9A971079A25A9E7B9506 /* RaceView.swift in Sources */,
 				80988CCA3AA8991448125184 /* RacingScene.swift in Sources */,
 				EB501B5D388B3B13AB23172D /* RacingTheme.swift in Sources */,
