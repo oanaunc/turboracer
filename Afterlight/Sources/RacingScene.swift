@@ -271,7 +271,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         let dark = material(0x091626); let chrome = material(0xD8E8EF)
         let widths: [Float] = [1,0.96,1.06,1.02,1.08,0.97]
         let lengths: [Float] = [1,0.91,1.07,1.03,1.10,1.04]
-        let width = widths[car.id], length = lengths[car.id]
+        let width = widths[car.id%6], length = lengths[car.id%6]
         let sections: [(Float,Float,Float)] = [(2.2,0.86,0.70),(1.55,1.02,0.84),(0.55,1.02,0.92),(-0.95,1.02,0.88),(-1.65,1.04,0.83),(-2.2,0.93,0.72)]
         var vertices: [SCNVector3] = []; var indices: [Int32] = []
         for (z,w,y) in sections {
@@ -301,7 +301,7 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             mat.isDoubleSided=true; geo.materials=[mat]; root.addChildNode(SCNNode(geometry:geo))
         }
         let glass=material(0x213B51); glass.metalness.contents=0.9; glass.roughness.contents=0.05
-        let roofY: Float=car.id==4 ? 1.26 : 1.42
+        let roofY: Float=car.id%6==4 ? 1.26 : 1.42
         let frontL=SCNVector3(-0.83,0.90,0.70),frontR=SCNVector3(0.83,0.90,0.70)
         let roofFL=SCNVector3(-0.66,roofY,0.06),roofFR=SCNVector3(0.66,roofY,0.06)
         let roofBL=SCNVector3(-0.67,roofY,-0.98),roofBR=SCNVector3(0.67,roofY,-0.98)
@@ -326,8 +326,8 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
             for spoke in 0..<5 { let sg=SCNBox(width:0.36,height:0.04,length:0.55,chamferRadius:0.01); sg.materials=[dark]; let sn=SCNNode(geometry:sg); sn.position=n.position; sn.eulerAngles.x=Float(spoke) * .pi/5; root.addChildNode(sn) }
             let hub=SCNNode(geometry:SCNCylinder(radius:0.1,height:0.37)); hub.geometry?.materials=[paint]; hub.eulerAngles.z = .pi/2; hub.position=n.position; root.addChildNode(hub)
         } }
-        if car.id>=3 { box(0.15,0.10,1.1,-0.66,0.86,-1.55,dark); box(0.15,0.10,1.1,0.66,0.86,-1.55,dark) }
-        if car.id==5 { box(0.06,0.6,1.4,0,1.0,-1.6,paint) }
+        if car.id%6>=3 { box(0.15,0.10,1.1,-0.66,0.86,-1.55,dark); box(0.15,0.10,1.1,0.66,0.86,-1.55,dark) }
+        if car.id%6==5 { box(0.06,0.6,1.4,0,1.0,-1.6,paint) }
         VehicleCollider.attach(to:root);return root
     }
     private func buildWorld() {

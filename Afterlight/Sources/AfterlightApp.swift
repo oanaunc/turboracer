@@ -226,17 +226,17 @@ struct GarageView: View {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:12) {
                         Text("MOTORWORKS / COLLECTION").font(RacingType.data(7)).tracking(1.5).foregroundStyle(racingBlue)
-                        Text(car.name).font(RacingType.title(30));Text(car.subtitle.uppercased()).font(RacingType.data(8)).foregroundStyle(racingBlue)
-                        rating("TOP SPEED",car.speed/80);rating("HANDLING",car.handling/1.4);rating("TUNING",Double(garage.save.upgrades[car.id] ?? 0)/4)
+                        Text(car.name).font(RacingType.title(30)).lineLimit(1).minimumScaleFactor(0.6);Text(car.subtitle.uppercased()).font(RacingType.data(8)).foregroundStyle(racingBlue)
+                        rating("TOP SPEED",car.speed/80);rating("ACCEL",car.acceleration);rating("HANDLING",car.handling/1.4);rating("TUNING",Double(garage.save.upgrades[car.id] ?? 0)/4)
                         Text("\(Int(car.speed*3.6)) KM/H  /  STAGE \(garage.save.upgrades[car.id] ?? 0)").font(RacingType.data(9)).foregroundStyle(.white)
                     }.frame(width:185,alignment:.leading).padding(14).background(ink.opacity(0.52),in:RacingPanel(cut:8))
                     Spacer()
-                    Text("CLASS \(["GT","C","S","S","R","X"][car.id])").font(RacingType.title(22)).foregroundStyle(mint).padding(12).background(ink.opacity(0.6),in:RacingPanel(cut:8))
+                    Text("CLASS \(car.carClass)").font(RacingType.title(22)).foregroundStyle(mint).padding(12).background(ink.opacity(0.6),in:RacingPanel(cut:8))
                 }
                 Spacer(minLength:10)
                 HStack(alignment:.bottom,spacing:12) {
                     VStack(alignment:.leading,spacing:10) {
-                        HStack(spacing:6) {ForEach(Car.all) {c in Button {inspected=c.id} label: {VStack(spacing:4) {Rectangle().fill(Color(hex:c.color)).frame(height:4);Text(c.name).font(RacingType.data(7)).foregroundStyle(inspected==c.id ? .white:muted)}.padding(9).background(inspected==c.id ? racingBlue.opacity(0.35):ink.opacity(0.65),in:RacingPanel(cut:4))}.accessibilityLabel(c.name)}}
+                        ScrollViewReader { proxy in ScrollView(.horizontal,showsIndicators:false) {HStack(spacing:6) {ForEach(Car.all) {c in Button {inspected=c.id} label: {VStack(alignment:.leading,spacing:4) {Rectangle().fill(Color(hex:c.color)).frame(height:4);HStack(spacing:5) {Text(c.carClass).font(RacingType.title(10)).foregroundStyle(mint);Text(c.name).font(RacingType.data(7)).foregroundStyle(inspected==c.id ? .white:muted).lineLimit(1)};if !garage.save.owned.contains(c.id) {Image(systemName:"lock.fill").font(.system(size:7)).foregroundStyle(muted)}}.frame(minWidth:74,alignment:.leading).padding(9).background(inspected==c.id ? racingBlue.opacity(0.35):ink.opacity(0.65),in:RacingPanel(cut:4))}.id(c.id).accessibilityLabel(c.name)}}}.frame(maxWidth:560).onAppear {proxy.scrollTo(inspected,anchor:.center)}.onChange(of:inspected) {_,value in withAnimation {proxy.scrollTo(value,anchor:.center)}} }
                         if garage.save.selectedCar==car.id && (garage.save.upgrades[car.id] ?? 0)<4 {
                             Button {garage.upgrade()} label: {Label("UPGRADE • \(((garage.save.upgrades[car.id] ?? 0)+1)*600)",systemImage:"wrench.and.screwdriver.fill").font(RacingType.title(13)).foregroundStyle(ink).padding(12).background(racingBlue,in:RacingPanel(cut:6))}.disabled(garage.save.credits<((garage.save.upgrades[car.id] ?? 0)+1)*600)
                         }

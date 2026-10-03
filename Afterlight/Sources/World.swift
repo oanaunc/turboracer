@@ -1,13 +1,20 @@
 import Foundation
 import SwiftUI
 
+/// Paint finish applied to the body material.
+enum PaintFinish { case metallic, pearl, matte }
+
 struct Car: Identifiable {
     let id: Int; let name: String; let subtitle: String; let price: Int
     let speed: Double; let handling: Double; let color: UInt32
-    var modelName: String { ["LuxurySedan","SportsCoupe","ConceptGT","Roadster","Hyper","Hyper"][id] }
-    // The later three garage entries share a platform. Exclude the whole
+    /// Body model, aero kit (0 stock, 1 sport, 2 race) and performance class.
+    var design = "LuxurySedan"; var kit = 0; var carClass = "D"; var finish = PaintFinish.metallic
+    var modelName: String { design }
+    /// Acceleration rating derived from class and kit, used by the garage.
+    var acceleration: Double { min(1, (["D":0.45,"C":0.58,"B":0.7,"A":0.82,"S":0.94][carClass] ?? 0.5)+Double(kit)*0.03) }
+    // Roadster and Hyper share the concept platform. Exclude the whole
     // family so a rival cannot be a roof/wing variant of the player's body.
-    var bodyFamily: String { id<3 ? modelName : "ConceptPlatform" }
+    var bodyFamily: String { ["Roadster","Hyper"].contains(design) ? "ConceptPlatform" : design }
     static func rivals(for player:Car,route:Int) -> [Car] {
         var used=Set([player.bodyFamily]),grid:[Car]=[]
         for offset in 0..<all.count {
@@ -17,13 +24,20 @@ struct Car: Identifiable {
         }
         return grid
     }
+    static let classes = ["D","C","B","A","S"]
     static let all = [
-        Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C),
-        Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4),
-        Car(id: 2, name: "VANTA", subtitle: "Born for the midnight run", price: 3600, speed: 61, handling: 0.95, color: 0xA68CFF),
-        Car(id: 3, name: "AURORA", subtitle: "A beautiful kind of chaos", price: 6000, speed: 65, handling: 1.1, color: 0xFFD76E),
-        Car(id: 4, name: "SPECTRE", subtitle: "Leave nothing but light", price: 9000, speed: 70, handling: 1.05, color: 0xF576C5),
-        Car(id: 5, name: "AFTERLIGHT", subtitle: "Tomorrow belongs to you", price: 13000, speed: 74, handling: 1.25, color: 0xD9F8F5)
+        Car(id: 0, name: "SOLSTICE", subtitle: "An elegant grand tourer", price: 0, speed: 54, handling: 1.0, color: 0xFF780C, design: "LuxurySedan", carClass: "D"),
+        Car(id: 1, name: "KOMET", subtitle: "Light feet. Heavy attitude.", price: 1800, speed: 57, handling: 1.2, color: 0x59E8D4, design: "SportsCoupe", carClass: "D", finish: .pearl),
+        Car(id: 2, name: "VANTA", subtitle: "Born for the midnight run", price: 3600, speed: 61, handling: 0.95, color: 0xA68CFF, design: "ConceptGT", carClass: "C"),
+        Car(id: 3, name: "AURORA", subtitle: "A beautiful kind of chaos", price: 6000, speed: 65, handling: 1.1, color: 0xFFD76E, design: "Roadster", carClass: "C"),
+        Car(id: 4, name: "SPECTRE", subtitle: "Leave nothing but light", price: 9000, speed: 70, handling: 1.05, color: 0xF576C5, design: "Hyper", carClass: "B", finish: .pearl),
+        Car(id: 5, name: "AFTERLIGHT", subtitle: "Tomorrow belongs to you", price: 13000, speed: 74, handling: 1.25, color: 0xD9F8F5, design: "Hyper", carClass: "A", finish: .pearl),
+        Car(id: 6, name: "RAVINE", subtitle: "A badlands brawler", price: 2600, speed: 58, handling: 0.9, color: 0x6F7D45, design: "RivalPickup", kit: 1, carClass: "D", finish: .matte),
+        Car(id: 7, name: "SOLSTICE GT-S", subtitle: "The tourer, sharpened", price: 4800, speed: 63, handling: 1.08, color: 0x1F4FC9, design: "LuxurySedan", kit: 1, carClass: "C"),
+        Car(id: 8, name: "KOMET R", subtitle: "Stripped, winged, furious", price: 7500, speed: 67, handling: 1.3, color: 0xF1F1EC, design: "SportsCoupe", kit: 2, carClass: "B"),
+        Car(id: 9, name: "VANTA NOCTIS", subtitle: "Midnight carbon grand tourer", price: 11000, speed: 72, handling: 1.05, color: 0x15191F, design: "ConceptGT", kit: 1, carClass: "A", finish: .matte),
+        Car(id: 10, name: "AURORA SPEEDSTER", subtitle: "Roofless, relentless", price: 15500, speed: 76, handling: 1.2, color: 0xE5262E, design: "Roadster", kit: 2, carClass: "A"),
+        Car(id: 11, name: "SPECTRE GT3", subtitle: "Built to win the Festival", price: 21000, speed: 80, handling: 1.32, color: 0x1CB6FF, design: "Hyper", kit: 2, carClass: "S", finish: .pearl)
     ]
 }
 /// Closed, arc-length sampled courses. Lane offsets are real metres normal to

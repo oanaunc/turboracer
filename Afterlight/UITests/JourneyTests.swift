@@ -95,6 +95,7 @@ final class JourneyTests: XCTestCase {
             app.buttons["control-NITRO"].press(forDuration:4)
             capture("route-art-\(id)",app)
             let sample=app.descendants(matching:.any)["race-scene"].value as? String ?? "0"
+            print("AFTERLIGHT-FPS route \(id): \(sample)")
             XCTAssertGreaterThanOrEqual(Double(sample.split(separator:" ").first ?? "0") ?? 0,30,"Route \(id) render timing")
             app.terminate()
         }
