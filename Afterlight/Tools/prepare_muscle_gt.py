@@ -27,7 +27,9 @@ for mat in bpy.data.materials:
     elif 'steel' in name: color = (.55, .57, .6, 1); metal = .95; rough = .2
     elif 'carbon' in name: color = (.03, .03, .035, 1); metal = .3; rough = .3
     elif 'rubber' in name: color = (.016, .018, .02, 1); metal = 0; rough = .88
-    elif 'led' in name or 'emission' in name or 'carlight' in name or name.startswith('material.003'):
+    elif 'carlight' in name: color = (.18, .19, .2, 1); metal = .9; rough = .15
+    elif name.startswith('material.003'): color = (.012, .022, .03, 1); metal = .1; rough = .1  # rear and side glazing
+    elif 'led' in name:
         color = (.8, .9, 1, 1); p.inputs['Emission Color'].default_value = (.6, .75, 1, 1); p.inputs['Emission Strength'].default_value = 1.4
     elif 'piano' in name: color = (.01, .012, .014, 1); metal = .2; rough = .15
     p.inputs['Base Color'].default_value = color; p.inputs['Metallic'].default_value = metal; p.inputs['Roughness'].default_value = rough

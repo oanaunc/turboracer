@@ -116,6 +116,15 @@ import UIKit
     }
     static func skyline(_ circuit:Circuit) -> SCNNode {
         let root=SCNNode()
+        // Landmark skyscrapers break up the distant box skyline.
+        for i in 0..<9 {
+            guard let tower=SceneDressing.asset(i%2==0 ? "SkyscraperA":"SkyscraperB",height:140+Float(i%3)*35) else {break}
+            let angle=Float(i)*2 * .pi/9+0.2,distance:Float=420+Float(i%3)*40
+            tower.position=SCNVector3(sin(angle)*distance,-2,cos(angle)*distance);tower.eulerAngles.y=angle+Float(i)
+            tower.enumerateHierarchy {n,_ in n.castsShadow=false
+                n.geometry?.materials.forEach {m in if m.name?.hasPrefix("Glazing") == true {m.emission.contents=SurfaceLibrary.image("facade-emission");m.emission.intensity=0.6}}}
+            root.addChildNode(tower)
+        }
         for i in 0..<72 {
             let angle=Float(i)*2 * .pi/72,distance:Float=350+Float(i%5)*18
             let h:CGFloat=CGFloat(22+(i*37)%105),w:CGFloat=CGFloat(14+i%5*4)

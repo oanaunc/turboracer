@@ -48,8 +48,7 @@ struct RaceView: View {
                     }
                     GlassControl(symbol:"pause.rectangle.fill",title:"BRAKE",color:Color(hex:0xFF7A66),size:52) {engine.braking=$0}
                     Spacer()
-                    VStack(spacing:2) {Tachometer(speed:engine.speed,rpm:engine.rpm,gear:engine.gear,nitro:engine.nitro,boosting:engine.boosting);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}
-                    Spacer()
+                    VStack(spacing:2) {Tachometer(speed:engine.speed,rpm:engine.rpm,gear:engine.gear,nitro:engine.nitro,boosting:engine.boosting);Text("\(engine.collected)/12 CHIPS").font(RacingType.data(8)).foregroundStyle(mint)}.padding(.bottom,4)
                     GlassControl(symbol:"wind",title:"DRIFT",color:Color(hex:0xFFB347),size:70,badge:engine.combo>1 ? "×\(engine.combo)" : nil) {engine.drifting=$0}
                     GlassControl(symbol:"bolt.fill",title:"NITRO",color:engine.nitro >= 0.5 ? Color(hex:0xC48BFF) : Color(hex:0x46E5FF),size:92,fill:engine.nitro) {engine.nitroHeld=$0}
                 }

@@ -108,3 +108,13 @@ Memory-chip collectible, trackside furniture, city skyline and sea shading:
 original native SceneKit geometry/materials authored for Afterlight.
 Circuit selection images: captures of the actual native game scenes.
 Existing models and surface maps retain the licenses credited above.
+
+Additional BlenderKit Royalty Free models (October 2026, local encrypted packs):
+Muscle car — sadawn 322. https://www.blenderkit.com/asset-gallery-detail/a86896cc-f4be-4faa-a033-78e7cfe64602/
+  Adaptation: decimated mobile geometry, PBR palette, rotating wheel pivots, rescaled; used for SOLSTICE.
+Horizon Glow Tower, Skyline Vista Tower, Urban Pulse Tower, Modern Building 05, Modern One-Story House — Abbos Mirzaev.
+Office Building (two variants), Brutalist Apartment Building — Abraham Ballesteros.
+Apartment building — Jan Holinka.
+  https://www.blenderkit.com/docs/licenses/
+  Adaptation: joined and decimated geometry, 512 px textures, darker reflective glazing, night window glow.
+Converters: Tools/prepare_muscle_gt.py and Tools/prepare_licensed_buildings.py. Sources stay outside public Git.

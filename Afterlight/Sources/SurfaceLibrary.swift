@@ -91,7 +91,7 @@ import UIKit
                 node.geometry?.materials=geometry.materials.map {original in
                     let m=original.copy() as! SCNMaterial
                     if m.name?.hasPrefix("Paint 1") == true || m.name?.hasPrefix("LuxuryBodyPaint") == true {let body=paint(car.color,finish:car.finish);if design=="LuxurySedan" || design=="SportsCoupe" {body.metalness.contents=0.45;body.roughness.contents=0.3;body.clearCoat.contents=0.6;body.clearCoatRoughness.contents=0.16};return body}
-                    if m.name=="Glass" {m.diffuse.contents=UIColor(hex:0x142B38);m.multiply.contents=UIColor.white;m.transparency=0.96;m.metalness.contents=0.05;m.roughness.contents=0.08}
+                    if m.name=="Glass" || (m.name?.lowercased().contains("glass") == true && m.name?.lowercased().contains("red") == false) {m.diffuse.contents=UIColor(hex:0x142B38);m.multiply.contents=UIColor.white;m.transparency=0.96;m.metalness.contents=0.05;m.roughness.contents=0.08}
                     return m
                 }
             }

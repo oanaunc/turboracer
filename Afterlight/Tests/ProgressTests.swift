@@ -354,4 +354,13 @@ final class ProgressTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(duel.rivalCars[0].speed,Car.all[0].speed)
     }
 
+    @MainActor func testLicensedArchitectureLoads() throws {
+        guard GeneratedArtKeys.keys["TowerHorizon"] != nil else { throw XCTSkip("Licensed building packs are local build inputs") }
+        for (name,height) in [("TowerHorizon",60.8),("TowerVista",60.8),("TowerPulse",60.6),("SkyscraperA",195.6),("SkyscraperB",229.0),("ModernBlock",21.7),("ModernVilla",5.4),("CountryHouse",8.1),("BrutalistBlock",38.0)] as [(String,Float)] {
+            guard let node=SceneDressing.asset(name,height:height) else { XCTFail("\(name) failed to load"); continue }
+            let b=node.boundingBox, h=(b.max.y-b.min.y)*node.scale.y
+            XCTAssertEqual(h,height,accuracy:height*0.05,"\(name) height")
+        }
+    }
+
 }

@@ -37,7 +37,8 @@ import UIKit
         let count=[24,12,12,18,10][circuit.route]
         for i in 0..<count {
             let t=Double(i)/Double(count)+0.035
-            let building=ArchitectureArt.villa(variant:i)
+            // Modern villas and a beach hotel from BlenderKit alternate with the Riviera villas.
+            let building=(i%3==1 ? asset("ModernVilla",height:5.4) : i%7==3 ? asset("ModernBlock",height:16) : nil) ?? ArchitectureArt.villa(variant:i)
             building.eulerAngles.y=circuit.heading(t)+Float.pi/2
             let b=building.boundingBox
             var extent:Float=0
@@ -96,6 +97,22 @@ import UIKit
         let authored=["CityBank","CityOffice","CityTerrace","CityBrick","CityApartment"]
         let fallback=["CityCorner","CityMidrise","CityLandmark"]
         let choice=abs(seed/6)
+        // Tall residential towers and modern blocks from BlenderKit mix with the
+        // street-scale buildings; taller requests favour the towers.
+        let towers:[(String,Float)]=[("TowerHorizon",60.8),("TowerVista",60.8),("TowerPulse",60.6),("BrutalistBlock",38),("ModernBlock",21.7)]
+        if height>22 || choice%3==1, let pick=Optional(towers[choice%towers.count]), let building=asset(pick.0,height:pick.1*(0.55+Float(choice%4)*0.08)) {
+            building.enumerateChildNodes { node,_ in
+                guard let g=node.geometry else {return}
+                node.geometry=g.copy() as? SCNGeometry
+                node.geometry?.materials=g.materials.map {original in
+                    let m=original.copy() as! SCNMaterial
+                    // Lit windows at night: glazing glows faintly warm or cool.
+                    if m.name?.hasPrefix("Glazing") == true {m.emission.contents=UIColor(hex:seed%2==0 ? 0x5C7FA0:0xB89260);m.emission.intensity=0.35}
+                    return m
+                }
+            }
+            return building
+        }
         if let building=asset(authored[choice%authored.count],height:max(12,min(32,height))) ?? asset(fallback[choice%fallback.count],height:max(12,min(32,height))) {
             building.enumerateChildNodes { node,_ in
                 guard let g=node.geometry else {return}

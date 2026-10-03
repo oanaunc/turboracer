@@ -495,13 +495,19 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
                     let corner=n.convertPosition(SCNVector3(x,0,z),to:nil)
                     extent=max(extent,hypot(corner.x,corner.z))
                 }}
-                for offset in stride(from:Double(extent)+18,through:Double(extent)+85,by:4) {
+                for offset in stride(from:Double(extent)+18,through:Double(extent)+(extent>24 ? 170:85),by:extent>24 ? 8:4) {
                     let position=circuit.point(t,lane:side*offset)
                     let clear=(0..<480).allSatisfy {step in let road=circuit.point(Double(step)/480);return hypot(road.x-position.x,road.z-position.z)>11+extent+3}
                     if clear && RouteScenery.allowsScenery(position,radius:extent,circuit:circuit) {n.position=SCNVector3(position.x,-0.12,position.z);n.name="roadside-building";world.addChildNode(n);SceneDressing.foundation(for:n,in:world);break}
                 }
             } else {
                 if circuit.environment==3 && (index/6)%circuit.look.density==0 && RouteScenery.allowsScenery(p,radius:4,circuit:circuit),let pine=SceneDressing.asset("AlpineFir",height:12+Float(index%4)*2,maxWidth:8) ?? SceneDressing.asset("pine_sapling_small",height:8+Float(index%4)) {pine.position=SCNVector3(p.x,0,p.z);world.addChildNode(pine)}
+                // Alpine farmhouses from BlenderKit, kept clear of the whole circuit.
+                if circuit.environment==3 && index%24==12, let house=SceneDressing.asset("CountryHouse",height:8.1) {
+                    let spot=circuit.point(t,lane:side*46);house.eulerAngles.y=circuit.heading(t)+(side>0 ? .pi : 0)
+                    let clear=(0..<480).allSatisfy {step in let road=circuit.point(Double(step)/480);return hypot(road.x-spot.x,road.z-spot.z)>11+18}
+                    if clear && RouteScenery.allowsScenery(spot,radius:17,circuit:circuit) {house.position=SCNVector3(spot.x,-0.1,spot.z);house.name="roadside-building";world.addChildNode(house)}
+                }
                 let h=Float(4+index%(circuit.route==1 ? 4:8))
                 // Sculpted ridge outcrops: the cliff scan flattened into slabs at this footprint.
                 let rock=SurfaceLibrary.hill(radius:11+Float(index%3)*2,height:h,seed:index+circuit.id*31,vegetated:circuit.environment==3 && index%2==0,desert:circuit.environment==2,snow:circuit.look.ground=="snow"); let rockPoint=circuit.point(t,lane:side*38)
