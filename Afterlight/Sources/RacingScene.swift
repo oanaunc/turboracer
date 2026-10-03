@@ -379,6 +379,12 @@ func material(_ color: UInt32, glow: Bool = false) -> SCNMaterial {
         roadMat.multiply.contents=GroundCover.wear;roadMat.multiply.wrapS = .repeat;roadMat.multiply.wrapT = .repeat
         roadMat.multiply.contentsTransform=SCNMatrix4MakeScale(1/3.6,0.125,1);roadMat.multiply.mipFilter = .linear
         let road=(0..<240).map {circuit.point(Double($0)/240)}
+        world.addChildNode(NatureDressing.dress(circuit) { p in
+            guard self.circuit.environment>=2 else {return -0.03}
+            let nearest=road.reduce(Float.greatestFiniteMagnitude) {min($0,hypot($1.x-p.x,$1.z-p.z))}
+            let relief=max(0,min(1,(nearest-19)/65))*RouteScenery.terrainRelief(p.x,p.z,circuit:self.circuit)
+            return -0.04+relief*(1.8+sin(p.x*0.03)*cos(p.z*0.025)*1.7)
+        })
         world.addChildNode(GroundCover.tufts(circuit) { p in
             guard self.circuit.environment>=2 else {return -0.03}
             let nearest=road.reduce(Float.greatestFiniteMagnitude) {min($0,hypot($1.x-p.x,$1.z-p.z))}

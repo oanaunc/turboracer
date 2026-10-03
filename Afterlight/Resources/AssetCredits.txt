@@ -118,3 +118,8 @@ Apartment building — Jan Holinka.
   https://www.blenderkit.com/docs/licenses/
   Adaptation: joined and decimated geometry, 512 px textures, darker reflective glazing, night window glow.
 Converters: Tools/prepare_muscle_gt.py and Tools/prepare_licensed_buildings.py. Sources stay outside public Git.
+
+Scanned nature — Poly Haven, CC0 1.0 (https://polyhaven.com/license):
+island_tree_02, quiver_tree_01, quiver_tree_02, coast_land_rocks_02, coast_rocks_01, namaqualand_boulder_02,
+namaqualand_boulder_05, namaqualand_cliff_01, rock_moss_set_01, boulder_01, dead_tree_trunk_02, tree_stump_01, rock_face_01.
+Fetched with checksums by Tools/fetch_nature.py; leaves thinned and solids decimated by Tools/prepare_nature.py.

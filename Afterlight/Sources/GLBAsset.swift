@@ -70,7 +70,7 @@ import UIKit
             m.isDoubleSided=definition["doubleSided"] as? Bool ?? false
             let alpha=m.name=="PalmAtlas" ? "MASK":(definition["alphaMode"] as? String ?? "OPAQUE")
             if alpha=="MASK" {
-                let botanical=["RoyalPalm","CoastalPalm","AlpineFir","CoastalShrub","island_tree_01","pine_sapling_small"].contains(name)
+                let botanical=["RoyalPalm","CoastalPalm","AlpineFir","CoastalShrub","island_tree_01","pine_sapling_small","IslandTree","QuiverTree"].contains(name)
                 let authored=definition["alphaCutoff"] as? Double ?? 0.5
                 // Thin botanical atlases lose coverage in filtered mobile mip levels.
                 configureCutout(m,cutoff:botanical ? min(authored,0.18):authored)
