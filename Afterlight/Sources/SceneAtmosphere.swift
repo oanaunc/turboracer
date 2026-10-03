@@ -139,8 +139,8 @@ import UIKit
     }
     static func sea() -> SCNNode {
         let plane=SCNPlane(width:1400,height:1400);plane.widthSegmentCount=64;plane.heightSegmentCount=64
-        let m=material(0x187C91);m.metalness.contents=0.18;m.roughness.contents=0.23
-        m.normal.contents=SurfaceLibrary.image("water-normal");m.normal.wrapS = .repeat;m.normal.wrapT = .repeat;m.normal.contentsTransform=SCNMatrix4MakeScale(110,110,1);m.normal.intensity=0.5
+        let m=material(0x187C91);m.metalness.contents=0.02;m.roughness.contents=0.07
+        m.normal.contents=SurfaceLibrary.image("water-normal");m.normal.wrapS = .repeat;m.normal.wrapT = .repeat;m.normal.contentsTransform=SCNMatrix4MakeScale(110,110,1);m.normal.intensity=0.65
         m.shaderModifiers=[.geometry:"""
         #pragma varyings
         float2 seaPosition;
@@ -148,10 +148,28 @@ import UIKit
         out.seaPosition=_geometry.position.xy;
         """,.surface:"""
         #pragma body
-        float shore=smoothstep(290.0,415.0,in.seaPosition.x);
-        float wave=sin(in.seaPosition.y*0.26+scn_frame.time*0.7+sin(in.seaPosition.x*0.08));
-        _surface.diffuse.rgb=mix(float3(0.022,0.13,0.23),float3(0.08,0.48,0.49),shore)*(0.94+wave*0.06);
+        float2 p=in.seaPosition;
+        float t=scn_frame.time;
+        float shore=smoothstep(290.0,415.0,p.x);
+        float swell=sin(p.y*0.21+t*0.9+sin(p.x*0.05))*0.5+sin(p.y*0.07-t*0.5+p.x*0.03)*0.5;
+        float3 deep=float3(0.015,0.09,0.17), mid=float3(0.03,0.26,0.36), shallow=float3(0.12,0.55,0.55);
+        float3 water=mix(deep,mid,smoothstep(0.0,0.6,shore));
+        water=mix(water,shallow,smoothstep(0.6,1.0,shore))*(0.92+swell*0.08);
+        // Breaking foam along the beach line, broken up by travelling crests.
+        float edge=smoothstep(392.0,405.0,p.x)*(1.0-smoothstep(408.0,416.0,p.x));
+        float crest=smoothstep(0.55,0.95,sin(p.y*0.45+t*1.6+p.x*0.6)*0.5+0.5);
+        float foam=clamp(edge*(0.45+crest*0.7),0.0,1.0);
+        _surface.diffuse.rgb=mix(water,float3(0.92,0.96,0.97),foam);
+        _surface.roughness=mix(0.06,0.6,foam);
         """]
-        plane.materials=[m];let node=SCNNode(geometry:plane);node.eulerAngles.x = -.pi/2;node.position=SCNVector3(-580,-0.3,0);return node
+        plane.materials=[m];let node=SCNNode(geometry:plane);node.eulerAngles.x = -.pi/2;node.position=SCNVector3(-580,-0.3,0)
+        // Scroll the wave normals so the surface moves and sparkles.
+        node.runAction(.repeatForever(.customAction(duration:60) { _,elapsed in
+            var transform=SCNMatrix4MakeScale(110,110,1);transform.m41=Float(elapsed)*0.35;transform.m42=Float(elapsed)*0.22
+            m.normal.contentsTransform=transform
+        }))
+        node.castsShadow=false
+        return node
     }
+
 }
