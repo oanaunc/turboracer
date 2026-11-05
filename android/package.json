@@ -1,0 +1,1 @@
+{"name":"afterlight-android","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs"},"dependencies":{"@fontsource/roboto-condensed":"^5.2.8","three":"0.187.0"}}

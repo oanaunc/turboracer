@@ -137,6 +137,7 @@
 		D2C63925DC8CE59A4FAD4AC6 /* Roadster.glb in Resources */ = {isa = PBXBuildFile; fileRef = 79D0973030002E0E4287FA0A /* Roadster.glb */; };
 		D4C90DEE1172D60D81CC5932 /* ProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */; };
 		D52084FABAA9C229DD3F4FAD /* circuit-18.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8DA1DB25AD0882A37A848769 /* circuit-18.jpg */; };
+		D7325DCACE3FD368ECAF97CE /* AndroidExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA1FB64F32F90DC2BA613B1 /* AndroidExportTests.swift */; };
 		D9E773ABC7D0774EB091188F /* ArchitectureArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A17541CAEB462C4CA8EBAA5 /* ArchitectureArt.swift */; };
 		DC170E1E36A1D156C36E7354 /* rock-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = FA17B7086BEE99EEDB6C3C75 /* rock-normal.png */; };
 		DE54C799EF4933EAAA414E4D /* ridge-rock-normal.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 02F4666A4888FD8DF148D6D4 /* ridge-rock-normal.jpg */; };
@@ -253,6 +254,7 @@
 		67BE91FF2E80D3ABA563ABF2 /* CountryHouse.asset */ = {isa = PBXFileReference; path = CountryHouse.asset; sourceTree = "<group>"; };
 		691D427B6930D984C75AEEEE /* Boulder.glb */ = {isa = PBXFileReference; path = Boulder.glb; sourceTree = "<group>"; };
 		6A7499082B353AAB2F52C327 /* alloy-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "alloy-normal.png"; sourceTree = "<group>"; };
+		6BA1FB64F32F90DC2BA613B1 /* AndroidExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidExportTests.swift; sourceTree = "<group>"; };
 		72090579563CA4922B9B29C8 /* facade-night.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facade-night.png"; sourceTree = "<group>"; };
 		73568E18F43E4526F3C45272 /* JourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyTests.swift; sourceTree = "<group>"; };
 		74057869D084E925139E97E5 /* ridge-rock-roughness.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "ridge-rock-roughness.jpg"; sourceTree = "<group>"; };
@@ -577,6 +579,7 @@
 		E5611A70DB12E0FDEFE20231 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				6BA1FB64F32F90DC2BA613B1 /* AndroidExportTests.swift */,
 				1835E9BE33F36C10E8D216FC /* EnvironmentArtTests.swift */,
 				B139EEEFE7EB5E13711FE927 /* ProgressTests.swift */,
 			);
@@ -854,6 +857,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7325DCACE3FD368ECAF97CE /* AndroidExportTests.swift in Sources */,
 				8A29ED4538BF2C3B0BF16CA2 /* EnvironmentArtTests.swift in Sources */,
 				D4C90DEE1172D60D81CC5932 /* ProgressTests.swift in Sources */,
 			);

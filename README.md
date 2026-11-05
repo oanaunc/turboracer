@@ -8,8 +8,8 @@ Inherit your father's Solstice, rebuild the garage with mechanic Mika, and join 
 
 - Four themed districts with five separately authored routes each. Every route now has a setting-specific landmark complex, ground treatment, lighting profile and scenery density; shared district assets remain. Constant-width roads and arc-length sampling keep corner widths and driving speed consistent.
 - Twenty original 3D circuits with UV-mapped asphalt, normal/roughness maps, guardrails, textured terrain, coastal landscaping, detailed licensed city buildings, scanned cliffs and alpine trees. HDR skies, metallic reflections, shadows and chase-camera framing.
-- Sixty campaign events: two-lap races with three rivals, time attack, and drift runs.
-- Six fictional garage entries. The local licensed art build replaces SOLSTICE with an independent luxury sedan and KOMET with an independent sports coupe; VANTA uses an independent concept GT; the remaining three entries use concept-platform derivatives. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
+- Eighty campaign events: circuit races, time attacks, drift runs, elimination, knockdown and champion duels. Ramps, jumps, barrel rolls, takedowns and shockwave nitro add stunt rewards.
+- Twelve fictional garage entries across five performance classes, including sport and race kits. The local licensed art build uses an independent muscle GT for SOLSTICE, sports coupes for KOMET and an independent concept GT for VANTA, with additional sedan, pickup, roadster and hypercar variants. Authored interior, alloy wheels, tread normals and brake hardware; wheels rotate during racing.
 - Automatic acceleration, touch steering, braking, drift combos, nitro, off-road penalties, and rival collisions with model-sized body volumes and swept contact checks. The rival roster excludes the player’s body family and uses three different families. Nitro eases the chase camera in and out, and an exhausted tank stays off until the button is released. The simulation clock runs during touch tracking.
 - Twelve metallic memory chips per circuit: collect them to recharge nitro, earn credits, and recover four notebook pages through district-wide progress. A live route map tracks your race position.
 - Daily rotating drift challenge; the first starred run awards 350 extra credits.
@@ -39,9 +39,13 @@ Camera-space steering regression and UI touch checks cover both landscape orient
 
 ## Release
 
-Bundle ID: `com.oanarinaldi.afterlight`. Team: `HBD3XXQK45`. App Store Connect app ID: `6818519420`. Version 1.0.0, build 20. The separate app identity was requested by the owner; the original Turbo Racer record and its saves remain untouched. The new installation uses its own save container. See `release/SubmissionStrategy.md` for submission status and `release/Validation.md` for the test evidence.
+Bundle ID: `com.oanarinaldi.afterlight`. Team: `HBD3XXQK45`. App Store Connect app ID: `6818519420`. Version 1.0.0, build 21. The separate app identity was requested by the owner; the original Turbo Racer record and its saves remain untouched. The new installation uses its own save container. See `release/SubmissionStrategy.md` for submission status and `release/Validation.md` for the test evidence.
 
 Use `release/ExportOptions.plist` for App Store export; archives and signing products are intentionally excluded from Git. Release metadata and validation notes live in `release/`.
+
+## Android / Google Play
+
+The Android port is in **android/**, with the Apple scene export as its art source. It includes all twelve cars, twenty circuits, eighty events, story, notebook, daily rewards, music and driving mechanics. See [Android build instructions](android/README.md) and [Google Play release evidence](release/google-play/RELEASE.md). The production bundle uses install-time Play Asset Delivery for offline scenery.
 
 ## Ownership and data
 

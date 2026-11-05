@@ -20,3 +20,16 @@ Afterlight/Resources/Models/*.blend
 # Licensed BlenderKit sources and runtime packs are local build inputs.
 Afterlight/Resources/Protected/
 Afterlight/Sources/GeneratedArtKeys.swift
+
+# Android generated licensed scenes, local signing and release artifacts.
+android/generated/
+*.aab
+*.apk
+*.keystore
+*.jks
+android/node_modules/
+android/web/art
+android/web/media
+
+# Console approval screenshots stay local to the owner's account.
+release/google-play/play-*.jpg
