@@ -1,0 +1,18 @@
+{
+  "package": "com.oanarinaldi.afterlight",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "art": {
+    "files": 4894,
+    "sourceLibrarySHA256": "dcd4e0ee2b00eed4040a1db31bce8b1df1072130dc8b27913ca3b64e71256f13",
+    "sceneRoutes": 20,
+    "carModels": 12,
+    "maxTextureSize": 2048
+  },
+  "sourceSHA256": "5bc7e94ac2ff4b77261273cfcece39819a8db45ffcf25e40eb78684a2f0c7687",
+  "aab": {
+    "file": "Afterlight-1.0.0-1.aab",
+    "sha256": "3366f19cf6801ab0eed0a86f19aaeb23dc68b3c2f48a0a1b47d536bfd086f8ef",
+    "bytes": 424228883
+  }
+}

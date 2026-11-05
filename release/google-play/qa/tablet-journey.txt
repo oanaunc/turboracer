@@ -1,0 +1,6 @@
+
+com.oanarinaldi.afterlight.JourneyTest:.
+
+Time: 84.216
+
+OK (1 test)

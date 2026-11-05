@@ -1,0 +1,26 @@
+{
+  "bundleValidated": true,
+  "jarSignatureVerified": true,
+  "targetSdk": 36,
+  "minSdk": 29,
+  "debuggable": false,
+  "internetPermission": false,
+  "installTimeAssetPack": true,
+  "apkSet": "build/Afterlight-production.apks",
+  "apkEntries": [
+    "toc.pb",
+    "asset-slices/festival_art-master.apk",
+    "splits/base-en.apk",
+    "splits/base-master.apk",
+    "splits/base-xxhdpi.apk"
+  ],
+  "productionSplitInstallationVerified": true,
+  "installedSplits": [
+    "base",
+    "config.en",
+    "config.xxhdpi",
+    "festival_art"
+  ],
+  "productionLaunchVerified": true,
+  "productionLaunchCapture": "qa/production-installed-home.png"
+}
