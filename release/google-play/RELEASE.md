@@ -1,6 +1,6 @@
-# Afterlight: Racing Festival — Android release, November 5, 2026
+# Afterlight: Racing Festival — Android release, November 6, 2026
 
-Prepared locally for Google Play; **not submitted**. The new-app form is open with English (US), free game, title **Afterlight: Racing Festival** and package **com.oanarinaldi.afterlight**. Google confirmed package availability. The developer-policy and US export certifications remain unchecked for the owner to review. No Play app ID or review-submission ID has been created.
+**Submitted to Google Play production review on November 6, 2026.** Play Console shows [submission 1 in review](https://play.google.com/console/u/0/developers/8359156760975569195/app/4974962365827548181/publishing/submission-activity/1/details). The Play app ID is `4974962365827548181`, package `com.oanarinaldi.afterlight`, and release `Afterlight 1.0.0 (1)`. Managed publishing is off. The full rollout is configured for 177 listed countries and regions plus the rest of the world, subject to Google's approval and availability.
 
 ## Build and content
 
@@ -24,9 +24,9 @@ The `festival_art` module is delivered at install time through Play Asset Delive
 
 The original models, scene composition, artwork, catalogue and UI dimensions are preserved. This is a separate WebGL/Android implementation. Roboto Condensed and original SVG controls replace Apple's licensed system font and symbols; rendering, tone mapping, shadows, bloom, color fringing and platform controls are not pixel-identical to SceneKit/SwiftUI. Textures are capped at 2048px for mobile memory. No automated pixel-equivalence claim is made. Physical Android hardware, motion-sensor behavior and live Google Play installation/protection have not been validated by emulator testing alone.
 
-## Store setup prepared
+## Store submission
 
-The English listing is in `listing-en-US.json`, with free Racing classification, no real-money purchases, support contact `oanarinaldi@gmail.com` and the published privacy policy. Age-rating and target-audience questionnaires still need to be completed after app creation; no ratings have been asserted or submitted.
+The English (US) listing uses `listing-en-US.json`, the original icon, the feature graphic, and six actual screenshots each for phones and 10-inch tablets. The icon and Crew images carry Google Play's AI artwork disclosure. The game is free in Racing with no purchases, ads, accounts, advertising ID or app data collection. The target audience starts at age 13. The IARC questionnaire discloses vehicle takedowns without blood, gore, or violence depicted against people or animals; the resulting European rating is PEGI 7. Developer-policy, US export and IARC terms were authorized by the owner.
 
 The shared privacy policy now covers Android storage, Google Play install-time artwork and disabled Android backup. Website main commit `996bd0d` was pushed and the live page verified:
 
